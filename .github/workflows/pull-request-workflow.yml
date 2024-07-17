@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - develop
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
 
 jobs:
   build:
@@ -28,6 +28,7 @@ jobs:
         shell: bash
 
       - name: Send Discord Notification
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
         env:
           DATA: |
             {
