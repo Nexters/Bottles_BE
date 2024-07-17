@@ -26,20 +26,29 @@ jobs:
         run: ./gradlew clean build
         shell: bash
 
+      - name: Set Date and Time for Tag
+        run: echo "DATETIME_TAG=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
       - name: Docker build & push
+        env:
+          DOCKER_TAG: ${{ env.DATETIME_TAG }}
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build --platform linux/amd64 -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/bottles .
-          docker push ${{ secrets.DOCKER_USERNAME }}/bottles
+          docker build --platform linux/amd64 -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/bottles:$DOCKER_TAG .
+          docker push ${{ secrets.DOCKER_USERNAME }}/bottles:$DOCKER_TAG
 
-      - name: Transfer docker-compose file use SCP
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER_NAME }}
-          key: ${{ secrets.SERVER_PRIVATE_KEY }}
-          source: "./docker-compose.yml"
-          target: "/docker"
+      - name: Transfer file using SCP
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER_NAME: ${{ secrets.SERVER_USER_NAME }}
+          SERVER_PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+        run: |
+          echo "$SERVER_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          scp -o StrictHostKeyChecking=no -i private_key.pem ./docker-compose.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/docker
+          scp -o StrictHostKeyChecking=no -i private_key.pem ./deploy.sh $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/deploy
+          scp -o StrictHostKeyChecking=no -i private_key.pem ./notify_error.sh $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/deploy
+          rm private_key.pem
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -49,13 +58,14 @@ jobs:
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
           script: |
             export SERVER_NGINX_CONF=${{ secrets.SERVER_NGINX_CONF }}
+            export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
             export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            export DOCKER_TAG=${{ env.DATETIME_TAG }}
             export DB_DATABASE=${{ secrets.DB_DATABASE }}
             export DB_USER_NAME=${{ secrets.DB_USER_NAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            
-            sudo docker ps
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bottles
-            cd docker
-            docker-compose up -d
-            sudo docker image prune -f
+            export DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}
+
+            cd /home/$SERVER_USER_NAME/deploy
+            sudo chmod +x deploy.sh notify_error.sh
+            ./deploy.sh
