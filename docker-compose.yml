@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/nginx/conf.d/${SERVER_NGINX_CONF}:/etc/nginx/conf.d/${SERVER_NGINX_CONF}
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - springboot
+
+  springboot:
+    container_name: springboot
+    image: ${DOCKER_USERNAME}/bottles:${DOCKER_TAG}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+  db:
+    container_name: mysql
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER_NAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./data/mysql/:/var/lib/mysql
+      - ./db/mysql/config:/etc/mysql/conf.d
