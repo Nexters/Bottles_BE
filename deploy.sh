@@ -23,5 +23,3 @@ if [ "$LATEST_TAG" != "$RUNNING_TAG" ]; then
 fi
 
 sudo docker image prune -f
-
-rm /home/$SERVER_USER_NAME/deploy/env_vars.sh

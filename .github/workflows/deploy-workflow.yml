@@ -57,6 +57,10 @@ jobs:
           username: ${{ secrets.SERVER_USER_NAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
           script: |
+            if [ -f /home/$SERVER_USER_NAME/deploy/env_vars.sh ]; then
+              rm /home/$SERVER_USER_NAME/deploy/env_vars.sh
+            fi
+            
             echo "SERVER_NGINX_CONF=${{ secrets.SERVER_NGINX_CONF }}" > /home/$SERVER_USER_NAME/deploy/env_vars.sh
             echo "SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
