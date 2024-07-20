@@ -4,7 +4,7 @@ ERROR_MESSAGE=$1
 
 DATA=$(cat <<EOF
 {
-  "content": "<@&$DISCORD_ROLE_ID>",
+  "content": "<@&${DISCORD_ROLE_ID}>",
   "embeds": [
     {
       "title": "🚨 Deploy Error",
