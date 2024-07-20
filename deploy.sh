@@ -23,4 +23,3 @@ if [ "$LATEST_TAG" != "$RUNNING_TAG" ]; then
 fi
 
 sudo docker image prune -f
-
