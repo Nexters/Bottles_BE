@@ -70,6 +70,8 @@ jobs:
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
+            export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
+
             cd /home/${{ secrets.SERVER_USER_NAME }}/deploy
             sudo chmod +x deploy.sh notify_error.sh
             ./deploy.sh
