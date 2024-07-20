@@ -32,6 +32,7 @@ jobs:
         env:
           DATA: |
             {
+              "content": "<@&${{ secrets.DISCORD_ROLE_ID }}>",
               "embeds": [
                 {
                   "author": {
