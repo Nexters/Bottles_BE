@@ -1,6 +1,6 @@
 package com.nexters.bottles.profile.controller.dto
 
-data class Interest(
+data class InterestDto(
     val culture: List<String> = arrayListOf(),
     val sports: List<String> = arrayListOf(),
     val entertainment: List<String> = arrayListOf(),

@@ -1,6 +1,6 @@
 package com.nexters.bottles.profile.controller.dto
 
-data class Region(
+data class RegionDto(
     val city: String,
     val state: String
 )
