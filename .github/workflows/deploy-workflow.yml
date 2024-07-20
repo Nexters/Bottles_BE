@@ -61,14 +61,14 @@ jobs:
               rm /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             fi
             
-            echo "SERVER_NGINX_CONF=${{ secrets.SERVER_NGINX_CONF }}" > /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "DOCKER_TAG=${{ env.DATETIME_TAG }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "DB_USER_NAME=${{ secrets.DB_USER_NAME }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
-            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> /home/$SERVER_USER_NAME/deploy/env_vars.sh
+            echo "SERVER_NGINX_CONF=${{ secrets.SERVER_NGINX_CONF }}" > /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "DOCKER_TAG=${{ env.DATETIME_TAG }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "DB_USER_NAME=${{ secrets.DB_USER_NAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             cd /home/${{ secrets.SERVER_USER_NAME }}/deploy
             sudo chmod +x deploy.sh notify_error.sh
