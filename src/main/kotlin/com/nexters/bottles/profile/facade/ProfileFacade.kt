@@ -36,7 +36,7 @@ class ProfileFacade(
             "키워드는 5개 이하여야 해요"
         }
         val interestCount = profileDto.interest.culture.size + profileDto.interest.sports.size
-            + profileDto.interest.entertainment.size + profileDto.interest.etc.size
+        +profileDto.interest.entertainment.size + profileDto.interest.etc.size
         require(interestCount <= 5) {
             "취미는 5개 이하여야 해요"
         }

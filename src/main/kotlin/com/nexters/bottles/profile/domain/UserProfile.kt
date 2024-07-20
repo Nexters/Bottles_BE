@@ -26,5 +26,4 @@ class UserProfile(
     @Column(name = "updated_at")
     @UpdateTimestamp
     var updatedAt: LocalDateTime = LocalDateTime.now()
-) {
-}
+)

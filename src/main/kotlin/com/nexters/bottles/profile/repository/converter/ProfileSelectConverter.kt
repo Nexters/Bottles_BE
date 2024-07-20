@@ -1,6 +1,7 @@
 package com.nexters.bottles.profile.repository.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.nexters.bottles.profile.domain.ProfileSelect
 import javax.persistence.AttributeConverter
@@ -9,7 +10,16 @@ import javax.persistence.Converter
 @Converter(autoApply = true)
 class ProfileSelectConverter : AttributeConverter<ProfileSelect, String> {
 
-    private val objectMapper = ObjectMapper().registerModule(KotlinModule())
+    private val objectMapper = ObjectMapper().registerModule(
+        KotlinModule.Builder()
+            .withReflectionCacheSize(512)
+            .configure(KotlinFeature.NullToEmptyCollection, false)
+            .configure(KotlinFeature.NullToEmptyMap, false)
+            .configure(KotlinFeature.NullIsSameAsDefault, false)
+            .configure(KotlinFeature.SingletonSupport, DISABLED)
+            .configure(KotlinFeature.StrictNullChecks, false)
+            .build()
+    )
 
     override fun convertToDatabaseColumn(attribute: ProfileSelect?): String {
         return try {

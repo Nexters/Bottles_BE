@@ -1,6 +1,5 @@
 package com.nexters.bottles.profile.service
 
-import com.nexters.bottles.profile.controller.dto.RegisterProfileRequestDto
 import com.nexters.bottles.profile.domain.UserProfile
 import com.nexters.bottles.profile.repository.UserProfileRepository
 import org.springframework.stereotype.Service
