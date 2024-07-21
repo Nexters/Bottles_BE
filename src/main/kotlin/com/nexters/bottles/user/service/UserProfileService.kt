@@ -18,10 +18,8 @@ class UserProfileService(
 
     @Transactional
     fun saveProfile(userProfile: UserProfile): UserProfile {
-        log.info { "test!: $userProfile" }
         val user = userRepository.findByIdOrNull(1L) // TODO User 회원 가입 기능 구현후 수정
 
-        log.info { "test!!: $user" }
         userProfile.user = user
         return profileRepository.save(userProfile)
     }
