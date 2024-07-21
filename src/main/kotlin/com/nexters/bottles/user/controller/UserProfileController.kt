@@ -1,6 +1,7 @@
 package com.nexters.bottles.user.controller
 
 import com.nexters.bottles.user.controller.dto.ProfileChoiceResponseDto
+import com.nexters.bottles.user.controller.dto.ProfileResponseDto
 import com.nexters.bottles.user.controller.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.controller.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.facade.UserProfileFacade
@@ -29,5 +30,10 @@ class UserProfileController(
     @PostMapping("/introduction")
     fun upsertIntroduction(@RequestBody registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
         profileFacade.upsertIntroduction(registerIntroductionRequestDto)
+    }
+
+    @GetMapping
+    fun getProfile(): ProfileResponseDto {
+        return profileFacade.getProfile()
     }
 }

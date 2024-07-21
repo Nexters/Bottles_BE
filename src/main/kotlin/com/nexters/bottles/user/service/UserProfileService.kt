@@ -8,7 +8,7 @@ import com.nexters.bottles.user.repository.UserRepository
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserProfileService(
@@ -64,5 +64,11 @@ class UserProfileService(
         } else {
             throw IllegalStateException ("회원가입 상태를 문의해주세요")
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun findProfile() : UserProfile? {
+        val user = userRepository.findByIdOrNull(1L) ?: return null
+        return profileRepository.findByUserId(user.id)
     }
 }
