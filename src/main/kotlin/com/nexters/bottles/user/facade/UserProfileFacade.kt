@@ -1,14 +1,14 @@
-package com.nexters.bottles.profile.facade
+package com.nexters.bottles.user.facade
 
-import com.nexters.bottles.profile.controller.dto.RegisterProfileRequestDto
-import com.nexters.bottles.profile.domain.ProfileSelect
-import com.nexters.bottles.profile.domain.UserProfile
-import com.nexters.bottles.profile.service.ProfileService
+import com.nexters.bottles.user.controller.dto.RegisterProfileRequestDto
+import com.nexters.bottles.user.domain.UserProfile
+import com.nexters.bottles.user.domain.UserProfileSelect
+import com.nexters.bottles.user.service.UserProfileService
 import org.springframework.stereotype.Component
 
 @Component
-class ProfileFacade(
-    private val profileService: ProfileService,
+class UserProfileFacade(
+    private val profileService: UserProfileService,
 ) {
 
     fun saveProfile(profileDto: RegisterProfileRequestDto) {
@@ -16,8 +16,7 @@ class ProfileFacade(
 
         profileService.saveProfile(
             UserProfile(
-                userId = 1L,
-                profileSelect = ProfileSelect(
+                profileSelect = UserProfileSelect(
                     mbti = profileDto.mbti,
                     keyword = profileDto.keyword,
                     interest = profileDto.interest,

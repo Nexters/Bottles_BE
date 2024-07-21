@@ -1,14 +1,14 @@
-package com.nexters.bottles.profile.repository.converter
+package com.nexters.bottles.user.repository.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.nexters.bottles.profile.domain.ProfileSelect
+import com.nexters.bottles.user.domain.UserProfileSelect
 import javax.persistence.AttributeConverter
 import javax.persistence.Converter
 
 @Converter(autoApply = true)
-class ProfileSelectConverter : AttributeConverter<ProfileSelect, String> {
+class UserProfileSelectConverter : AttributeConverter<UserProfileSelect, String> {
 
     private val objectMapper = ObjectMapper().registerModule(
         KotlinModule.Builder()
@@ -20,7 +20,7 @@ class ProfileSelectConverter : AttributeConverter<ProfileSelect, String> {
             .build()
     )
 
-    override fun convertToDatabaseColumn(attribute: ProfileSelect?): String {
+    override fun convertToDatabaseColumn(attribute: UserProfileSelect?): String {
         return try {
             objectMapper.writeValueAsString(attribute)
         } catch (e: Exception) {
@@ -28,9 +28,9 @@ class ProfileSelectConverter : AttributeConverter<ProfileSelect, String> {
         }
     }
 
-    override fun convertToEntityAttribute(dbData: String?): ProfileSelect? {
+    override fun convertToEntityAttribute(dbData: String?): UserProfileSelect? {
         return try {
-            dbData?.let { objectMapper.readValue(it, ProfileSelect::class.java) }
+            dbData?.let { objectMapper.readValue(it, UserProfileSelect::class.java) }
         } catch (e: Exception) {
             throw RuntimeException("Error converting String to JSON", e)
         }

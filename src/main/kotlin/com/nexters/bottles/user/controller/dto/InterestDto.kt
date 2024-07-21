@@ -1,4 +1,4 @@
-package com.nexters.bottles.profile.controller.dto
+package com.nexters.bottles.user.controller.dto
 
 data class InterestDto(
     val culture: List<String> = arrayListOf(),
