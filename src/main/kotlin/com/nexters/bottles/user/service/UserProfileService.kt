@@ -1,6 +1,8 @@
 package com.nexters.bottles.user.service
 
+import com.nexters.bottles.user.domain.QuestionAndAnswer
 import com.nexters.bottles.user.domain.UserProfile
+import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.repository.UserProfileRepository
 import com.nexters.bottles.user.repository.UserRepository
 import mu.KotlinLogging
@@ -17,10 +19,50 @@ class UserProfileService(
     private val log = KotlinLogging.logger { }
 
     @Transactional
-    fun saveProfile(userProfile: UserProfile): UserProfile {
-        val user = userRepository.findByIdOrNull(1L) // TODO User 회원 가입 기능 구현후 수정
+    fun upsertProfile(profileSelect: UserProfileSelect) {
+        // TODO User 회원 가입 기능 구현후 수정
+        val user = userRepository.findByIdOrNull(1L)
+        if (user != null) {
+            user.userProfile?.profileSelect = profileSelect
 
-        userProfile.user = user
-        return profileRepository.save(userProfile)
+            profileRepository.findByUserId(user.id)?.let {
+                it.user = user
+                it.profileSelect = it.profileSelect
+                it.introduction = it.introduction
+            } ?: run {
+                profileRepository.save(
+                    UserProfile(
+                        user = user,
+                        profileSelect = profileSelect,
+                    )
+                )
+            }
+        } else {
+            throw IllegalStateException ("회원가입 상태를 문의해주세요")
+        }
+    }
+
+    @Transactional
+    fun saveIntroduction(introduction: List<QuestionAndAnswer>) {
+        // TODO User 회원 가입 기능 구현후 수정
+        val user = userRepository.findByIdOrNull(1L)
+        if (user != null) {
+            user.userProfile?.introduction = introduction
+
+            profileRepository.findByUserId(user.id)?.let {
+                it.user = user
+                it.profileSelect = it.profileSelect
+                it.introduction = it.introduction
+            } ?: run {
+                profileRepository.save(
+                    UserProfile(
+                        user = user,
+                        introduction = introduction
+                    )
+                )
+            }
+        } else {
+            throw IllegalStateException ("회원가입 상태를 문의해주세요")
+        }
     }
 }
