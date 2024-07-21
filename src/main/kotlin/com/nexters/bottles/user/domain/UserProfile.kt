@@ -2,6 +2,7 @@ package com.nexters.bottles.user.domain
 
 import com.nexters.bottles.user.controller.dto.InterestDto
 import com.nexters.bottles.user.controller.dto.RegionDto
+import com.nexters.bottles.user.repository.converter.QuestionAndAnswerConverter
 import com.nexters.bottles.user.repository.converter.UserProfileSelectConverter
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -20,7 +21,11 @@ class UserProfile(
 
     @Column(name = "profile_select")
     @Convert(converter = UserProfileSelectConverter::class)
-    var profileSelect: UserProfileSelect,
+    var profileSelect: UserProfileSelect? = null,
+
+    @Column(name = "introduction")
+    @Convert(converter = QuestionAndAnswerConverter::class)
+    var introduction: List<QuestionAndAnswer> = arrayListOf(),
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
@@ -40,5 +45,10 @@ data class UserProfileSelect(
     val alcohol: String,
     val religion: String,
     val region: RegionDto,
+)
+
+data class QuestionAndAnswer(
+    val question: String,
+    val answer: String,
 )
 
