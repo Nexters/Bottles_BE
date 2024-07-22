@@ -1,7 +1,8 @@
 package com.nexters.bottles.user.domain
 
-import com.nexters.bottles.user.controller.dto.InterestDto
-import com.nexters.bottles.user.controller.dto.RegionDto
+import com.nexters.bottles.user.facade.dto.InterestDto
+import com.nexters.bottles.user.facade.dto.RegionDto
+import com.nexters.bottles.user.repository.converter.QuestionAndAnswerConverter
 import com.nexters.bottles.user.repository.converter.UserProfileSelectConverter
 import javax.persistence.*
 
@@ -16,7 +17,10 @@ class UserProfile(
     var user: User? = null,
 
     @Convert(converter = UserProfileSelectConverter::class)
-    var profileSelect: UserProfileSelect,
+    var profileSelect: UserProfileSelect? = null,
+
+    @Convert(converter = QuestionAndAnswerConverter::class)
+    var introduction: List<QuestionAndAnswer> = arrayListOf(),
 ) :  BaseEntity()
 
 data class UserProfileSelect(
@@ -28,5 +32,10 @@ data class UserProfileSelect(
     val alcohol: String,
     val religion: String,
     val region: RegionDto,
+)
+
+data class QuestionAndAnswer(
+    val question: String,
+    val answer: String,
 )
 
