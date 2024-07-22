@@ -1,10 +1,12 @@
 package com.nexters.bottles.user.facade
 
+import com.nexters.bottles.user.controller.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.controller.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.domain.UserProfile
 import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.service.UserProfileService
 import org.springframework.stereotype.Component
+import regions
 
 @Component
 class UserProfileFacade(
@@ -28,6 +30,12 @@ class UserProfileFacade(
                     region = convertedProfileDto.region,
                 )
             )
+        )
+    }
+
+    fun getProfileChoice(): ProfileChoiceResponseDto {
+        return ProfileChoiceResponseDto(
+            regions = regions
         )
     }
 

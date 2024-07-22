@@ -1,7 +1,9 @@
 package com.nexters.bottles.user.controller
 
+import com.nexters.bottles.user.controller.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.controller.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.facade.UserProfileFacade
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,5 +18,10 @@ class UserProfileController(
     @PostMapping("/profile/choice")
     fun registerProfile(@RequestBody registerProfileRequestDto: RegisterProfileRequestDto) {
         profileFacade.saveProfile(registerProfileRequestDto)
+    }
+
+    @GetMapping("/profile/choice")
+    fun getProfileChoiceList() : ProfileChoiceResponseDto {
+        return profileFacade.getProfileChoice()
     }
 }
