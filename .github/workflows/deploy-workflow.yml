@@ -37,6 +37,21 @@ jobs:
           docker build --platform linux/amd64 -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/bottles:$DOCKER_TAG .
           docker push ${{ secrets.DOCKER_USERNAME }}/bottles:$DOCKER_TAG
 
+      - name: Get Github Actions IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
       - name: Transfer file using SCP
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
@@ -76,3 +91,7 @@ jobs:
             cd /home/${{ secrets.SERVER_USER_NAME }}/deploy
             sudo chmod +x deploy.sh notify_error.sh
             ./deploy.sh
+
+      - name: Remove Github Actions IP From Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
