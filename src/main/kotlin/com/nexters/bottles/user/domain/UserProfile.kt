@@ -3,9 +3,6 @@ package com.nexters.bottles.user.domain
 import com.nexters.bottles.user.controller.dto.InterestDto
 import com.nexters.bottles.user.controller.dto.RegionDto
 import com.nexters.bottles.user.repository.converter.UserProfileSelectConverter
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
-import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -18,18 +15,9 @@ class UserProfile(
     @JoinColumn(name = "user_id")
     var user: User? = null,
 
-    @Column(name = "profile_select")
     @Convert(converter = UserProfileSelectConverter::class)
     var profileSelect: UserProfileSelect,
-
-    @Column(name = "created_at", updatable = false)
-    @CreationTimestamp
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    var updatedAt: LocalDateTime = LocalDateTime.now()
-)
+) :  BaseEntity()
 
 data class UserProfileSelect(
     val mbti: String,

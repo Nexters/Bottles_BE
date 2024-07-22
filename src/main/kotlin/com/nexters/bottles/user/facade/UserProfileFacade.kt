@@ -13,18 +13,19 @@ class UserProfileFacade(
 
     fun saveProfile(profileDto: RegisterProfileRequestDto) {
         validateProfile(profileDto)
+        val convertedProfileDto = convertProfileDto(profileDto)
 
         profileService.saveProfile(
             UserProfile(
                 profileSelect = UserProfileSelect(
-                    mbti = profileDto.mbti,
-                    keyword = profileDto.keyword,
-                    interest = profileDto.interest,
-                    job = profileDto.job,
-                    smoking = profileDto.smoking,
-                    alcohol = profileDto.alcohol,
-                    religion = profileDto.religion,
-                    region = profileDto.region,
+                    mbti = convertedProfileDto.mbti,
+                    keyword = convertedProfileDto.keyword,
+                    interest = convertedProfileDto.interest,
+                    job = convertedProfileDto.job,
+                    smoking = convertedProfileDto.smoking,
+                    alcohol = convertedProfileDto.alcohol,
+                    religion = convertedProfileDto.religion,
+                    region = convertedProfileDto.region,
                 )
             )
         )
@@ -39,5 +40,19 @@ class UserProfileFacade(
         require(interestCount <= 5) {
             "취미는 5개 이하여야 해요"
         }
+    }
+
+    private fun convertProfileDto(profileDto: RegisterProfileRequestDto): RegisterProfileRequestDto {
+        when(profileDto.smoking) {
+            "전혀 피우지 않아요" -> profileDto.smoking = "흡연 안해요"
+            "가끔 피워요" -> profileDto.smoking = "흡연은 가끔"
+            "자주 피워요" -> profileDto.smoking = "흡연해요"
+        }
+        when(profileDto.alcohol) {
+            "한 방울도 마시지 않아요" -> profileDto.smoking = "술은 안해요"
+            "때에 따라 적당히 즐겨요" -> profileDto.smoking = "술은 적당히"
+            "자주 찾는 편이에요" -> profileDto.smoking = "술을 즐겨요"
+        }
+        return profileDto
     }
 }

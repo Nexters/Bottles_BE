@@ -9,16 +9,20 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class JacksonConfig {
 
+    companion object {
+        val kotlinModule = KotlinModule.Builder()
+            .withReflectionCacheSize(512)
+            .configure(KotlinFeature.NullToEmptyCollection, false)
+            .configure(KotlinFeature.NullToEmptyMap, false)
+            .configure(KotlinFeature.NullIsSameAsDefault, false)
+            .configure(KotlinFeature.StrictNullChecks, false)
+            .build()
+    }
+
     @Bean
     fun objectMapper(): ObjectMapper {
         return ObjectMapper().registerModule(
-            KotlinModule.Builder()
-                .withReflectionCacheSize(512)
-                .configure(KotlinFeature.NullToEmptyCollection, false)
-                .configure(KotlinFeature.NullToEmptyMap, false)
-                .configure(KotlinFeature.NullIsSameAsDefault, false)
-                .configure(KotlinFeature.StrictNullChecks, false)
-                .build()
+            kotlinModule
         )
     }
 }
