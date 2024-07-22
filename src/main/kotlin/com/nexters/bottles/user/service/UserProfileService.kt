@@ -21,48 +21,38 @@ class UserProfileService(
     @Transactional
     fun upsertProfile(profileSelect: UserProfileSelect) {
         // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L)
-        if (user != null) {
-            user.userProfile?.profileSelect = profileSelect
+        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-            profileRepository.findByUserId(user.id)?.let {
-                it.user = user
-                it.profileSelect = it.profileSelect
-                it.introduction = it.introduction
-            } ?: run {
-                profileRepository.save(
-                    UserProfile(
-                        user = user,
-                        profileSelect = profileSelect,
-                    )
+        profileRepository.findByUserId(user.id)?.let {
+            it.user = user
+            it.profileSelect = profileSelect
+            it.introduction = it.introduction
+        } ?: run {
+            profileRepository.save(
+                UserProfile(
+                    user = user,
+                    profileSelect = profileSelect,
                 )
-            }
-        } else {
-            throw IllegalStateException ("회원가입 상태를 문의해주세요")
+            )
         }
     }
 
     @Transactional
     fun saveIntroduction(introduction: List<QuestionAndAnswer>) {
         // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L)
-        if (user != null) {
-            user.userProfile?.introduction = introduction
+        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-            profileRepository.findByUserId(user.id)?.let {
-                it.user = user
-                it.profileSelect = it.profileSelect
-                it.introduction = it.introduction
-            } ?: run {
-                profileRepository.save(
-                    UserProfile(
-                        user = user,
-                        introduction = introduction
-                    )
+        profileRepository.findByUserId(user.id)?.let {
+            it.user = user
+            it.profileSelect = it.profileSelect
+            it.introduction = introduction
+        } ?: run {
+            profileRepository.save(
+                UserProfile(
+                    user = user,
+                    introduction = introduction
                 )
-            }
-        } else {
-            throw IllegalStateException ("회원가입 상태를 문의해주세요")
+            )
         }
     }
 }

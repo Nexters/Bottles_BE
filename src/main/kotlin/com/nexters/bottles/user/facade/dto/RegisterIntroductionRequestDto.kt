@@ -1,4 +1,4 @@
-package com.nexters.bottles.user.controller.dto
+package com.nexters.bottles.user.facade.dto
 
 import com.nexters.bottles.user.domain.QuestionAndAnswer
 

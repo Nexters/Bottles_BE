@@ -1,9 +1,7 @@
 package com.nexters.bottles.user.repository.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.nexters.bottles.config.JacksonConfig.Companion.kotlinModule
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.nexters.bottles.user.domain.UserProfileSelect
 import javax.persistence.AttributeConverter
 import javax.persistence.Converter
@@ -11,7 +9,7 @@ import javax.persistence.Converter
 @Converter(autoApply = true)
 class UserProfileSelectConverter : AttributeConverter<UserProfileSelect, String> {
 
-    private val objectMapper = ObjectMapper().registerModule(kotlinModule)
+    private val objectMapper = ObjectMapper().registerModule(kotlinModule())
 
     override fun convertToDatabaseColumn(attribute: UserProfileSelect?): String {
         return try {

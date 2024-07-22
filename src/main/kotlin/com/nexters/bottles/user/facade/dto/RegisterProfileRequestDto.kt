@@ -1,4 +1,4 @@
-package com.nexters.bottles.user.controller.dto
+package com.nexters.bottles.user.facade.dto
 
 data class RegisterProfileRequestDto(
     val mbti: String,
