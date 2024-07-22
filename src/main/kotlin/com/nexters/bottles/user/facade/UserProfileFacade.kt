@@ -6,6 +6,7 @@ import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
 import com.nexters.bottles.user.service.UserProfileService
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import regions
 
@@ -13,6 +14,8 @@ import regions
 class UserProfileFacade(
     private val profileService: UserProfileService,
 ) {
+
+    private val log = KotlinLogging.logger {  }
 
     fun upsertProfile(profileDto: RegisterProfileRequestDto) {
         validateProfile(profileDto)
@@ -47,13 +50,15 @@ class UserProfileFacade(
     fun getProfile(): UserProfileResponseDto {
 
         val userProfile = profileService.findUserProfile(1L) // TODO: 회원 기능 구현후 수정
-
+        log.info { "test!!: $userProfile" }
         return UserProfileResponseDto(
             userName = "테스트",
             age = 20,
             introduction = userProfile?.introduction,
             profileSelect = userProfile?.profileSelect
-        )
+        ).also {
+            log.info { "TEst! : $it" }
+        }
     }
 
     private fun validateProfile(profileDto: RegisterProfileRequestDto) {
