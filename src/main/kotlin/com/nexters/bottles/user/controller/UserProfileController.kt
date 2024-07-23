@@ -4,6 +4,7 @@ import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.facade.UserProfileFacade
+import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -29,5 +30,10 @@ class UserProfileController(
     @PostMapping("/introduction")
     fun upsertIntroduction(@RequestBody registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
         profileFacade.upsertIntroduction(registerIntroductionRequestDto)
+    }
+
+    @GetMapping
+    fun getProfile(): UserProfileResponseDto {
+        return profileFacade.getProfile()
     }
 }
