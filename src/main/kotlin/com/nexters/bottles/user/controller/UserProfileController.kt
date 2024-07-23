@@ -5,6 +5,7 @@ import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.facade.UserProfileFacade
 import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
+import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,21 +18,25 @@ class UserProfileController(
     private val profileFacade: UserProfileFacade,
 ) {
 
+    @ApiOperation("온보딩 프로필 등록하기")
     @PostMapping("/choice")
     fun upsertProfile(@RequestBody registerProfileRequestDto: RegisterProfileRequestDto) {
         profileFacade.upsertProfile(registerProfileRequestDto)
     }
 
+    @ApiOperation("온보딩 선택지 조회하기 - 지역")
     @GetMapping("/choice")
     fun getProfileChoiceList() : ProfileChoiceResponseDto {
         return profileFacade.getProfileChoice()
     }
 
+    @ApiOperation("마이페이지 자기소개 등록하기")
     @PostMapping("/introduction")
     fun upsertIntroduction(@RequestBody registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
         profileFacade.upsertIntroduction(registerIntroductionRequestDto)
     }
 
+    @ApiOperation("마이페이지 내 프로필 조회하기")
     @GetMapping
     fun getProfile(): UserProfileResponseDto {
         return profileFacade.getProfile()
