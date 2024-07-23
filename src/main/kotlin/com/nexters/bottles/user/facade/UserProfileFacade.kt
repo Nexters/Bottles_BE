@@ -4,6 +4,7 @@ import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.domain.UserProfileSelect
+import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
 import com.nexters.bottles.user.service.UserProfileService
 import org.springframework.stereotype.Component
 import regions
@@ -41,6 +42,18 @@ class UserProfileFacade(
         validateIntroduction(registerIntroductionRequestDto)
 
         profileService.saveIntroduction(registerIntroductionRequestDto.introduction)
+    }
+
+    fun getProfile(): UserProfileResponseDto {
+
+        val userProfile = profileService.findUserProfile(1L) // TODO: 회원 기능 구현후 수정
+
+        return UserProfileResponseDto(
+            userName = "테스트",
+            age = 20,
+            introduction = userProfile?.introduction,
+            profileSelect = userProfile?.profileSelect
+        )
     }
 
     private fun validateProfile(profileDto: RegisterProfileRequestDto) {
