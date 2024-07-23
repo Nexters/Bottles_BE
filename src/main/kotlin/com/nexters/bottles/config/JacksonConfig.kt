@@ -1,6 +1,7 @@
 package com.nexters.bottles.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.context.annotation.Bean
@@ -21,8 +22,8 @@ class JacksonConfig {
 
     @Bean
     fun objectMapper(): ObjectMapper {
-        return ObjectMapper().registerModule(
-            kotlinModule
-        )
+        return ObjectMapper()
+            .registerModule(kotlinModule)
+            .registerModule(JavaTimeModule())
     }
 }

@@ -1,5 +1,6 @@
 package com.nexters.bottles.user.domain
 
+import com.nexters.bottles.global.BaseEntity
 import com.nexters.bottles.user.domain.enum.Gender
 import javax.persistence.*
 

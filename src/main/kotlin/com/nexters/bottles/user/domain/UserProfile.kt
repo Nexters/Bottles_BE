@@ -1,5 +1,6 @@
 package com.nexters.bottles.user.domain
 
+import com.nexters.bottles.global.BaseEntity
 import com.nexters.bottles.user.facade.dto.InterestDto
 import com.nexters.bottles.user.facade.dto.RegionDto
 import com.nexters.bottles.user.repository.converter.QuestionAndAnswerConverter
