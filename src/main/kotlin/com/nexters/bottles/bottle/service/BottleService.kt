@@ -24,6 +24,7 @@ class BottleService(
 
     @Transactional(readOnly = true)
     fun getBottle(bottleId: Long): Bottle {
-        return bottleRepository.findByIdOrNull(bottleId) ?: throw IllegalArgumentException("존재하지 않는 보틀입니다.")
+        return bottleRepository.findByIdAndNotExpired(bottleId, LocalDateTime.now())
+            ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
     }
 }

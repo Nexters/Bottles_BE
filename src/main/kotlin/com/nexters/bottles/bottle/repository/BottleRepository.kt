@@ -18,4 +18,14 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         @Param("targetUser") targetUser: User,
         @Param("currentDateTime") currentDateTime: LocalDateTime
     ): List<Bottle>
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "JOIN FETCH b.sourceUser " +
+                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime"
+    )
+    fun findByIdAndNotExpired(
+        @Param("bottleId") bottleId: Long,
+        @Param("currentDateTime") currentDateTime: LocalDateTime
+    ): Bottle?
 }
