@@ -50,15 +50,12 @@ class UserProfileFacade(
     fun getProfile(): UserProfileResponseDto {
 
         val userProfile = profileService.findUserProfile(1L) // TODO: 회원 기능 구현후 수정
-        log.info { "test!!: $userProfile" }
         return UserProfileResponseDto(
             userName = "테스트",
             age = 20,
             introduction = userProfile?.introduction,
             profileSelect = userProfile?.profileSelect
-        ).also {
-            log.info { "TEst! : $it" }
-        }
+        )
     }
 
     private fun validateProfile(profileDto: RegisterProfileRequestDto) {
