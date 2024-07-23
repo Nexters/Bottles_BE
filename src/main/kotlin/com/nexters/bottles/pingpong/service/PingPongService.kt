@@ -22,7 +22,9 @@ class PingPongService(
         val pingPong = PingPong(userA = userA, userB = userB)
         val savedPingPong = pingPongRepository.save(pingPong)
 
-        val letters = questionRepository.findByRandom(3)
+        val letters = questionRepository.findAll()
+            .shuffled()
+            .take(3)
             .map {
                 LetterQuestionAndAnswer(question = it.question)
             }
