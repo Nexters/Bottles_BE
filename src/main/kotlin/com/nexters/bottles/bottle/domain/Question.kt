@@ -1,4 +1,4 @@
-package com.nexters.bottles.pingpong.domain
+package com.nexters.bottles.bottle.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity

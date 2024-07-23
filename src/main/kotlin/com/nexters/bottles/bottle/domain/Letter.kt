@@ -1,7 +1,7 @@
-package com.nexters.bottles.pingpong.domain
+package com.nexters.bottles.bottle.domain
 
+import com.nexters.bottles.bottle.repository.converter.LetterQuestionAndAnswerConverter
 import com.nexters.bottles.global.BaseEntity
-import com.nexters.bottles.pingpong.repository.converter.LetterQuestionAndAnswerConverter
 import com.nexters.bottles.user.domain.User
 import javax.persistence.Column
 import javax.persistence.Convert
@@ -21,10 +21,10 @@ class Letter(
     val id: Long = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ping_pong_id")
-    val pingPong: PingPong,
+    @JoinColumn(name = "bottle_id")
+    val bottle: Bottle,
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User,
 

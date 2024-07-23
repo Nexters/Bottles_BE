@@ -1,8 +1,8 @@
-package com.nexters.bottles.pingpong.repository.converter
+package com.nexters.bottles.bottle.repository.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.nexters.bottles.bottle.domain.LetterQuestionAndAnswer
 import com.nexters.bottles.config.JacksonConfig.Companion.kotlinModule
-import com.nexters.bottles.pingpong.domain.LetterQuestionAndAnswer
 import javax.persistence.AttributeConverter
 import javax.persistence.Converter
 
