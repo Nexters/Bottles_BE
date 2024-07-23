@@ -39,4 +39,8 @@ class BottleFacade(
             profileSelect = bottle.sourceUser.userProfile?.profileSelect
         )
     }
+
+    fun acceptBottle(bottleId: Long) {
+        bottleService.acceptBottle(bottleId)
+    }
 }
