@@ -8,7 +8,7 @@ import com.nexters.bottles.user.repository.UserRepository
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserProfileService(
@@ -26,7 +26,6 @@ class UserProfileService(
         profileRepository.findByUserId(user.id)?.let {
             it.user = user
             it.profileSelect = profileSelect
-            it.introduction = it.introduction
         } ?: run {
             profileRepository.save(
                 UserProfile(
@@ -52,5 +51,10 @@ class UserProfileService(
                 )
             )
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun findUserProfile(userId: Long): UserProfile? {
+        return profileRepository.findByUserId(userId)
     }
 }

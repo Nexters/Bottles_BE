@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class BottleDto(
     val id: Long,
-    val userName: String?,
+    val userName: String,
     val age: Int,
     val mbti: String?,
     val keyword: List<String>?,

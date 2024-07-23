@@ -1,6 +1,7 @@
 package com.nexters.bottles.bottle.controller
 
 import com.nexters.bottles.bottle.facade.BottleFacade
+import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,6 +18,11 @@ class BottleController(
     @GetMapping
     fun getBottlesList(): BottleListResponseDto {
         return bottleFacade.getBottles()
+    }
+
+    @GetMapping("/{bottleId}")
+    fun getBottleDetail(@PathVariable bottleId: Long): BottleDetailResponseDto {
+        return bottleFacade.getBottle(bottleId)
     }
 
     @PostMapping("/{bottleId}/accept")
