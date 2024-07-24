@@ -3,6 +3,7 @@ package com.nexters.bottles.bottle.service
 import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.LetterQuestionAndAnswer
+import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.repository.BottleRepository
 import com.nexters.bottles.bottle.repository.LetterRepository
 import com.nexters.bottles.bottle.repository.QuestionRepository
@@ -26,18 +27,18 @@ class BottleService(
         // TODO User 회원 가입 기능 구현후 수정
         val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        return bottleRepository.findByTargetUserAndNotExpired(user, LocalDateTime.now())
+        return bottleRepository.findByTargetUserAndStatusAndNotExpired(user, PingPongStatus.NONE, LocalDateTime.now())
     }
 
     @Transactional(readOnly = true)
     fun getBottle(bottleId: Long): Bottle {
-        return bottleRepository.findByIdAndNotExpired(bottleId, LocalDateTime.now())
+        return bottleRepository.findByIdAndStatusAndNotExpired(bottleId, PingPongStatus.NONE, LocalDateTime.now())
             ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
     }
 
     @Transactional
     fun acceptBottle(bottleId: Long) {
-        val bottle = bottleRepository.findByIdAndNotExpired(bottleId, LocalDateTime.now())
+        val bottle = bottleRepository.findByIdAndStatusAndNotExpired(bottleId, PingPongStatus.NONE, LocalDateTime.now())
             ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
         // TODO User 회원 가입 기능 구현후 수정
@@ -70,7 +71,7 @@ class BottleService(
 
     @Transactional
     fun refuseBottle(bottleId: Long) {
-        val bottle = bottleRepository.findByIdAndNotExpired(bottleId, LocalDateTime.now())
+        val bottle = bottleRepository.findByIdAndStatusAndNotExpired(bottleId, PingPongStatus.NONE, LocalDateTime.now())
             ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
         // TODO User 회원 가입 기능 구현후 수정
