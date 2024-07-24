@@ -13,7 +13,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     @Query(
         value = "SELECT b FROM Bottle b " +
                 "JOIN FETCH b.sourceUser " +
-                "WHERE b.targetUser = :targetUser AND b.pingPongStatus = :pingPongStatus AND b.expiredAt > :currentDateTime"
+                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus"
     )
     fun findByTargetUserAndStatusAndNotExpired(
         @Param("targetUser") targetUser: User,
@@ -24,7 +24,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     @Query(
         value = "SELECT b FROM Bottle b " +
                 "JOIN FETCH b.sourceUser " +
-                "WHERE b.id = :bottleId AND b.pingPongStatus = :pingPongStatus AND b.expiredAt > :currentDateTime"
+                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus"
     )
     fun findByIdAndStatusAndNotExpired(
         @Param("bottleId") bottleId: Long,
