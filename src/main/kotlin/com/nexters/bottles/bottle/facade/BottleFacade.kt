@@ -72,10 +72,10 @@ class BottleFacade(
         return PingPongBottleDto(
             id = bottle.id,
             isRead = letter.isRead,
-            userName = "letter.user.name", // TODO User 변경된 후 수정
+            userName = "otherUser.name", // TODO User 변경된 후 수정
             age = 20,
-            mbti = letter.user.userProfile?.profileSelect?.mbti,
-            keyword = letter.user.userProfile?.profileSelect?.keyword
+            mbti = otherUser.userProfile?.profileSelect?.mbti,
+            keyword = otherUser.userProfile?.profileSelect?.keyword
         )
     }
 }
