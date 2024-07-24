@@ -65,4 +65,16 @@ class BottleService(
         val letter = Letter(bottle = bottle, user = user, letters = letters)
         letterRepository.save(letter)
     }
+
+    @Transactional
+    fun refuseBottle(bottleId: Long) {
+        val bottle = bottleRepository.findByIdAndNotExpired(bottleId, LocalDateTime.now())
+            ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
+
+        // TODO User 회원 가입 기능 구현후 수정
+        val targetUser = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        userRepository.findByIdOrNull(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
+
+        bottle.refuse(targetUser)
+    }
 }

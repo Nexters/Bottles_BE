@@ -29,4 +29,9 @@ class BottleController(
     fun acceptBottle(@PathVariable bottleId: Long) {
         bottleFacade.acceptBottle(bottleId)
     }
+
+    @PostMapping("{bottleId}/refuse")
+    fun refuseBottle(@PathVariable bottleId: Long) {
+        bottleFacade.refuseBottle(bottleId)
+    }
 }

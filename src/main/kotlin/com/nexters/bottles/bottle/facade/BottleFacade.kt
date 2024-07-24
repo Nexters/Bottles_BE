@@ -43,4 +43,8 @@ class BottleFacade(
     fun acceptBottle(bottleId: Long) {
         bottleService.acceptBottle(bottleId)
     }
+
+    fun refuseBottle(bottleId: Long) {
+        bottleService.refuseBottle(bottleId)
+    }
 }
