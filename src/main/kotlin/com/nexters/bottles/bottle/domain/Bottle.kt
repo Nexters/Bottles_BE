@@ -41,6 +41,10 @@ class Bottle(
     var pingPongStatus: PingPongStatus = PingPongStatus.NONE,
 ) : BaseEntity() {
 
+    fun accept() {
+        this.pingPongStatus = PingPongStatus.ACTIVE
+    }
+
     fun refuse(refusedBy: User) {
         this.stoppedUser = refusedBy
         this.pingPongStatus = PingPongStatus.STOPPED

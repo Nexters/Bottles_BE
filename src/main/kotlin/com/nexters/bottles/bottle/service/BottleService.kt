@@ -45,6 +45,8 @@ class BottleService(
         val sourceUser = userRepository.findByIdOrNull(bottle.sourceUser.id)
             ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
+        bottle.accept()
+
         val letters = findRandomQuestions()
         saveLetter(bottle, targetUser, letters)
         saveLetter(bottle, sourceUser, letters)
