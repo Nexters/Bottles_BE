@@ -1,14 +1,21 @@
 package com.nexters.bottles.bottle.facade
 
+import com.nexters.bottles.bottle.domain.Bottle
+import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
+import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
+import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.service.BottleService
+import com.nexters.bottles.bottle.service.LetterService
+import com.nexters.bottles.user.domain.User
 import org.springframework.stereotype.Component
 
 @Component
 class BottleFacade(
-    private val bottleService: BottleService
+    private val bottleService: BottleService,
+    private val letterService: LetterService
 ) {
 
     fun getBottles(): BottleListResponseDto {
@@ -46,5 +53,29 @@ class BottleFacade(
 
     fun refuseBottle(bottleId: Long) {
         bottleService.refuseBottle(bottleId)
+    }
+
+    fun getPingPongBottles(): PingPongListResponseDto {
+        val pingPongBottles = bottleService.getPingPongBottles()
+        val user = User() // TODO 회원 기능 구현 후 수정
+
+        val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
+        val activeBottles = groupByStatus[PingPongStatus.ACTIVE]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
+        val doneBottles = groupByStatus[PingPongStatus.DONE]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
+        return PingPongListResponseDto(activeBottles = activeBottles, doneBottles = doneBottles)
+    }
+
+    private fun toPingPongBottleDto(bottle: Bottle, user: User): PingPongBottleDto {
+        val otherUser = bottle.findOtherUser(user)
+        val letter = letterService.findLetter(bottle, otherUser)
+
+        return PingPongBottleDto(
+            id = bottle.id,
+            isRead = letter.isRead,
+            userName = "letter.user.name", // TODO User 변경된 후 수정
+            age = 20,
+            mbti = letter.user.userProfile?.profileSelect?.mbti,
+            keyword = letter.user.userProfile?.profileSelect?.keyword
+        )
     }
 }

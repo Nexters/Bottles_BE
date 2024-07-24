@@ -3,6 +3,7 @@ package com.nexters.bottles.bottle.controller
 import com.nexters.bottles.bottle.facade.BottleFacade
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
+import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -34,8 +35,15 @@ class BottleController(
         bottleFacade.acceptBottle(bottleId)
     }
 
+    @ApiOperation("홈 - 보틀 떠내려 보내기(거절하기)")
     @PostMapping("{bottleId}/refuse")
     fun refuseBottle(@PathVariable bottleId: Long) {
         bottleFacade.refuseBottle(bottleId)
+    }
+
+    @ApiOperation("보틀 보관함 - 보틀 보관함 조회하기")
+    @GetMapping("/ping-pong")
+    fun getPingPongList(): PingPongListResponseDto {
+        return bottleFacade.getPingPongBottles()
     }
 }
