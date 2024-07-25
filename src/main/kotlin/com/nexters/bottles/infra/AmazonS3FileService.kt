@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class AmazonS3FileService(
@@ -35,7 +36,8 @@ class AmazonS3FileService(
     }
 
     private fun makeKey(file: MultipartFile) =
-        file.originalFilename + FILE_NAME_DELIMITER + LocalDateTime.now()
+        file.originalFilename + FILE_NAME_DELIMITER +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"
