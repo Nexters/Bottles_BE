@@ -36,7 +36,12 @@ class Letter(
 
     @Column
     var isRead: Boolean = false,
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun markRead() {
+        isRead = true
+    }
+}
 
 data class LetterQuestionAndAnswer(
     val question: String,

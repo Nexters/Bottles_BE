@@ -46,4 +46,10 @@ class BottleController(
     fun getPingPongList(): PingPongListResponseDto {
         return bottleFacade.getPingPongBottles()
     }
+
+    @ApiOperation("보틀 보관함 - 보틀 읽음 표시하기")
+    @PostMapping("/ping-pong/{bottleId}/read")
+    fun readPingPongBottle(@PathVariable bottleId: Long) {
+        bottleFacade.readPingPongBottle(bottleId)
+    }
 }

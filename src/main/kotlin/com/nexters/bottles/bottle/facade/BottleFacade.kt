@@ -78,4 +78,11 @@ class BottleFacade(
             keyword = otherUser.userProfile?.profileSelect?.keyword
         )
     }
+
+    fun readPingPongBottle(bottleId: Long) {
+        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val me = User() // TODO 회원 기능 구현 후 수정
+        val otherUser = pingPongBottle.findOtherUser(me)
+        letterService.readOtherUserLetter(pingPongBottle, otherUser)
+    }
 }
