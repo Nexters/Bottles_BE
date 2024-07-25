@@ -35,7 +35,7 @@ class Letter(
     var image: String? = null,
 
     @Column
-    var isRead: Boolean = false,
+    var isReadByOtherUser: Boolean = false,
 ) : BaseEntity() {
 
     fun registerAnswer(order: Int, answer: String) {
@@ -43,7 +43,7 @@ class Letter(
     }
 
     fun markUnread() {
-        isRead = false
+        isReadByOtherUser = false
     }
 }
 

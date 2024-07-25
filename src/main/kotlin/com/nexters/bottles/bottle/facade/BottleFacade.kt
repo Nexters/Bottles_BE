@@ -68,11 +68,11 @@ class BottleFacade(
 
     private fun toPingPongBottleDto(bottle: Bottle, user: User): PingPongBottleDto {
         val otherUser = bottle.findOtherUser(user)
-        val letter = letterService.findLetter(bottle, otherUser)
+        val otherUserLetter = letterService.findLetter(bottle, otherUser)
 
         return PingPongBottleDto(
             id = bottle.id,
-            isRead = letter.isRead,
+            isRead = otherUserLetter.isReadByOtherUser,
             userName = "otherUser.name", // TODO User 변경된 후 수정
             age = 20,
             mbti = otherUser.userProfile?.profileSelect?.mbti,
