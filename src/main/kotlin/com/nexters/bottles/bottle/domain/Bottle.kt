@@ -3,6 +3,7 @@ package com.nexters.bottles.bottle.domain
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.global.BaseEntity
 import com.nexters.bottles.user.domain.User
+import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -56,5 +57,10 @@ class Bottle(
             sourceUser.id -> targetUser
             else -> throw IllegalArgumentException("고객센터에 문의해주세요")
         }
+    }
+
+    fun stop(stoppedBy: User) {
+        pingPongStatus = PingPongStatus.STOPPED
+        stoppedUser = stoppedBy
     }
 }

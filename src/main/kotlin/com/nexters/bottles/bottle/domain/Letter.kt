@@ -35,11 +35,22 @@ class Letter(
     var imageUrl: String? = null,
 
     @Column
-    var isRead: Boolean = false,
+    var isReadByOtherUser: Boolean = false,
 ) : BaseEntity() {
 
+    fun registerAnswer(order: Int, answer: String) {
+        require(order >= 0 && order <= letters.size) {
+            "고객센터에 문의해주세요"
+        }
+        letters[order - 1].answer = answer
+    }
+
+    fun markRead() {
+        isReadByOtherUser = true
+    }
+
     fun markUnread() {
-        isRead = false
+        isReadByOtherUser = false
     }
 
     fun uploadImage(imageUrl: String) {
@@ -49,5 +60,5 @@ class Letter(
 
 data class LetterQuestionAndAnswer(
     val question: String,
-    val answer: String? = null,
+    var answer: String? = null,
 )

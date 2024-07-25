@@ -11,7 +11,7 @@ import javax.persistence.*
 class UserProfile(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0L,
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -29,6 +29,7 @@ data class UserProfileSelect(
     val keyword: List<String> = arrayListOf(),
     val interest: InterestDto,
     val job: String,
+    val height: Int,
     val smoking: String,
     val alcohol: String,
     val religion: String,

@@ -24,11 +24,11 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     @Query(
         value = "SELECT b FROM Bottle b " +
                 "JOIN FETCH b.sourceUser " +
-                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus"
+                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus IN :pingPongStatus"
     )
     fun findByIdAndStatusAndNotExpired(
         @Param("bottleId") bottleId: Long,
-        @Param("pingPongStatus") pingPongStatus: PingPongStatus,
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>,
         @Param("currentDateTime") currentDateTime: LocalDateTime
     ): Bottle?
 

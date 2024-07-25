@@ -27,6 +27,7 @@ class UserProfileFacade(
                 keyword = convertedProfileDto.keyword,
                 interest = convertedProfileDto.interest,
                 job = convertedProfileDto.job,
+                height = convertedProfileDto.height,
                 smoking = convertedProfileDto.smoking,
                 alcohol = convertedProfileDto.alcohol,
                 religion = convertedProfileDto.religion,
