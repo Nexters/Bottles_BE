@@ -22,5 +22,6 @@ class LetterService(
         val letter =
             letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
         letter.registerAnswer(order, answer)
+        letter.markUnread()
     }
 }

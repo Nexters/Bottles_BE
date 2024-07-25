@@ -41,6 +41,10 @@ class Letter(
     fun registerAnswer(order: Int, answer: String) {
         letters[order - 1].answer = answer
     }
+
+    fun markUnread() {
+        isRead = false
+    }
 }
 
 data class LetterQuestionAndAnswer(
