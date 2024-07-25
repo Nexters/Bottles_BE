@@ -60,4 +60,10 @@ class BottleController(
     fun readPingPongBottle(@PathVariable bottleId: Long) {
         bottleFacade.readPingPongBottle(bottleId)
     }
+
+    @ApiOperation("보틀 보관함 - 대화 중단하기")
+    @PostMapping("/ping-pong/{bottleId}/stop")
+    fun stopBottle(@PathVariable bottleId: Long) {
+        bottleFacade.stopBottle(bottleId)
+    }
 }
