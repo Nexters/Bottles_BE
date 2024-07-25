@@ -45,6 +45,10 @@ class Letter(
         letters[order - 1].answer = answer
     }
 
+    fun markRead() {
+        isReadByOtherUser = true
+    }
+
     fun markUnread() {
         isReadByOtherUser = false
     }

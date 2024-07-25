@@ -54,4 +54,10 @@ class BottleController(
     fun registerLetter(@PathVariable bottleId: Long, @RequestBody registerLetterRequestDto: RegisterLetterRequestDto) {
         bottleFacade.registerLetter(bottleId, registerLetterRequestDto)
     }
+
+    @ApiOperation("보틀 보관함 - 보틀 읽음 표시하기")
+    @PostMapping("/ping-pong/{bottleId}/read")
+    fun readPingPongBottle(@PathVariable bottleId: Long) {
+        bottleFacade.readPingPongBottle(bottleId)
+    }
 }
