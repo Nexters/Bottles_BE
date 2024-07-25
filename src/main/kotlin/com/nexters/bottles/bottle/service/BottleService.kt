@@ -88,4 +88,10 @@ class BottleService(
 
         return bottleRepository.findByUserAndStatus(user, setOf(PingPongStatus.ACTIVE, PingPongStatus.DONE))
     }
+
+    @Transactional(readOnly = true)
+    fun getPingPongBottle(bottleId: Long): Bottle {
+        return bottleRepository.findByIdAndStatus(bottleId, setOf(PingPongStatus.ACTIVE, PingPongStatus.DONE))
+            ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+    }
 }
