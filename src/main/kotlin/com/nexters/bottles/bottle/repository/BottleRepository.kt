@@ -31,4 +31,14 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         @Param("pingPongStatus") pingPongStatus: PingPongStatus,
         @Param("currentDateTime") currentDateTime: LocalDateTime
     ): Bottle?
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
+                "AND b.pingPongStatus IN :pingPongStatus"
+    )
+    fun findByUserAndStatus(
+        @Param("user") user: User,
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
+    ): List<Bottle>
 }

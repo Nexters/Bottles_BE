@@ -49,4 +49,12 @@ class Bottle(
         this.stoppedUser = refusedBy
         this.pingPongStatus = PingPongStatus.STOPPED
     }
+
+    fun findOtherUser(user: User): User {
+        return when (user.id) {
+            targetUser.id -> sourceUser
+            sourceUser.id -> targetUser
+            else -> throw IllegalArgumentException("고객센터에 문의해주세요")
+        }
+    }
 }
