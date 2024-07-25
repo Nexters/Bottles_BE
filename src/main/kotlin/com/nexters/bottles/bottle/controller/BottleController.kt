@@ -4,10 +4,12 @@ import com.nexters.bottles.bottle.facade.BottleFacade
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
+import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -45,6 +47,12 @@ class BottleController(
     @GetMapping("/ping-pong")
     fun getPingPongList(): PingPongListResponseDto {
         return bottleFacade.getPingPongBottles()
+    }
+
+    @ApiOperation("보틀 보관함 - 편지 답변 등록하기")
+    @PostMapping("/ping-pong/{bottleId}/letters")
+    fun registerLetter(@PathVariable bottleId: Long, @RequestBody registerLetterRequestDto: RegisterLetterRequestDto) {
+        bottleFacade.registerLetter(bottleId, registerLetterRequestDto)
     }
 
     @ApiOperation("보틀 보관함 - 보틀 읽음 표시하기")

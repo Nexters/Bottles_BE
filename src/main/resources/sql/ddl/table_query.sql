@@ -1,12 +1,13 @@
-CREATE TABLE user (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) DEFAULT NULL,
-    birthdate DATE DEFAULT NULL,
-    kakao_id VARCHAR(255) DEFAULT NULL,
+CREATE TABLE user
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name         VARCHAR(255) DEFAULT NULL,
+    birthdate    DATE         DEFAULT NULL,
+    kakao_id     VARCHAR(255) DEFAULT NULL,
     phone_number VARCHAR(255) DEFAULT NULL,
-    gender VARCHAR(10) DEFAULT 'MALE',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    gender       VARCHAR(10)  DEFAULT 'MALE',
+    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE user_profile
@@ -33,14 +34,14 @@ CREATE TABLE bottle
 
 CREATE TABLE letter
 (
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    bottle_id  BIGINT                             NOT NULL,
-    user_id    BIGINT                             NOT NULL,
-    letters    JSON                               NOT NULL,
-    image      TEXT,
-    is_read    BOOLEAN  DEFAULT FALSE             NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    bottle_id             BIGINT                             NOT NULL,
+    user_id               BIGINT                             NOT NULL,
+    letters               JSON                               NOT NULL,
+    image                 TEXT,
+    is_read_by_other_user BOOLEAN  DEFAULT FALSE             NOT NULL,
+    created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE question

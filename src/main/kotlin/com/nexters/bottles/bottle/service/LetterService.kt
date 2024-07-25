@@ -14,7 +14,15 @@ class LetterService(
 
     @Transactional(readOnly = true)
     fun findLetter(bottle: Bottle, user: User): Letter {
-        return letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("")
+        return letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+    }
+
+    @Transactional
+    fun registerLetter(bottle: Bottle, user: User, order: Int, answer: String) {
+        val letter =
+            letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        letter.registerAnswer(order, answer)
+        letter.markUnread()
     }
 
     fun readOtherUserLetter(bottle: Bottle, otherUser: User) {

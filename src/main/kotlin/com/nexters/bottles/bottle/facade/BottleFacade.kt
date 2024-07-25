@@ -7,6 +7,7 @@ import com.nexters.bottles.bottle.facade.dto.BottleDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
+import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
 import com.nexters.bottles.bottle.service.BottleService
 import com.nexters.bottles.bottle.service.LetterService
 import com.nexters.bottles.user.domain.User
@@ -67,15 +68,27 @@ class BottleFacade(
 
     private fun toPingPongBottleDto(bottle: Bottle, user: User): PingPongBottleDto {
         val otherUser = bottle.findOtherUser(user)
-        val letter = letterService.findLetter(bottle, otherUser)
+        val otherUserLetter = letterService.findLetter(bottle, otherUser)
 
         return PingPongBottleDto(
             id = bottle.id,
-            isRead = letter.isRead,
+            isRead = otherUserLetter.isReadByOtherUser,
             userName = "otherUser.name", // TODO User 변경된 후 수정
             age = 20,
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword
+        )
+    }
+
+    fun registerLetter(bottleId: Long, registerLetterRequestDto: RegisterLetterRequestDto) {
+        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val user = User() // TODO 회원 기능 구현 후 수정
+
+        letterService.registerLetter(
+            pingPongBottle,
+            user,
+            registerLetterRequestDto.order,
+            registerLetterRequestDto.answer
         )
     }
 
