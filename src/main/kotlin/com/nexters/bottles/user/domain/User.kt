@@ -11,9 +11,9 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    var birthdate: LocalDate? = null,
+    var birthdate: LocalDate,
 
-    var name: String? = null,
+    var name: String,
 
     var kakaoId: String? = null,
 
@@ -26,4 +26,8 @@ class User(
     var gender: Gender = Gender.MALE,
 
 ) : BaseEntity() {
+
+    fun getKoreanAge(): Int {
+        return LocalDate.now().year - birthdate.year + 1
+    }
 }

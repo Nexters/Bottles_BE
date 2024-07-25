@@ -5,6 +5,7 @@ data class RegisterProfileRequestDto(
     val keyword: List<String>,
     val interest: InterestDto,
     val job: String,
+    val height: Int,
     var smoking: String,
     var alcohol: String,
     val religion: String,

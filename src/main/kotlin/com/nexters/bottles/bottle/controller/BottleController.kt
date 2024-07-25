@@ -3,6 +3,7 @@ package com.nexters.bottles.bottle.controller
 import com.nexters.bottles.bottle.facade.BottleFacade
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
 import io.swagger.annotations.ApiOperation
@@ -22,7 +23,7 @@ class BottleController(
     @ApiOperation("홈 - 받은 보틀 목록 조회하기")
     @GetMapping
     fun getBottlesList(): BottleListResponseDto {
-        return bottleFacade.getBottles()
+        return bottleFacade.getNewBottles()
     }
 
     @ApiOperation("홈 - 보틀 상세 정보 조회하기")
@@ -65,5 +66,11 @@ class BottleController(
     @PostMapping("/ping-pong/{bottleId}/stop")
     fun stopBottle(@PathVariable bottleId: Long) {
         bottleFacade.stopBottle(bottleId)
+    }
+
+    @ApiOperation("보틀의 핑퐁 조회하기")
+    @GetMapping("/ping-pong/{bottleId}")
+    fun getBottlePingPong(@PathVariable bottleId: Long): BottlePingpongResponseDto {
+        return bottleFacade.getBottlePingPong(bottleId)
     }
 }
