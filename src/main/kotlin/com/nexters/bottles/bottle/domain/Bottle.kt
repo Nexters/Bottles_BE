@@ -57,4 +57,9 @@ class Bottle(
             else -> throw IllegalArgumentException("고객센터에 문의해주세요")
         }
     }
+
+    fun stop(stoppedBy: User) {
+        pingPongStatus = PingPongStatus.STOPPED
+        stoppedUser = stoppedBy
+    }
 }
