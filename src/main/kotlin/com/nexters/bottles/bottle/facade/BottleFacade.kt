@@ -21,6 +21,8 @@ import com.nexters.bottles.user.domain.User
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class BottleFacade(
@@ -183,8 +185,18 @@ class BottleFacade(
     fun uploadImage(bottleId: Long, file: MultipartFile) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
         val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
-
-        val imageUrl = fileService.upload(file)
+        val path = makePathWithUserId(file, me.id)
+        val imageUrl = fileService.upload(file, path)
         letterService.uploadImageURl(pingPongBottle, me, imageUrl.toString())
+    }
+
+    private fun makePathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ) = file.originalFilename + FILE_NAME_DELIMITER +
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
+
+    companion object {
+        private const val FILE_NAME_DELIMITER = "_"
     }
 }

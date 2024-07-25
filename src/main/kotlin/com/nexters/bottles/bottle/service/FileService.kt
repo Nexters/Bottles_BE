@@ -5,5 +5,5 @@ import java.net.URL
 
 interface FileService {
 
-    fun upload(file: MultipartFile): URL
+    fun upload(file: MultipartFile, path: String): URL
 }
