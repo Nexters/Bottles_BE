@@ -39,6 +39,9 @@ class Letter(
 ) : BaseEntity() {
 
     fun registerAnswer(order: Int, answer: String) {
+        require(order >= 0 && order <= letters.size) {
+            "고객센터에 문의해주세요"
+        }
         letters[order - 1].answer = answer
     }
 
