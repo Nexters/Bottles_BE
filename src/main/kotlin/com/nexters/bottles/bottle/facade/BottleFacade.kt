@@ -8,9 +8,7 @@ import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
-import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
-import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.facade.dto.*
 import com.nexters.bottles.bottle.service.BottleService
 import com.nexters.bottles.bottle.service.LetterService
@@ -63,11 +61,11 @@ class BottleFacade(
 
     fun getPingPongBottles(): PingPongListResponseDto {
         val pingPongBottles = bottleService.getPingPongBottles()
-        val user = User() // TODO 회원 기능 구현 후 수정
+        val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
 
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
         val activeBottles = groupByStatus[PingPongStatus.ACTIVE]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
-        val doneBottles = groupByStatus[PingPongStatus.DONE]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
+        val doneBottles = groupByStatus[PingPongStatus.MATCHED]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
         return PingPongListResponseDto(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
@@ -87,7 +85,7 @@ class BottleFacade(
 
     fun registerLetter(bottleId: Long, registerLetterRequestDto: RegisterLetterRequestDto) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val user = User() // TODO 회원 기능 구현 후 수정
+        val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
 
         letterService.registerLetter(
             pingPongBottle,
@@ -99,14 +97,14 @@ class BottleFacade(
 
     fun readPingPongBottle(bottleId: Long) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = User() // TODO 회원 기능 구현 후 수정
+        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
         val otherUser = pingPongBottle.findOtherUser(me)
         letterService.readOtherUserLetter(pingPongBottle, otherUser)
     }
 
     fun stopBottle(bottleId: Long) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = User() // TODO 회원 기능 구현 후 수정
+        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
 
         pingPongBottle.stop(me)
     }
