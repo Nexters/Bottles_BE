@@ -36,9 +36,14 @@ class Letter(
 
     @Column
     var isRead: Boolean = false,
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun registerAnswer(order: Int, answer: String) {
+        letters[order - 1].answer = answer
+    }
+}
 
 data class LetterQuestionAndAnswer(
     val question: String,
-    val answer: String? = null,
+    var answer: String? = null,
 )
