@@ -84,7 +84,7 @@ class BottleFacade(
 
     fun uploadImage(bottleId: Long, file: MultipartFile) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = User() // TODO 회원 기능 구현 후 수정
+        val me = User(1) // TODO 회원 기능 구현 후 수정
 
         val imageUrl = fileService.upload(file)
         letterService.uploadImageURl(pingPongBottle, me, imageUrl.toString())

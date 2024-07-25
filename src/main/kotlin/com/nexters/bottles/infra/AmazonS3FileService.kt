@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
+import java.time.LocalDateTime
 
 @Component
 class AmazonS3FileService(
@@ -22,14 +23,21 @@ class AmazonS3FileService(
             this.contentType = file.contentType
             this.contentLength = file.size
         }
+        val key = makeKey(file)
         val putObjectRequest = PutObjectRequest(
             bucket,
-            "objectKey",
+            key,
             file.inputStream,
             objectMetadata,
         )
-
         amazonS3.putObject(putObjectRequest)
-        return amazonS3.getUrl(bucket, "objectKey")
+        return amazonS3.getUrl(bucket, key)
+    }
+
+    private fun makeKey(file: MultipartFile) =
+        file.originalFilename + FILE_NAME_DELIMITER + LocalDateTime.now()
+
+    companion object {
+        private const val FILE_NAME_DELIMITER = "_"
     }
 }
