@@ -86,6 +86,6 @@ class BottleService(
         // TODO User 회원 가입 기능 구현후 수정
         val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        return bottleRepository.findPingPongBottlesByUser(user)
+        return bottleRepository.findByUserAndStatus(user, setOf(PingPongStatus.ACTIVE, PingPongStatus.DONE))
     }
 }
