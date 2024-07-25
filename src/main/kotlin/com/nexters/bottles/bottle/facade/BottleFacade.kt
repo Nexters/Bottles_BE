@@ -8,14 +8,17 @@ import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.service.BottleService
+import com.nexters.bottles.bottle.service.FileService
 import com.nexters.bottles.bottle.service.LetterService
 import com.nexters.bottles.user.domain.User
 import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
 
 @Component
 class BottleFacade(
     private val bottleService: BottleService,
-    private val letterService: LetterService
+    private val letterService: LetterService,
+    private val fileService: FileService,
 ) {
 
     fun getBottles(): BottleListResponseDto {
@@ -77,5 +80,13 @@ class BottleFacade(
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword
         )
+    }
+
+    fun uploadImage(bottleId: Long, file: MultipartFile) {
+        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val me = User() // TODO 회원 기능 구현 후 수정
+
+        val imageUrl = fileService.upload(file)
+        letterService.uploadImageURl(pingPongBottle, me, imageUrl.toString())
     }
 }

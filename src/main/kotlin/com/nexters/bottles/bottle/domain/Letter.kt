@@ -32,11 +32,20 @@ class Letter(
     var letters: List<LetterQuestionAndAnswer> = arrayListOf(),
 
     @Column
-    var image: String? = null,
+    var imageUrl: String? = null,
 
     @Column
     var isRead: Boolean = false,
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun markUnread() {
+        isRead = false
+    }
+
+    fun uploadImage(imageUrl: String) {
+        this.imageUrl = imageUrl
+    }
+}
 
 data class LetterQuestionAndAnswer(
     val question: String,

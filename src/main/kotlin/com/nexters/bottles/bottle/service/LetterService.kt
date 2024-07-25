@@ -16,4 +16,12 @@ class LetterService(
     fun findLetter(bottle: Bottle, user: User): Letter {
         return letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("")
     }
+
+    @Transactional
+    fun uploadImageURl(bottle: Bottle, user: User, imageUrl: String) {
+        val letter = letterRepository.findByBottleAndUser(bottle, user)
+            ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        letter.uploadImage(imageUrl)
+        letter.markUnread()
+    }
 }
