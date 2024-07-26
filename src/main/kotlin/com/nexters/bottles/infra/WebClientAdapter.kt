@@ -1,4 +1,4 @@
-package com.nexters.bottles.auth.component
+package com.nexters.bottles.infra
 
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -9,13 +9,13 @@ class WebClientAdapter(
     private val webClient: WebClient,
 ) {
 
-    fun sendAuthRequest(code: String): KakaoUserInfoResponse? {
+    fun sendAuthRequest(code: String): KakaoUserInfoResponse {
 
         return webClient.get()
             .uri("/v2/user/me")
             .header("Authorization", "Bearer $code")
             .retrieve()
             .bodyToMono(KakaoUserInfoResponse::class.java)
-            .block()
+            .block() ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
     }
 }

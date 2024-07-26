@@ -1,5 +1,8 @@
 package com.nexters.bottles.auth.facade.dto
 
+import java.time.LocalDate
+import java.time.YearMonth
+
 data class KakaoUserInfoResponse(
     val id: Long,
     val connected_at: String,
@@ -22,5 +25,6 @@ data class KakaoAccount(
     val birthday_type: String,
     val has_gender: Boolean,
     val gender_needs_agreement: Boolean,
-    val gender: String
+    val gender: String,
+    val birthDate: LocalDate? = null,
 )

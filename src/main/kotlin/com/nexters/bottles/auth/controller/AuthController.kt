@@ -18,6 +18,6 @@ class AuthController(
     @ApiOperation("카카오 회원가입/로그인으로 엑세스 토큰 얻기")
     @PostMapping("/kakao")
     fun upsertProfile(@RequestBody kakaoSignInUpRequest: KakaoSignInUpRequest) {
-        authFacade.signInUp(kakaoSignInUpRequest.code)
+        authFacade.kakaoSignInUp(kakaoSignInUpRequest.code)
     }
 }

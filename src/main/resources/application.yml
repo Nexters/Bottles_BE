@@ -41,3 +41,7 @@ cloud:
       auto: false
     stack:
       auto: false
+
+jwt:
+  access-token-secret-key: ${ACCESS_TOKEN_SECRET_KEY}
+  refresh-token-secret-key: ${REFRESH_TOKEN_SECRET_KEY}
