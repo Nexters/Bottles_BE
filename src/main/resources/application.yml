@@ -13,6 +13,9 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+webclient:
+  kakao-auth-url: https://kapi.kakao.com
+
 ---
 spring:
   profiles: local
