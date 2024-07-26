@@ -30,4 +30,12 @@ class LetterService(
             ?: throw IllegalArgumentException("고객센터에 문의해주세요")
         otherUserLetter.markRead()
     }
+
+    @Transactional
+    fun uploadImageURl(bottle: Bottle, user: User, imageUrl: String) {
+        val letter = letterRepository.findByBottleAndUser(bottle, user)
+            ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        letter.uploadImage(imageUrl)
+        letter.markUnread()
+    }
 }

@@ -34,16 +34,6 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "JOIN FETCH b.sourceUser " +
-                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus"
-    )
-    fun findByIdAndStatus(
-        @Param("bottleId") bottleId: Long,
-        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>,
-    ): Bottle?
-
-    @Query(
-        value = "SELECT b FROM Bottle b " +
                 "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
                 "AND b.pingPongStatus IN :pingPongStatus"
     )
@@ -51,4 +41,13 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         @Param("user") user: User,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): List<Bottle>
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus"
+    )
+    fun findByIdAndStatus(
+        @Param("bottleId") bottleId: Long,
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
+    ): Bottle?
 }

@@ -32,7 +32,7 @@ class Letter(
     var letters: List<LetterQuestionAndAnswer> = arrayListOf(),
 
     @Column
-    var image: String? = null,
+    var imageUrl: String? = null,
 
     @Column
     var isReadByOtherUser: Boolean = false,
@@ -51,6 +51,10 @@ class Letter(
 
     fun markUnread() {
         isReadByOtherUser = false
+    }
+
+    fun uploadImage(imageUrl: String) {
+        this.imageUrl = imageUrl
     }
 }
 

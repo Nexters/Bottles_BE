@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - develop
-    types: [opened, reopened, synchronize]
+    types: [ opened, reopened, synchronize ]
 
 jobs:
   build:
@@ -26,6 +26,11 @@ jobs:
       - name: Build with gradle
         run: ./gradlew clean build
         shell: bash
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_REGION: ${{ secrets.S3_REGION }}
 
       - name: Send Discord Notification
         if: github.event.action == 'opened' || github.event.action == 'reopened'

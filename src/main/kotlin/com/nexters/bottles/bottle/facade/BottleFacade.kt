@@ -1,25 +1,34 @@
 package com.nexters.bottles.bottle.facade
 
 import com.nexters.bottles.bottle.domain.Bottle
+import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
+import com.nexters.bottles.bottle.facade.dto.MatchResult
+import com.nexters.bottles.bottle.facade.dto.Photo
 import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
+import com.nexters.bottles.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
+import com.nexters.bottles.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
-import com.nexters.bottles.bottle.domain.Letter
-import com.nexters.bottles.bottle.facade.dto.*
 import com.nexters.bottles.bottle.service.BottleService
+import com.nexters.bottles.bottle.service.FileService
 import com.nexters.bottles.bottle.service.LetterService
 import com.nexters.bottles.user.domain.User
 import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class BottleFacade(
     private val bottleService: BottleService,
-    private val letterService: LetterService
+    private val letterService: LetterService,
+    private val fileService: FileService,
 ) {
 
     fun getNewBottles(): BottleListResponseDto {
@@ -166,10 +175,28 @@ class BottleFacade(
     private fun getPhoto(myLetter: Letter, otherLetter: Letter): Photo {
 
         return Photo(
-            myImageUrl = myLetter.image,
-            otherImageUrl = otherLetter.image,
-            shouldAnswer = myLetter.image == null,
-            changeFinished = (myLetter.image != null) && (otherLetter.image != null)
+            myImageUrl = myLetter.imageUrl,
+            otherImageUrl = otherLetter.imageUrl,
+            shouldAnswer = myLetter.imageUrl == null,
+            changeFinished = (myLetter.imageUrl != null) && (otherLetter.imageUrl != null)
         )
+    }
+
+    fun uploadImage(bottleId: Long, file: MultipartFile) {
+        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+        val path = makePathWithUserId(file, me.id)
+        val imageUrl = fileService.upload(file, path)
+        letterService.uploadImageURl(pingPongBottle, me, imageUrl.toString())
+    }
+
+    private fun makePathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ) = file.originalFilename + FILE_NAME_DELIMITER +
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
+
+    companion object {
+        private const val FILE_NAME_DELIMITER = "_"
     }
 }

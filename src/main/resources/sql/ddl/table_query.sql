@@ -22,16 +22,14 @@ CREATE TABLE user_profile
 
 CREATE TABLE bottle
 (
-    id                      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    target_user_id          BIGINT                                NOT NULL,
-    target_user_image_url   VARCHAR(255)                          NULL,
-    source_user_id          BIGINT                                NOT NULL,
-    source_user_image_url   VARCHAR(255)                          NULL,
-    expired_at              DATETIME                              NOT NULL,
-    stopped_user_id         BIGINT,
-    ping_pong_status        VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
-    created_at              DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at              DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+    target_user_id   BIGINT                                NOT NULL,
+    source_user_id   BIGINT                                NOT NULL,
+    expired_at       DATETIME                              NOT NULL,
+    stopped_user_id  BIGINT,
+    ping_pong_status VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
+    created_at       DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at       DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE letter
@@ -40,7 +38,7 @@ CREATE TABLE letter
     bottle_id             BIGINT                             NOT NULL,
     user_id               BIGINT                             NOT NULL,
     letters               JSON                               NOT NULL,
-    image                 TEXT,
+    image_url             TEXT,
     is_read_by_other_user BOOLEAN  DEFAULT FALSE             NOT NULL,
     created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
