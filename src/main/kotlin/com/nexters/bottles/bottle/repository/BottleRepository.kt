@@ -15,7 +15,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "JOIN FETCH b.sourceUser " +
                 "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus"
     )
-    fun findByTargetUserAndStatusAndNotExpired(
+    fun findAllByTargetUserAndStatusAndNotExpired(
         @Param("targetUser") targetUser: User,
         @Param("pingPongStatus") pingPongStatus: PingPongStatus,
         @Param("currentDateTime") currentDateTime: LocalDateTime
@@ -37,7 +37,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
                 "AND b.pingPongStatus IN :pingPongStatus"
     )
-    fun findByUserAndStatus(
+    fun findAllByUserAndStatus(
         @Param("user") user: User,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): List<Bottle>

@@ -27,7 +27,11 @@ class BottleService(
         // TODO User 회원 가입 기능 구현후 수정
         val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        return bottleRepository.findByTargetUserAndStatusAndNotExpired(user, PingPongStatus.NONE, LocalDateTime.now())
+        return bottleRepository.findAllByTargetUserAndStatusAndNotExpired(
+            user,
+            PingPongStatus.NONE,
+            LocalDateTime.now()
+        )
     }
 
     @Transactional(readOnly = true)
@@ -88,7 +92,7 @@ class BottleService(
         // TODO User 회원 가입 기능 구현후 수정
         val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        return bottleRepository.findByUserAndStatus(
+        return bottleRepository.findAllByUserAndStatus(
             user,
             setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED, PingPongStatus.STOPPED)
         )
