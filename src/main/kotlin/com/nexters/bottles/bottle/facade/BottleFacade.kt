@@ -73,7 +73,9 @@ class BottleFacade(
         val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
 
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
-        val activeBottles = groupByStatus[PingPongStatus.ACTIVE]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
+        val activeBottles =
+            (groupByStatus[PingPongStatus.ACTIVE].orEmpty() + groupByStatus[PingPongStatus.STOPPED].orEmpty())
+                .map { toPingPongBottleDto(it, user) }
         val doneBottles = groupByStatus[PingPongStatus.MATCHED]?.map { toPingPongBottleDto(it, user) } ?: emptyList()
         return PingPongListResponseDto(activeBottles = activeBottles, doneBottles = doneBottles)
     }
@@ -120,10 +122,7 @@ class BottleFacade(
 
     fun getBottlePingPong(bottleId: Long): BottlePingpongResponseDto {
         val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO: 회원 기능 갖추고 수정
-        val bottle = bottleService.getPingPongBottle(
-            bottleId,
-            setOf(PingPongStatus.ACTIVE, PingPongStatus.STOPPED, PingPongStatus.MATCHED)
-        )
+        val bottle = bottleService.getPingPongBottle(bottleId)
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
@@ -137,7 +136,7 @@ class BottleFacade(
                 profileSelect = otherUser.userProfile?.profileSelect
             ),
             introduction = otherUser.userProfile?.introduction,
-            letters = getPingpongLetters(myLetter = myLetter, otherLetter = otherLetter),
+            letters = getPingPongLetters(myLetter = myLetter, otherLetter = otherLetter),
             photo = getPhoto(myLetter = myLetter, otherLetter = otherLetter),
             matchResult = MatchResult(
                 isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
@@ -146,7 +145,7 @@ class BottleFacade(
         )
     }
 
-    private fun getPingpongLetters(myLetter: Letter?, otherLetter: Letter?): List<PingPongLetter> {
+    private fun getPingPongLetters(myLetter: Letter?, otherLetter: Letter?): List<PingPongLetter> {
         if (myLetter == null || otherLetter == null) {
             // TODO: 편지가 언제 들어갈지 정하기. (ex. 보틀 매칭할 때 함께 넣어줄지)
             throw IllegalArgumentException("고객센터에 문의하세요")

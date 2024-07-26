@@ -36,12 +36,6 @@ class BottleService(
             ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
     }
 
-    @Transactional(readOnly = true)
-    fun getPingPongBottle(bottleId: Long, statusSet: Set<PingPongStatus>): Bottle {
-        return bottleRepository.findByIdAndStatus(bottleId, statusSet)
-            ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
-    }
-
     @Transactional
     fun acceptBottle(bottleId: Long) {
         val bottle =
@@ -94,12 +88,17 @@ class BottleService(
         // TODO User 회원 가입 기능 구현후 수정
         val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        return bottleRepository.findByUserAndStatus(user, setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED))
+        return bottleRepository.findByUserAndStatus(
+            user,
+            setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED, PingPongStatus.STOPPED)
+        )
     }
 
     @Transactional(readOnly = true)
     fun getPingPongBottle(bottleId: Long): Bottle {
-        return bottleRepository.findByIdAndStatus(bottleId, setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED))
-            ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        return bottleRepository.findByIdAndStatus(
+            bottleId,
+            setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED, PingPongStatus.STOPPED)
+        ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
 }
