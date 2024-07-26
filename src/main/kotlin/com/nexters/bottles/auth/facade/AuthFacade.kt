@@ -5,8 +5,10 @@ import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
 import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
+import org.springframework.stereotype.Component
 import java.time.LocalDate
 
+@Component
 class AuthFacade(
     private val userService: UserService,
     private val webClientAdapter: WebClientAdapter,

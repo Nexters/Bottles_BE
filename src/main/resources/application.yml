@@ -20,7 +20,7 @@ webclient:
 spring:
   profiles: local
   datasource:
-    url: jdbc:mysql://localhost:3306/bottles?useSSL=false
+    url: jdbc:mysql://localhost:3306/bottles?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: root
 

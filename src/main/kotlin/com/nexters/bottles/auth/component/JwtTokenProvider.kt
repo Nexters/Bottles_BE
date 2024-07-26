@@ -4,7 +4,7 @@ import com.nexters.bottles.auth.domain.RefreshToken
 import com.nexters.bottles.auth.repository.RefreshTokenRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -17,7 +17,7 @@ class JwtTokenProvider(
     @Value("\${jwt.access-token-secret-key}")
     private val accessTokenSecretKey: String,
 
-    @Value("\${refresh-token-secret-key}")
+    @Value("\${jwt.refresh-token-secret-key}")
     private val refreshTokenSecretKey: String,
 
     private val refreshTokenRepository: RefreshTokenRepository,
@@ -25,6 +25,8 @@ class JwtTokenProvider(
 
     private val accessTokenValidityInMilliseconds  = 1000 * 60 * 60 * 10L // 10시간
     private val refreshTokenValidityInMilliseconds = 1000 * 60 * 60 * 24 * 7L // 7일
+    private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
+    private val refreshKey = Keys.hmacShaKeyFor(refreshTokenSecretKey.toByteArray())
 
     fun createAccessToken(userId: Long): String {
         val now = LocalDateTime.now()
@@ -34,7 +36,7 @@ class JwtTokenProvider(
             .setSubject(userId.toString())
             .setIssuedAt(toDate(now))
             .setExpiration(toDate(expiryDate))
-            .signWith(SignatureAlgorithm.HS256, accessTokenSecretKey.toByteArray())
+            .signWith(accessKey)
             .compact()
     }
 
@@ -46,7 +48,7 @@ class JwtTokenProvider(
             .setSubject(userId.toString())
             .setIssuedAt(toDate(now))
             .setExpiration(toDate(expiryDate))
-            .signWith(SignatureAlgorithm.HS256, refreshTokenSecretKey.toByteArray())
+            .signWith(refreshKey)
             .compact()
 
         val refreshToken = RefreshToken(
