@@ -48,11 +48,11 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation("org.slf4j:slf4j-simple:2.0.7")
 
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation ("io.jsonwebtoken:jjwt-api:0.11.2")
-    implementation ("io.jsonwebtoken:jjwt-impl:0.11.2")
-    implementation ("io.jsonwebtoken:jjwt-jackson:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
