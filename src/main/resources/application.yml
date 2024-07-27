@@ -13,11 +13,14 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+webclient:
+  kakao-auth-url: https://kapi.kakao.com
+
 ---
 spring:
   profiles: local
   datasource:
-    url: jdbc:mysql://localhost:3306/bottles?useSSL=false
+    url: jdbc:mysql://localhost:3306/bottles?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: root
 
@@ -38,3 +41,7 @@ cloud:
       auto: false
     stack:
       auto: false
+
+jwt:
+  access-token-secret-key: ${ACCESS_TOKEN_SECRET_KEY}
+  refresh-token-secret-key: ${REFRESH_TOKEN_SECRET_KEY}
