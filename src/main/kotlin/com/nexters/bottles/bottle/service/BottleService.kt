@@ -105,4 +105,23 @@ class BottleService(
             setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED, PingPongStatus.STOPPED)
         ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
+
+    @Transactional(readOnly = true)
+    fun getActivePingPongBottle(bottleId: Long): Bottle {
+        return bottleRepository.findByIdAndStatus(
+            bottleId,
+            setOf(PingPongStatus.ACTIVE)
+        ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+    }
+
+    @Transactional
+    fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean): Bottle {
+        val pingPongBottle = bottleRepository.findByIdAndStatus(
+            bottleId,
+            setOf(PingPongStatus.ACTIVE)
+        ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+
+        pingPongBottle.selectMatch(userId, willMatch)
+        return pingPongBottle
+    }
 }
