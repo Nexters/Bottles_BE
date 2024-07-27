@@ -1,11 +1,7 @@
 package com.nexters.bottles.bottle.controller
 
 import com.nexters.bottles.bottle.facade.BottleFacade
-import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
-import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
-import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
-import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
-import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
+import com.nexters.bottles.bottle.facade.dto.*
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -80,5 +76,11 @@ class BottleController(
     @PostMapping("/ping-pong/{bottleId}/images")
     fun uploadImage(@PathVariable bottleId: Long, @RequestPart file: MultipartFile) {
         bottleFacade.uploadImage(bottleId, file)
+    }
+
+    @ApiOperation("최종 선택하기")
+    @PostMapping("/ping-pong/{bottleId}/match")
+    fun selectMatch(@PathVariable bottleId: Long, @RequestBody bottleMatchRequest: BottleMatchRequest) {
+        bottleFacade.selectMatch(bottleId, bottleMatchRequest.willMatch)
     }
 }

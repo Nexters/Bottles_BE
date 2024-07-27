@@ -195,6 +195,20 @@ class BottleFacade(
     ) = file.originalFilename + FILE_NAME_DELIMITER +
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
 
+    fun selectMatch(bottleId: Long, willMatch: Boolean) {
+        val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+
+        val previousStatus = bottleService.getPingPongBottle(bottleId).pingPongStatus
+        val pingPongBottle = bottleService.selectMatch(
+            userId = user.id,
+            bottleId = bottleId,
+            willMatch = willMatch,
+        )
+        val afterStatus = pingPongBottle.pingPongStatus
+
+        // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
+    }
+
     companion object {
         private const val FILE_NAME_DELIMITER = "_"
     }

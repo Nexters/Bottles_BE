@@ -20,11 +20,15 @@ class JwtTokenProvider(
     @Value("\${jwt.refresh-token-secret-key}")
     private val refreshTokenSecretKey: String,
 
+    @Value("\${jwt.access-token-validity}")
+    private val accessTokenValidityInMilliseconds: Long,
+
+    @Value("\${jwt.refresh-token-validity}")
+    private val refreshTokenValidityInMilliseconds: Long,
+
     private val refreshTokenRepository: RefreshTokenRepository,
 ) {
 
-    private val accessTokenValidityInMilliseconds  = 1000 * 60 * 60 * 10L // 10시간
-    private val refreshTokenValidityInMilliseconds = 1000 * 60 * 60 * 24 * 7L // 7일
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
     private val refreshKey = Keys.hmacShaKeyFor(refreshTokenSecretKey.toByteArray())
 
