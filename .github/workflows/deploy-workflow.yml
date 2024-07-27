@@ -85,10 +85,10 @@ jobs:
             echo "export DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DISCORD_ROLE_ID=${{ secrets.DISCORD_ROLE_ID }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
-            echo "export S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}" >> /home/${{ secrets.S3_ACCESS_KEY }}/deploy/env_vars.sh
-            echo "export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/${{ secrets.S3_SECRET_KEY }}/deploy/env_vars.sh
-            echo "export S3_BUCKET=${{ secrets.S3_BUCKET }}" >> /home/${{ secrets.S3_BUCKET }}/deploy/env_vars.sh
-            echo "export S3_REGION=${{ secrets.S3_REGION }}" >> /home/${{ secrets.S3_REGION }}/deploy/env_vars.sh
+            echo "export S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_BUCKET=${{ secrets.S3_BUCKET }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_REGION=${{ secrets.S3_REGION }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export ACCESS_TOKEN_SECRET_KEY=${{ secrets.ACCESS_TOKEN_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export REFRESH_TOKEN_SECRET_KEY=${{ secrets.REFRESH_TOKEN_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
