@@ -105,4 +105,15 @@ class BottleService(
             setOf(PingPongStatus.ACTIVE, PingPongStatus.MATCHED, PingPongStatus.STOPPED)
         ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
+
+    @Transactional
+    fun saveBottle(targetUserId: Long, sourceUserId: Long) {
+        val targetUser = userRepository.findByIdOrNull(targetUserId)
+        val sourceUser = userRepository.findByIdOrNull(sourceUserId)
+        // 이런 경우에는 매칭을 실패한 것인데 어떻게 처리?
+        if (targetUser == null || sourceUser == null) return
+
+        val bottle = Bottle(targetUser = targetUser, sourceUser = sourceUser)
+        bottleRepository.save(bottle)
+    }
 }

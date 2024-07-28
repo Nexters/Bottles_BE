@@ -49,3 +49,13 @@ CREATE TABLE question
     id       BIGINT AUTO_INCREMENT PRIMARY KEY,
     question VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE bottle_history
+(
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id         BIGINT                             NOT NULL,
+    matched_user_id BIGINT,
+    refused_user_id BIGINT,
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
