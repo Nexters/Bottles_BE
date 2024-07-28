@@ -123,6 +123,7 @@ class BottleService(
 
         pingPongBottle.selectMatch(userId, willMatch)
         return pingPongBottle
+    }
 
     @Transactional
     fun saveBottle(targetUserId: Long, sourceUserId: Long) {
