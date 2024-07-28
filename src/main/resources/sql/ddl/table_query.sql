@@ -4,7 +4,7 @@ CREATE TABLE user
     name         VARCHAR(255) DEFAULT NULL,
     birthdate    DATE         DEFAULT NULL,
     kakao_id     VARCHAR(255) DEFAULT NULL,
-    phone_number VARCHAR(255) DEFAULT NULL,
+    phone_number VARCHAR(255) DEFAULT NULL  comment 'ex) 01012345678',
     gender       VARCHAR(10)  DEFAULT 'MALE',
     created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL

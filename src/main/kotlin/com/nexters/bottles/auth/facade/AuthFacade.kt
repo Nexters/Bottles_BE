@@ -1,10 +1,13 @@
 package com.nexters.bottles.auth.facade
 
 import com.nexters.bottles.auth.component.JwtTokenProvider
+import com.nexters.bottles.auth.component.NaverSmsEncoder
 import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
 import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
+import com.nexters.bottles.auth.facade.dto.MessageDTO
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -13,7 +16,10 @@ class AuthFacade(
     private val userService: UserService,
     private val webClientAdapter: WebClientAdapter,
     private val jwtTokenProvider: JwtTokenProvider,
+    private val naverSmsEncoder: NaverSmsEncoder,
 ) {
+
+    private val log = KotlinLogging.logger {  }
 
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
@@ -26,6 +32,18 @@ class AuthFacade(
             accessToken = accessToken,
             refreshToken = refreshToken,
         )
+    }
+
+    fun requestSendSms(phoneNumber: String) {
+        val currentTimeMillis = System.currentTimeMillis()
+        val signature = naverSmsEncoder.generateSignature(currentTimeMillis)
+
+        val smsResponse = webClientAdapter.sendSms(
+            time = currentTimeMillis,
+            messageDto = MessageDTO(to = phoneNumber, content = "123456"),
+            signature = signature,
+        )
+        log.info { "requestId: ${smsResponse?.requestId}, statusCode: ${smsResponse?.statusCode}" }
     }
 }
 
@@ -43,10 +61,12 @@ fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {
 }
 
 /**
- * +82 10-1234-3456 으로 들어온 전화번호를  010-1234-3456 으로 변환합니다.
+ * +82 10-1234-3456 으로 들어온 전화번호를  01012343456 으로 변환합니다.
  */
 private fun convertFromInternationalToKr(phoneNumber: String): String {
-    return phoneNumber.replace("+82 ", "0")
+    return phoneNumber
+        .replace("+82 ", "0")
+        .replace("-", "")
 }
 
 /**

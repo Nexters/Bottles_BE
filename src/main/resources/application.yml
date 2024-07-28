@@ -47,3 +47,9 @@ jwt:
   refresh-token-secret-key: ${REFRESH_TOKEN_SECRET_KEY}
   access-token-validity: 36000000  # 1000 * 60 * 60 * 10 (10시간)
   refresh-token-validity: 604800000  # 1000 * 60 * 60 * 24 * 7 (7일)
+
+naver-cloud-sms:
+  serviceId: ${NAVER_SMS_SERVICE_ID}
+  accessKey: ${NAVER_SMS_API_KEY}
+  secretKey: ${NAVER_SMS_SECRET_KEY}
+  senderPhone: ${NAVER_SMS_SENDER_PHONE}
