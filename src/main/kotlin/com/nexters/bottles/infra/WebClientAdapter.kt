@@ -12,13 +12,11 @@ import org.springframework.web.reactive.function.BodyInserters
 
 @Component
 class WebClientAdapter(
-    private val webClient: WebClient,
+    @Value("\${webclient.kakao-auth-url}")
+    val kakaoAuthUrl: String,
 
     @Value("\${naver-cloud-sms.accessKey}")
     val naverSmsAccessKey: String,
-
-    @Value("\${naver-cloud-sms.secretKey}")
-    val naverSmsSecretKey: String,
 
     @Value("\${naver-cloud-sms.serviceId}")
     val naverSmsServiceId: String,
@@ -28,6 +26,9 @@ class WebClientAdapter(
 ) {
 
     fun sendAuthRequest(code: String): KakaoUserInfoResponse {
+        val webClient = WebClient.builder()
+            .baseUrl(kakaoAuthUrl)
+            .build()
 
         return webClient.get()
             .uri("/v2/user/me")
@@ -45,15 +46,6 @@ class WebClientAdapter(
             "x-ncp-apigw-signature-v2" to signature
         )
 
-        val request = SmsRequestDTO(
-            type = "SMS",
-            contentType = "COMM",
-            countryCode = "82",
-            from = naverSmsSenderPhone,
-            content = messageDto.content,
-            messages = listOf(messageDto)
-        )
-
         val webClient = WebClient.builder()
             .baseUrl("https://sens.apigw.ntruss.com")
             .defaultHeaders { httpHeaders ->
@@ -62,6 +54,15 @@ class WebClientAdapter(
                 }
             }
             .build()
+
+        val request = SmsRequestDTO(
+            type = "SMS",
+            contentType = "COMM",
+            countryCode = "82",
+            from = naverSmsSenderPhone,
+            content = messageDto.content,
+            messages = listOf(messageDto)
+        )
 
         val response: SmsResponseDTO? = webClient.post()
             .uri("/sms/v2/services/$naverSmsServiceId/messages")
