@@ -78,17 +78,29 @@ jobs:
             
             echo "export SERVER_NGINX_CONF=${{ secrets.SERVER_NGINX_CONF }}" > /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
             echo "export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DOCKER_TAG=${{ env.DATETIME_TAG }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
             echo "export DB_DATABASE=${{ secrets.DB_DATABASE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DB_USER_NAME=${{ secrets.DB_USER_NAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
             echo "export DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DISCORD_ROLE_ID=${{ secrets.DISCORD_ROLE_ID }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
-            echo "export S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}" >> /home/${{ secrets.S3_ACCESS_KEY }}/deploy/env_vars.sh
-            echo "export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/${{ secrets.S3_SECRET_KEY }}/deploy/env_vars.sh
-            echo "export S3_BUCKET=${{ secrets.S3_BUCKET }}" >> /home/${{ secrets.S3_BUCKET }}/deploy/env_vars.sh
-            echo "export S3_REGION=${{ secrets.S3_REGION }}" >> /home/${{ secrets.S3_REGION }}/deploy/env_vars.sh
+            
+            echo "export S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_BUCKET=${{ secrets.S3_BUCKET }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_REGION=${{ secrets.S3_REGION }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
+            echo "export ACCESS_TOKEN_SECRET_KEY=${{ secrets.ACCESS_TOKEN_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export REFRESH_TOKEN_SECRET_KEY=${{ secrets.REFRESH_TOKEN_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
+            echo "export NAVER_SMS_SERVICE_ID=${{ secrets.NAVER_SMS_SERVICE_ID }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export NAVER_SMS_API_KEY=${{ secrets.NAVER_SMS_API_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export NAVER_SMS_SECRET_KEY=${{ secrets.NAVER_SMS_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export NAVER_SMS_SENDER_PHONE=${{ secrets.NAVER_SMS_SENDER_PHONE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
 

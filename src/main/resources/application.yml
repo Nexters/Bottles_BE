@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: local
+    active: develop
   jpa:
     properties:
       hibernate:
@@ -13,13 +13,16 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+webclient:
+  kakao-auth-url: https://kapi.kakao.com
+
 ---
 spring:
-  profiles: local
+  profiles: develop
   datasource:
-    url: jdbc:mysql://localhost:3306/bottles?useSSL=false
-    username: root
-    password: root
+    url: jdbc:mysql://localhost:3306/bottles?allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
 
 logging:
   level:
@@ -38,3 +41,15 @@ cloud:
       auto: false
     stack:
       auto: false
+
+jwt:
+  access-token-secret-key: ${ACCESS_TOKEN_SECRET_KEY}
+  refresh-token-secret-key: ${REFRESH_TOKEN_SECRET_KEY}
+  access-token-validity: 36000000  # 1000 * 60 * 60 * 10 (10시간)
+  refresh-token-validity: 604800000  # 1000 * 60 * 60 * 24 * 7 (7일)
+
+naver-cloud-sms:
+  serviceId: ${NAVER_SMS_SERVICE_ID}
+  accessKey: ${NAVER_SMS_API_KEY}
+  secretKey: ${NAVER_SMS_SECRET_KEY}
+  senderPhone: ${NAVER_SMS_SENDER_PHONE}

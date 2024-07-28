@@ -26,9 +26,13 @@ class Bottle(
     @JoinColumn(name = "target_user_id")
     val targetUser: User,
 
+    var targetUserSelect: Boolean = false,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_user_id")
     val sourceUser: User,
+
+    var sourceUserSelect: Boolean = false,
 
     @Column
     val expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
@@ -62,5 +66,16 @@ class Bottle(
     fun stop(stoppedBy: User) {
         pingPongStatus = PingPongStatus.STOPPED
         stoppedUser = stoppedBy
+    }
+
+    fun selectMatch(userId: Long, willMatch: Boolean) {
+        when (userId) {
+            targetUser.id -> targetUserSelect = willMatch
+            sourceUser.id -> sourceUserSelect = willMatch
+            else -> throw IllegalArgumentException("고객센터에 문의해주세요")
+        }
+        if (targetUserSelect && sourceUserSelect) {
+            pingPongStatus = PingPongStatus.MATCHED
+        }
     }
 }
