@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: local
+    active: develop
   jpa:
     properties:
       hibernate:
@@ -18,11 +18,11 @@ webclient:
 
 ---
 spring:
-  profiles: local
+  profiles: develop
   datasource:
     url: jdbc:mysql://localhost:3306/bottles?allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: root
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
 
 logging:
   level:
