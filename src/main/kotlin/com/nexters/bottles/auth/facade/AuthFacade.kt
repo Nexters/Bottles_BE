@@ -26,15 +26,22 @@ class AuthFacade(
 
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
-        val user = userService.findUserOrSignUp(userInfoResponse)
+        val signInUpDto = userService.findUserOrSignUp(userInfoResponse)
 
-        val accessToken = jwtTokenProvider.createAccessToken(user.id)
-        val refreshToken = jwtTokenProvider.createRefreshToken(user.id)
+        val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
 
         return KakaoSignInUpResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
+            isSignUp = signInUpDto.isSignUp,
         )
+    }
+
+    fun refreshToken(userId: Long): RefreshAccessTokenResponse {
+        val accessToken = jwtTokenProvider.createAccessToken(userId)
+
+        return RefreshAccessTokenResponse(accessToken = accessToken)
     }
 
     fun requestSendSms(phoneNumber: String): SendSmsResponse {
