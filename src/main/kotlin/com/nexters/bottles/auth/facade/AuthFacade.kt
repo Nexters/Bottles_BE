@@ -37,7 +37,7 @@ class AuthFacade(
         )
     }
 
-    fun requestSendSms(phoneNumber: String): SensSmsResponse {
+    fun requestSendSms(phoneNumber: String): SendSmsResponse {
         val currentTimeMillis = System.currentTimeMillis()
         val signature = naverSmsEncoder.generateSignature(currentTimeMillis)
 
@@ -55,7 +55,7 @@ class AuthFacade(
             expiredAt = LocalDateTime.now().plusMinutes(5)
         )
 
-        return SensSmsResponse(expiredAt = authSms.expiredAt)
+        return SendSmsResponse(expiredAt = authSms.expiredAt)
     }
 
     fun authSms(authSmsRequest: AuthSmsRequest) {
