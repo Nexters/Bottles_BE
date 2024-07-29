@@ -1,25 +1,28 @@
 package com.nexters.bottles.auth.facade
 
+import com.nexters.bottles.auth.component.AuthCodeGenerator
 import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
-import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
-import com.nexters.bottles.auth.facade.dto.MessageDTO
+import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.auth.service.AuthSmsService
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Component
 class AuthFacade(
     private val userService: UserService,
+    private val authSmsService: AuthSmsService,
     private val webClientAdapter: WebClientAdapter,
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
+    private val authCodeGenerator: AuthCodeGenerator,
 ) {
 
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
 
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
@@ -34,16 +37,30 @@ class AuthFacade(
         )
     }
 
-    fun requestSendSms(phoneNumber: String) {
+    fun requestSendSms(phoneNumber: String): SendSmsResponse {
         val currentTimeMillis = System.currentTimeMillis()
         val signature = naverSmsEncoder.generateSignature(currentTimeMillis)
 
+        val authCode = authCodeGenerator.createRandomNumbers()
         val smsResponse = webClientAdapter.sendSms(
             time = currentTimeMillis,
-            messageDto = MessageDTO(to = phoneNumber, content = "123456"),
+            messageDto = MessageDTO(to = phoneNumber, content = authCode),
             signature = signature,
         )
         log.info { "requestId: ${smsResponse?.requestId}, statusCode: ${smsResponse?.statusCode}" }
+
+        val authSms = authSmsService.saveAuthSms(
+            phoneNumber = phoneNumber,
+            authCode = authCode,
+            expiredAt = LocalDateTime.now().plusMinutes(5)
+        )
+
+        return SendSmsResponse(expiredAt = authSms.expiredAt)
+    }
+
+    fun authSms(authSmsRequest: AuthSmsRequest) {
+        val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
+        lastAuthSms.validate(lastAuthSms.authCode)
     }
 }
 
