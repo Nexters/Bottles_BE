@@ -9,6 +9,7 @@ data class RegisterProfileRequestDto(
     var smoking: String,
     var alcohol: String,
     val religion: String,
-    val region: RegionDto
+    val region: RegionDto,
+    val kakaoId: String,
 ) {
 }
