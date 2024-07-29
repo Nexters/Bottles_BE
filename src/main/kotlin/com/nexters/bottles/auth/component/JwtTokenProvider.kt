@@ -7,10 +7,11 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
-import java.time.Duration
+import javax.servlet.http.HttpServletRequest
 
 @Component
 class JwtTokenProvider(
@@ -63,6 +64,13 @@ class JwtTokenProvider(
         refreshTokenRepository.save(refreshToken)
 
         return token
+    }
+
+    fun resolveToken(request: HttpServletRequest): String? {
+        val bearerToken = request.getHeader("Authorization")
+        return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken.substring(7)
+        } else null
     }
 
     fun getUserIdFromToken(token: String, isAccessToken: Boolean): Long? {

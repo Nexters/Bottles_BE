@@ -19,12 +19,10 @@ class UserProfileService(
     private val log = KotlinLogging.logger { }
 
     @Transactional
-    fun upsertProfile(profileSelect: UserProfileSelect) {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun upsertProfile(userId: Long, profileSelect: UserProfileSelect) {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         profileRepository.findByUserId(user.id)?.let {
-            it.user = user
             it.profileSelect = profileSelect
         } ?: run {
             profileRepository.save(
@@ -37,9 +35,8 @@ class UserProfileService(
     }
 
     @Transactional
-    fun saveIntroduction(introduction: List<QuestionAndAnswer>) {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun saveIntroduction(userId: Long, introduction: List<QuestionAndAnswer>) {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         profileRepository.findByUserId(user.id)?.let {
             it.introduction = introduction

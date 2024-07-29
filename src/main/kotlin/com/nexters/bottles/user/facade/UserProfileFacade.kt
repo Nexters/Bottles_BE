@@ -1,11 +1,12 @@
 package com.nexters.bottles.user.facade
 
+import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
-import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
 import com.nexters.bottles.user.service.UserProfileService
+import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import regions
@@ -13,15 +14,17 @@ import regions
 @Component
 class UserProfileFacade(
     private val profileService: UserProfileService,
+    private val userService: UserService,
 ) {
 
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
 
-    fun upsertProfile(profileDto: RegisterProfileRequestDto) {
+    fun upsertProfile(userId: Long, profileDto: RegisterProfileRequestDto) {
         validateProfile(profileDto)
         val convertedProfileDto = convertProfileDto(profileDto)
 
         profileService.upsertProfile(
+            userId = userId,
             profileSelect = UserProfileSelect(
                 mbti = convertedProfileDto.mbti,
                 keyword = convertedProfileDto.keyword,
@@ -42,18 +45,19 @@ class UserProfileFacade(
         )
     }
 
-    fun upsertIntroduction(registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
+    fun upsertIntroduction(userId: Long, registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
         validateIntroduction(registerIntroductionRequestDto)
 
-        profileService.saveIntroduction(registerIntroductionRequestDto.introduction)
+        profileService.saveIntroduction(userId, registerIntroductionRequestDto.introduction)
     }
 
-    fun getProfile(): UserProfileResponseDto {
+    fun getProfile(userId: Long): UserProfileResponseDto {
 
-        val userProfile = profileService.findUserProfile(1L) // TODO: 회원 기능 구현후 수정
+        val userProfile = profileService.findUserProfile(userId)
+        val user = userProfile?.user ?: userService.findById(userId)
         return UserProfileResponseDto(
-            userName = "테스트",
-            age = 20,
+            userName = user.name,
+            age = user.getKoreanAge(),
             introduction = userProfile?.introduction,
             profileSelect = userProfile?.profileSelect
         )
@@ -63,8 +67,8 @@ class UserProfileFacade(
         require(profileDto.keyword.size <= 5) {
             "키워드는 5개 이하여야 해요"
         }
-        val interestCount = profileDto.interest.culture.size + profileDto.interest.sports.size
-        + profileDto.interest.entertainment.size + profileDto.interest.etc.size
+        val interestCount = profileDto.interest.culture.size + profileDto.interest.sports.size +
+                profileDto.interest.entertainment.size + profileDto.interest.etc.size
         require(interestCount <= 5) {
             "취미는 5개 이하여야 해요"
         }
@@ -80,12 +84,12 @@ class UserProfileFacade(
     }
 
     private fun convertProfileDto(profileDto: RegisterProfileRequestDto): RegisterProfileRequestDto {
-        when(profileDto.smoking) {
+        when (profileDto.smoking) {
             "전혀 피우지 않아요" -> profileDto.smoking = "흡연 안해요"
             "가끔 피워요" -> profileDto.smoking = "흡연은 가끔"
             "자주 피워요" -> profileDto.smoking = "흡연해요"
         }
-        when(profileDto.alcohol) {
+        when (profileDto.alcohol) {
             "한 방울도 마시지 않아요" -> profileDto.smoking = "술은 안해요"
             "때에 따라 적당히 즐겨요" -> profileDto.smoking = "술은 적당히"
             "자주 찾는 편이에요" -> profileDto.smoking = "술을 즐겨요"

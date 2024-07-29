@@ -23,9 +23,8 @@ class BottleService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getNewBottles(): List<Bottle> {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun getNewBottles(userId: Long): List<Bottle> {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         return bottleRepository.findAllByTargetUserAndStatusAndNotExpired(
             user,
@@ -41,13 +40,12 @@ class BottleService(
     }
 
     @Transactional
-    fun acceptBottle(bottleId: Long) {
+    fun acceptBottle(userId: Long, bottleId: Long) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(bottleId, setOf(PingPongStatus.NONE), LocalDateTime.now())
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        // TODO User 회원 가입 기능 구현후 수정
-        val targetUser = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val targetUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         val sourceUser = userRepository.findByIdOrNull(bottle.sourceUser.id)
             ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
@@ -75,22 +73,20 @@ class BottleService(
     }
 
     @Transactional
-    fun refuseBottle(bottleId: Long) {
+    fun refuseBottle(userId: Long, bottleId: Long) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(bottleId, setOf(PingPongStatus.NONE), LocalDateTime.now())
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        // TODO User 회원 가입 기능 구현후 수정
-        val targetUser = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val targetUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         userRepository.findByIdOrNull(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
         bottle.refuse(targetUser)
     }
 
     @Transactional(readOnly = true)
-    fun getPingPongBottles(): List<Bottle> {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun getPingPongBottles(userId: Long): List<Bottle> {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         return bottleRepository.findAllByUserAndStatus(
             user,
