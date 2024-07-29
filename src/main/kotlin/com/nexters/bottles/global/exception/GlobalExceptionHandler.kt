@@ -25,4 +25,11 @@ class GlobalExceptionHandler {
         log.warn { "Error occured at path: ${request.requestURI}, message: ${e.message}" }
         return ErrorResponseDto(e.message)
     }
+
+    @ExceptionHandler(UnauthorizedException::class)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    fun handle(request: HttpServletRequest, e: UnauthorizedException): ErrorResponseDto {
+        log.warn { "Error occured at path: ${request.requestURI}, message: ${e.message}" }
+        return ErrorResponseDto(e.message)
+    }
 }
