@@ -23,7 +23,6 @@ class UserProfileService(
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         profileRepository.findByUserId(user.id)?.let {
-            it.user = user
             it.profileSelect = profileSelect
         } ?: run {
             profileRepository.save(

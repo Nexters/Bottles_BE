@@ -6,6 +6,7 @@ import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
 import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
 import com.nexters.bottles.user.service.UserProfileService
+import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import regions
@@ -13,6 +14,7 @@ import regions
 @Component
 class UserProfileFacade(
     private val profileService: UserProfileService,
+    private val userService: UserService,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -52,9 +54,10 @@ class UserProfileFacade(
     fun getProfile(userId: Long): UserProfileResponseDto {
 
         val userProfile = profileService.findUserProfile(userId)
+        val user = userProfile?.user ?: userService.findById(userId)
         return UserProfileResponseDto(
-            userName = "테스트", // TODO 회원가입 기능 구현 후 수정
-            age = 20,
+            userName = user.name,
+            age = user.getKoreanAge(),
             introduction = userProfile?.introduction,
             profileSelect = userProfile?.profileSelect
         )

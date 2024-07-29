@@ -39,8 +39,8 @@ class BottleFacade(
             bottles.map {
                 BottleDto(
                     id = it.id,
-                    userName = "it.sourceUser.name",
-                    age = 20, // TODO User에 age 추가된 후 수정
+                    userName = it.sourceUser.name,
+                    age = it.sourceUser.getKoreanAge(),
                     mbti = it.sourceUser.userProfile?.profileSelect?.mbti,
                     keyword = it.sourceUser.userProfile?.profileSelect?.keyword,
                     expiredAt = it.expiredAt
@@ -54,8 +54,8 @@ class BottleFacade(
 
         return BottleDetailResponseDto(
             id = bottle.id,
-            userName = "bottle.sourceUser.name", // TODO User 변경된 후 수정
-            age = 20,
+            userName = bottle.sourceUser.name,
+            age = bottle.sourceUser.getKoreanAge(),
             introduction = bottle.sourceUser.userProfile?.introduction,
             profileSelect = bottle.sourceUser.userProfile?.profileSelect
         )
@@ -88,8 +88,8 @@ class BottleFacade(
         return PingPongBottleDto(
             id = bottle.id,
             isRead = otherUserLetter.isReadByOtherUser,
-            userName = "otherUser.name", // TODO User 변경된 후 수정
-            age = 20,
+            userName = otherUser.name,
+            age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword
         )
