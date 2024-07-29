@@ -30,7 +30,7 @@ class AuthController(
     }
 
     @ApiOperation("문자 인증하기")
-    @PostMapping("/sms/send")
+    @PostMapping("/sms/send/check")
     fun authSms(@RequestBody authSmsRequest: AuthSmsRequest) {
         authFacade.authSms(authSmsRequest)
     }
