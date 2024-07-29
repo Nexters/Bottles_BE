@@ -8,6 +8,8 @@ import com.nexters.bottles.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.auth.facade.dto.SignUpRequest
 import com.nexters.bottles.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.auth.facade.dto.SmsSendRequest
+import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.global.resolver.RefreshTokenUserId
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -24,6 +26,12 @@ class AuthController(
     @PostMapping("/kakao")
     fun kakaoSignInUp(@RequestBody kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
         return authFacade.kakaoSignInUp(kakaoSignInUpRequest.code)
+    }
+
+    @ApiOperation("토큰 재발행")
+    @PostMapping("/refresh")
+    fun requestRefresh(@RefreshTokenUserId userId: Long): RefreshAccessTokenResponse {
+        return authFacade.refreshToken(userId)
     }
 
     @ApiOperation("일반 회원가입")
