@@ -18,4 +18,11 @@ class GlobalExceptionHandler {
         log.warn { "Error occured at path: ${request.requestURI}, message: ${e.message}" }
         return ErrorResponseDto(e.message)
     }
+
+    @ExceptionHandler(IllegalStateException::class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    fun handle(request: HttpServletRequest, e: IllegalStateException): ErrorResponseDto {
+        log.warn { "Error occured at path: ${request.requestURI}, message: ${e.message}" }
+        return ErrorResponseDto(e.message)
+    }
 }
