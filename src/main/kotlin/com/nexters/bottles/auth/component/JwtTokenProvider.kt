@@ -93,21 +93,27 @@ class JwtTokenProvider(
     }
 
     private fun upsertRefreshToken(userId: Long, refreshToken: String, expiryDate: LocalDateTime) {
-        refreshTokenRepository.findByUserId(userId)?.let {
-            refreshTokenRepository.deleteById(it.id)
+        val refreshTokens = refreshTokenRepository.findAllByUserId(userId)
+
+        if (refreshTokens.isNotEmpty()) {
+            refreshTokens.forEach {
+                refreshTokenRepository.deleteById(it.id)
+            }
             refreshTokenRepository.save(
                 RefreshToken(
                     userId = userId,
-                    token =  refreshToken,
-                    expiryDate = expiryDate)
+                    token = refreshToken,
+                    expiryDate = expiryDate
                 )
-        } ?: run {
+            )
+        } else {
             refreshTokenRepository.save(
                 RefreshToken(
                     userId = userId,
-                    token =  refreshToken,
-                    expiryDate = expiryDate)
+                    token = refreshToken,
+                    expiryDate = expiryDate
                 )
+            )
         }
     }
 }

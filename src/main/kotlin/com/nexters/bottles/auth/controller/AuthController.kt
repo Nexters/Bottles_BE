@@ -54,6 +54,12 @@ class AuthController(
         authFacade.authSms(authSmsRequest)
     }
 
+    @ApiOperation("문자 로그인하기")
+    @PostMapping("/sms/login")
+    fun smsSignIn(@RequestBody smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
+        return authFacade.smsSignIn(smsSignInRequest)
+    }
+
     @ApiOperation("로그아웃하기")
     @PostMapping("/logout")
     @AuthRequired
