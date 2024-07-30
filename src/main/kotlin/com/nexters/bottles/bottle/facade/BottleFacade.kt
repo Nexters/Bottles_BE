@@ -181,8 +181,8 @@ class BottleFacade(
     ): Photo {
 
         return Photo(
-            myImageUrl = myProfile.imageUrlOriginal,
-            otherImageUrl = otherProfile.imageUrlOriginal,
+            myImageUrl = myProfile.imageUrl,
+            otherImageUrl = otherProfile.imageUrl,
             shouldAnswer = myLetter.isShowImage == null,
             changeFinished = (myLetter.isShowImage != null) && (otherLetter.isShowImage != null)
         )

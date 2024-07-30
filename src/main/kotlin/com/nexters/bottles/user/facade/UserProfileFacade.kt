@@ -1,6 +1,6 @@
 package com.nexters.bottles.user.facade
 
-import com.nexters.bottles.bottle.service.FileService
+import com.nexters.bottles.user.component.ImageUploader
 import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 class UserProfileFacade(
     private val profileService: UserProfileService,
     private val userService: UserService,
-    private val fileService: FileService,
+    private val imageUploader: ImageUploader,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -106,10 +106,10 @@ class UserProfileFacade(
     fun uploadImage(userId: Long, file: MultipartFile) {
         val me = userService.findById(userId)
         val path = makePathWithUserId(file, me.id)
-        val imageUrlOriginal = fileService.upload(file, path)
-        // TODO blur 처리된 Image 저장
-        val imageUrlBlur = fileService.upload(file, path)
-        profileService.uploadImageUrl(me, imageUrlOriginal.toString(), imageUrlBlur.toString())
+        val originalImageUrl = imageUploader.upload(file, path);
+        val blurredImageUrl = imageUploader.uploadWithBlur(file, path);
+
+        profileService.uploadImageUrl(me, originalImageUrl.toString(), blurredImageUrl.toString())
     }
 
     private fun makePathWithUserId(

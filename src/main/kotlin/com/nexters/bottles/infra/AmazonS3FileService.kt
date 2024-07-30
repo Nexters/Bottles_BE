@@ -7,7 +7,9 @@ import com.nexters.bottles.bottle.service.FileService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 import java.net.URL
+import java.nio.file.Files
 
 @Component
 class AmazonS3FileService(
@@ -17,7 +19,7 @@ class AmazonS3FileService(
     private val bucket: String,
 ) : FileService {
 
-    override fun upload(file: MultipartFile, path: String): URL {
+    override fun upload(file: MultipartFile, key: String): URL {
         val objectMetadata = ObjectMetadata().apply {
             this.contentType = file.contentType
             this.contentLength = file.size
@@ -25,11 +27,28 @@ class AmazonS3FileService(
 
         val putObjectRequest = PutObjectRequest(
             bucket,
-            path,
+            key,
             file.inputStream,
-            objectMetadata,
+            objectMetadata
         )
         amazonS3.putObject(putObjectRequest)
-        return amazonS3.getUrl(bucket, path)
+        return amazonS3.getUrl(bucket, key)
+    }
+
+    override fun upload(filePath: String, key: String): URL {
+        val file = File(filePath)
+        val objectMetadata = ObjectMetadata().apply {
+            this.contentType = Files.probeContentType(file.toPath())
+            this.contentLength = file.length()
+        }
+
+        val putObjectRequest = PutObjectRequest(
+            bucket,
+            key,
+            file.inputStream().buffered(),
+            objectMetadata
+        )
+        amazonS3.putObject(putObjectRequest)
+        return amazonS3.getUrl(bucket, key)
     }
 }

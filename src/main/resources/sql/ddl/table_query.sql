@@ -12,14 +12,14 @@ CREATE TABLE user
 
 CREATE TABLE user_profile
 (
-    id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id            BIGINT                             NOT NULL,
-    profile_select     JSON,
-    introduction       JSON,
-    image_url_original TEXT,
-    image_url_blur     TEXT,
-    created_at         DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id           BIGINT                             NOT NULL,
+    profile_select    JSON,
+    introduction      JSON,
+    image_url         TEXT,
+    blurred_image_url TEXT,
+    created_at        DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE bottle
