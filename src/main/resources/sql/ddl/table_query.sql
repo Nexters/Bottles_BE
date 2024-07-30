@@ -6,6 +6,7 @@ CREATE TABLE user
     kakao_id     VARCHAR(255) DEFAULT NULL,
     phone_number VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
     gender       VARCHAR(10)  DEFAULT 'MALE',
+    sign_up_type VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
     created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
@@ -62,13 +63,14 @@ CREATE TABLE refresh_tokens
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE auth_sms (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    phone_number VARCHAR(255) NOT NULL,
-    auth_code VARCHAR(255) NOT NULL
-    expired_at DATETIME NOT NULL,
-    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+CREATE TABLE auth_sms
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    phone_number VARCHAR(255)                       NOT NULL,
+    auth_code    VARCHAR(255)                       NOT NULL,
+    expired_at   DATETIME                           NOT NULL,
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX idx_phone_number ON auth_sms(phone_number);
+CREATE INDEX idx_phone_number ON auth_sms (phone_number);
