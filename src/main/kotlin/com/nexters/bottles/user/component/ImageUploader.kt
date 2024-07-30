@@ -26,7 +26,7 @@ class ImageUploader(
             Files.createDirectories(uploadDir)
         }
 
-        val originalFilePath = uploadDir.resolve("original_" + LocalDateTime.now() + file.originalFilename!!)
+        val originalFilePath = uploadDir.resolve("original_" + LocalDateTime.now() + file.originalFilename)
         Files.copy(file.inputStream, originalFilePath)
 
         val blurredImage = imageProcessor.blurImage(File(originalFilePath.toString()))

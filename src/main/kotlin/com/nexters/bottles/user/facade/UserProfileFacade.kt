@@ -115,8 +115,8 @@ class UserProfileFacade(
     private fun makePathWithUserId(
         file: MultipartFile,
         userId: Long
-    ) = file.originalFilename + FILE_NAME_DELIMITER +
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
+    ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
+        .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"
