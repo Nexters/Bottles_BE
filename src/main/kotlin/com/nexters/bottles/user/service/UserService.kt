@@ -21,7 +21,7 @@ class UserService(
 
     @Transactional
     fun findUserOrSignUp(userInfoResponse: KakaoUserInfoResponse): SignInUpDto {
-        userRepository.findByPhoneNumber(userInfoResponse.kakao_account.phone_number)?.let { user ->
+        userRepository.findByPhoneNumberAndDeletedFalse(userInfoResponse.kakao_account.phone_number)?.let { user ->
             log.info { "전화번호 ${userInfoResponse.kakao_account.phone_number} 유저 존재하여 조회 후 반환" }
             return SignInUpDto(userId = user.id, isSignUp = false)
         } ?: run {
@@ -45,7 +45,7 @@ class UserService(
 
     @Transactional
     fun signUp(signUpRequest: SignUpRequest): User {
-        userRepository.findByPhoneNumber(signUpRequest.phoneNumber)?.let {
+        userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
             throw IllegalArgumentException("이미 가입한 회원이에요")
         } ?: run {
             return userRepository.save(
@@ -61,14 +61,21 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun findById(userId: Long): User {
-        return userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun findByIdAndNotDeleted(userId: Long): User {
+        return userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
 
     @Transactional
     fun addKakaoId(userId: Long, kakaoId: String) {
-        userRepository.findByIdOrNull(userId)?.let {
+        userRepository.findByIdAndDeletedFalse(userId)?.let {
             it.kakaoId = kakaoId
+        } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    }
+
+    @Transactional
+    fun softDelete(userId: Long) {
+        userRepository.findByIdOrNull(userId)?.let {
+            it.softDelete()
         } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
 }

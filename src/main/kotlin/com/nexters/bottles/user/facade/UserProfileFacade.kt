@@ -55,7 +55,7 @@ class UserProfileFacade(
     fun getProfile(userId: Long): UserProfileResponseDto {
 
         val userProfile = profileService.findUserProfile(userId)
-        val user = userProfile?.user ?: userService.findById(userId)
+        val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
         return UserProfileResponseDto(
             userName = user.name,
             age = user.getKoreanAge(),

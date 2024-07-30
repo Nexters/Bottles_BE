@@ -20,7 +20,7 @@ webclient:
 spring:
   profiles: develop
   datasource:
-    url: jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
     username: ${DB_USER_NAME}
     password: ${DB_PASSWORD}
 

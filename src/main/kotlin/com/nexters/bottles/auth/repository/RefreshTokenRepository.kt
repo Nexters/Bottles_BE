@@ -11,5 +11,5 @@ interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
 
     fun findByToken(token: String): RefreshToken?
 
-    fun findAllByUserId(): List<RefreshToken>
+    fun findAllByUserId(userId: Long): List<RefreshToken>
 }
