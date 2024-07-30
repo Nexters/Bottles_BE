@@ -60,4 +60,11 @@ class AuthController(
     fun logout(@AuthUserId userId: Long) {
         authFacade.logout(userId)
     }
+
+    @ApiOperation("회원 탈퇴하기")
+    @PostMapping("/delete")
+    @AuthRequired
+    fun delete(@AuthUserId userId: Long) {
+        authFacade.delete(userId)
+    }
 }

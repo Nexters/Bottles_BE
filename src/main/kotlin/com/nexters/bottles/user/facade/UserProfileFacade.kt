@@ -2,6 +2,7 @@ package com.nexters.bottles.user.facade
 
 import com.nexters.bottles.user.component.ImageUploader
 import com.nexters.bottles.user.domain.UserProfileSelect
+import com.nexters.bottles.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
@@ -60,7 +61,7 @@ class UserProfileFacade(
     fun getProfile(userId: Long): UserProfileResponseDto {
 
         val userProfile = profileService.findUserProfile(userId)
-        val user = userProfile?.user ?: userService.findById(userId)
+        val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
         return UserProfileResponseDto(
             userName = user.name,
             age = user.getKoreanAge(),
@@ -104,7 +105,7 @@ class UserProfileFacade(
     }
 
     fun uploadImage(userId: Long, file: MultipartFile) {
-        val me = userService.findById(userId)
+        val me = userService.findByIdAndNotDeleted(userId)
         val path = makePathWithUserId(file, me.id)
         val originalImageUrl = imageUploader.upload(file, path);
         val blurredImageUrl = imageUploader.uploadWithBlur(file, path);
@@ -117,6 +118,11 @@ class UserProfileFacade(
         userId: Long
     ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
+
+    fun existIntroduction(userId: Long): ExistIntroductionResponse {
+        val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
+    }
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"

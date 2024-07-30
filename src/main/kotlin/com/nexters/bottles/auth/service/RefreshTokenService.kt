@@ -11,7 +11,7 @@ class RefreshTokenService(
 
     @Transactional
     fun delete(userId: Long) {
-        refreshTokenRepository.findAllByUserId()
+        refreshTokenRepository.findAllByUserId(userId)
             .forEach { refreshTokenRepository.deleteById(it.id) }
     }
 }

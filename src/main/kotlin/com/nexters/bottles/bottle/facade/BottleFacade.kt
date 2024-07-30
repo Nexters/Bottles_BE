@@ -67,7 +67,7 @@ class BottleFacade(
 
     fun getPingPongBottles(userId: Long): PingPongListResponseDto {
         val pingPongBottles = bottleService.getPingPongBottles(userId)
-        val user = userService.findById(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
 
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
         val activeBottles =
@@ -93,7 +93,7 @@ class BottleFacade(
 
     fun registerLetter(userId: Long, bottleId: Long, registerLetterRequestDto: RegisterLetterRequestDto) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val user = userService.findById(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
 
         letterService.registerLetter(
             pingPongBottle,
@@ -105,20 +105,20 @@ class BottleFacade(
 
     fun readPingPongBottle(userId: Long, bottleId: Long) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = userService.findById(userId)
+        val me = userService.findByIdAndNotDeleted(userId)
         val otherUser = pingPongBottle.findOtherUser(me)
         letterService.readOtherUserLetter(pingPongBottle, otherUser)
     }
 
     fun stopBottle(userId: Long, bottleId: Long) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = userService.findById(userId)
+        val me = userService.findByIdAndNotDeleted(userId)
 
         pingPongBottle.stop(me)
     }
 
     fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingpongResponseDto {
-        val me = userService.findById(userId)
+        val me = userService.findByIdAndNotDeleted(userId)
         val bottle = bottleService.getPingPongBottle(bottleId)
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
@@ -189,7 +189,7 @@ class BottleFacade(
     }
 
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
-        val user = userService.findById(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
 
         val letter = letterService.findLetter(pingPongBottle, user)
@@ -202,7 +202,7 @@ class BottleFacade(
     }
 
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
-        val user = userService.findById(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
 
         val previousStatus = bottleService.getPingPongBottle(bottleId).pingPongStatus
         val pingPongBottle = bottleService.selectMatch(
