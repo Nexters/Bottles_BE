@@ -1,7 +1,13 @@
 package com.nexters.bottles.auth.controller
 
 import com.nexters.bottles.auth.facade.AuthFacade
-import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.auth.facade.dto.AuthSmsRequest
+import com.nexters.bottles.auth.facade.dto.KakaoSignInUpRequest
+import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.auth.facade.dto.SendSmsResponse
+import com.nexters.bottles.auth.facade.dto.SignUpRequest
+import com.nexters.bottles.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.auth.facade.dto.SmsSendRequest
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,6 +24,12 @@ class AuthController(
     @PostMapping("/kakao")
     fun kakaoSignInUp(@RequestBody kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
         return authFacade.kakaoSignInUp(kakaoSignInUpRequest.code)
+    }
+
+    @ApiOperation("일반 회원가입")
+    @PostMapping("/signup")
+    fun signUp(@RequestBody signUpRequest: SignUpRequest): SignUpResponse {
+        return authFacade.signUp(signUpRequest)
     }
 
     @ApiOperation("문자 인증 발송 요청하기")
