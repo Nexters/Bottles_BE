@@ -5,6 +5,7 @@ import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
 import com.nexters.bottles.auth.facade.dto.*
 import com.nexters.bottles.auth.service.AuthSmsService
+import com.nexters.bottles.auth.service.RefreshTokenService
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
@@ -16,6 +17,7 @@ import java.time.LocalDateTime
 class AuthFacade(
     private val userService: UserService,
     private val authSmsService: AuthSmsService,
+    private val refreshTokenService: RefreshTokenService,
     private val webClientAdapter: WebClientAdapter,
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
@@ -80,6 +82,11 @@ class AuthFacade(
     fun authSms(authSmsRequest: AuthSmsRequest) {
         val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
         lastAuthSms.validate(lastAuthSms.authCode)
+    }
+
+    fun logout(userId: Long) {
+        //TODO: 액세스 토큰에 관해 블랙리스트 운영할지 말지 고민중
+        refreshTokenService.delete(userId)
     }
 }
 
