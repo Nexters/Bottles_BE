@@ -20,7 +20,7 @@ webclient:
 spring:
   profiles: develop
   datasource:
-    url: jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8
     username: ${DB_USER_NAME}
     password: ${DB_PASSWORD}
 
@@ -46,7 +46,7 @@ jwt:
   access-token-secret-key: ${ACCESS_TOKEN_SECRET_KEY}
   refresh-token-secret-key: ${REFRESH_TOKEN_SECRET_KEY}
   access-token-validity: 36000000  # 1000 * 60 * 60 * 10 (10시간)
-  refresh-token-validity: 604800000  # 1000 * 60 * 60 * 24 * 7 (7일)
+  refresh-token-validity: 14515200000  # 1000 * 60 * 60 * 24 * 7 * 4 * 6 (6개월)
 
 naver-cloud-sms:
   serviceId: ${NAVER_SMS_SERVICE_ID}
