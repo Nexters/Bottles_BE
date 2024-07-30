@@ -3,13 +3,7 @@ package com.nexters.bottles.auth.facade
 import com.nexters.bottles.auth.component.AuthCodeGenerator
 import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
-import com.nexters.bottles.auth.facade.dto.AuthSmsRequest
-import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
-import com.nexters.bottles.auth.facade.dto.MessageDTO
-import com.nexters.bottles.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.auth.facade.dto.SignUpRequest
-import com.nexters.bottles.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.auth.facade.dto.*
 import com.nexters.bottles.auth.service.AuthSmsService
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
@@ -32,22 +26,29 @@ class AuthFacade(
 
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
-        val user = userService.findUserOrSignUp(userInfoResponse)
+        val signInUpDto = userService.findUserOrSignUp(userInfoResponse)
 
-        val accessToken = jwtTokenProvider.createAccessToken(user.id)
-        val refreshToken = jwtTokenProvider.createRefreshToken(user.id)
+        val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
 
         return KakaoSignInUpResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
+            isSignUp = signInUpDto.isSignUp,
         )
+    }
+
+    fun refreshToken(userId: Long): RefreshAccessTokenResponse {
+        val accessToken = jwtTokenProvider.createAccessToken(userId)
+
+        return RefreshAccessTokenResponse(accessToken = accessToken)
     }
 
     fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
         val user = userService.signUp(signUpRequest)
 
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
-        val refreshToken = jwtTokenProvider.createRefreshToken(user.id)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
 
         return SignUpResponse(
             accessToken = accessToken,

@@ -14,7 +14,7 @@ data class RefreshToken(
 
     val userId: Long,
 
-    val token: String,
+    var token: String,
 
     val expiryDate: LocalDateTime,
 ) : BaseEntity()
