@@ -188,6 +188,19 @@ class BottleFacade(
         )
     }
 
+    fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
+        val user = userService.findById(userId)
+        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+
+        val letter = letterService.findLetter(pingPongBottle, user)
+        letter.shareImage(willShare)
+        letter.markUnread()
+
+        if (!willShare) {
+            pingPongBottle.stop(user)
+        }
+    }
+
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
         val user = userService.findById(userId)
 

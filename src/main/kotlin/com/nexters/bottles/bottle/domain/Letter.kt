@@ -52,6 +52,10 @@ class Letter(
     fun markUnread() {
         isReadByOtherUser = false
     }
+
+    fun shareImage(willShare: Boolean) {
+        isShowImage = willShare
+    }
 }
 
 data class LetterQuestionAndAnswer(

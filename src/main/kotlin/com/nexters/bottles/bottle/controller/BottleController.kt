@@ -2,6 +2,7 @@ package com.nexters.bottles.bottle.controller
 
 import com.nexters.bottles.bottle.facade.BottleFacade
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottleImageShareRequest
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleMatchRequest
 import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
@@ -88,6 +89,17 @@ class BottleController(
     @AuthRequired
     fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingpongResponseDto {
         return bottleFacade.getBottlePingPong(userId, bottleId)
+    }
+
+    @ApiOperation("사진 공유 선택하기")
+    @PostMapping("/ping-pong/{bottleId}/image")
+    @AuthRequired
+    fun selectShareImage(
+        @AuthUserId userId: Long,
+        @PathVariable bottleId: Long,
+        @RequestBody bottleImageShareRequest: BottleImageShareRequest
+    ) {
+        bottleFacade.selectShareImage(userId, bottleId, bottleImageShareRequest.willShare)
     }
 
     @ApiOperation("최종 선택하기")
