@@ -1,6 +1,7 @@
 package com.nexters.bottles.user.facade
 
 import com.nexters.bottles.user.domain.UserProfileSelect
+import com.nexters.bottles.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
@@ -15,6 +16,7 @@ import regions
 class UserProfileFacade(
     private val profileService: UserProfileService,
     private val userService: UserService,
+    private val userProfileService: UserProfileService,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -96,5 +98,10 @@ class UserProfileFacade(
             "자주 찾는 편이에요" -> profileDto.smoking = "술을 즐겨요"
         }
         return profileDto
+    }
+
+    fun existIntroduction(userId: Long): ExistIntroductionResponse {
+        val userProfile = userProfileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
     }
 }
