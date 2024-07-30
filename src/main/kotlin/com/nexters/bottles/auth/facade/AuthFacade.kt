@@ -5,6 +5,7 @@ import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
 import com.nexters.bottles.auth.facade.dto.*
 import com.nexters.bottles.auth.service.AuthSmsService
+import com.nexters.bottles.auth.service.RefreshTokenService
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
@@ -16,6 +17,7 @@ import java.time.LocalDateTime
 class AuthFacade(
     private val userService: UserService,
     private val authSmsService: AuthSmsService,
+    private val refreshTokenService: RefreshTokenService,
     private val webClientAdapter: WebClientAdapter,
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
@@ -26,14 +28,33 @@ class AuthFacade(
 
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
-        val user = userService.findUserOrSignUp(userInfoResponse)
+        val signInUpDto = userService.findUserOrSignUp(userInfoResponse)
 
-        val accessToken = jwtTokenProvider.createAccessToken(user.id)
-        val refreshToken = jwtTokenProvider.createRefreshToken(user.id)
+        val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
 
         return KakaoSignInUpResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
+            isSignUp = signInUpDto.isSignUp,
+        )
+    }
+
+    fun refreshToken(userId: Long): RefreshAccessTokenResponse {
+        val accessToken = jwtTokenProvider.createAccessToken(userId)
+
+        return RefreshAccessTokenResponse(accessToken = accessToken)
+    }
+
+    fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
+        val user = userService.signUp(signUpRequest)
+
+        val accessToken = jwtTokenProvider.createAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
+
+        return SignUpResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken
         )
     }
 
@@ -61,6 +82,11 @@ class AuthFacade(
     fun authSms(authSmsRequest: AuthSmsRequest) {
         val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
         lastAuthSms.validate(lastAuthSms.authCode)
+    }
+
+    fun logout(userId: Long) {
+        //TODO: 액세스 토큰에 관해 블랙리스트 운영할지 말지 고민중
+        refreshTokenService.delete(userId)
     }
 }
 

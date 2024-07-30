@@ -1,7 +1,6 @@
 package com.nexters.bottles.auth.facade.dto
 
-data class KakaoSignInUpResponse(
+data class SignUpResponse(
     val accessToken: String,
     val refreshToken: String,
-    val isSignUp: Boolean = false,
 )
