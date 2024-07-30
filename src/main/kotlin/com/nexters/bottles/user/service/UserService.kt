@@ -41,11 +41,6 @@ class UserService(
         }
     }
 
-    @Transactional(readOnly = true)
-    fun findById(userId: Long): User {
-        return userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-    }
-
     @Transactional
     fun signUp(signUpRequest: SignUpRequest): User {
         userRepository.findByPhoneNumber(signUpRequest.phoneNumber)?.let {
@@ -61,5 +56,17 @@ class UserService(
                 )
             )
         }
+    }
+    
+    @Transactional(readOnly = true)
+    fun findById(userId: Long): User {
+        return userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    }
+    
+    @Transactional
+    fun addKakaoId(userId: Long, kakaoId: String) {
+        userRepository.findByIdOrNull(userId)?.let {
+            it.kakaoId = kakaoId
+        } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
 }

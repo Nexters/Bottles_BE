@@ -37,6 +37,7 @@ class UserProfileFacade(
                 region = convertedProfileDto.region,
             )
         )
+        userService.addKakaoId(userId = userId, kakaoId = profileDto.kakaoId)
     }
 
     fun getProfileChoice(): ProfileChoiceResponseDto {
