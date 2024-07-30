@@ -88,6 +88,10 @@ class AuthFacade(
         //TODO: 액세스 토큰에 관해 블랙리스트 운영할지 말지 고민중
         refreshTokenService.delete(userId)
     }
+
+    fun delete(userId: Long) {
+        userService.softDelete(userId)
+    }
 }
 
 fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {

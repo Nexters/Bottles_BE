@@ -7,6 +7,8 @@ CREATE TABLE user
     phone_number VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
     gender       VARCHAR(10)  DEFAULT 'MALE',
     sign_up_type VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
+    deleted      BOOLEAN      DEFAULT FALSE             NOT NULL,
+    deleted_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
     created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
