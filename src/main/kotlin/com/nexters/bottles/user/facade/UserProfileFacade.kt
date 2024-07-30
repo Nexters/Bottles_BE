@@ -1,5 +1,6 @@
 package com.nexters.bottles.user.facade
 
+import com.nexters.bottles.user.component.ImageUploader
 import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
@@ -10,13 +11,16 @@ import com.nexters.bottles.user.service.UserProfileService
 import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
 import regions
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class UserProfileFacade(
     private val profileService: UserProfileService,
     private val userService: UserService,
-    private val userProfileService: UserProfileService,
+    private val imageUploader: ImageUploader,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -100,8 +104,27 @@ class UserProfileFacade(
         return profileDto
     }
 
+    fun uploadImage(userId: Long, file: MultipartFile) {
+        val me = userService.findByIdAndNotDeleted(userId)
+        val path = makePathWithUserId(file, me.id)
+        val originalImageUrl = imageUploader.upload(file, path);
+        val blurredImageUrl = imageUploader.uploadWithBlur(file, path);
+
+        profileService.uploadImageUrl(me, originalImageUrl.toString(), blurredImageUrl.toString())
+    }
+
+    private fun makePathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
+        .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
+
     fun existIntroduction(userId: Long): ExistIntroductionResponse {
-        val userProfile = userProfileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
         return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
+    }
+
+    companion object {
+        private const val FILE_NAME_DELIMITER = "_"
     }
 }

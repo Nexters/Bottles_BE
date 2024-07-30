@@ -15,12 +15,14 @@ CREATE TABLE user
 
 CREATE TABLE user_profile
 (
-    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id        BIGINT                             NOT NULL,
-    profile_select JSON,
-    introduction   JSON,
-    created_at     DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id           BIGINT                             NOT NULL,
+    profile_select    JSON,
+    introduction      JSON,
+    image_url         VARCHAR(2048),
+    blurred_image_url VARCHAR(2048),
+    created_at        DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE bottle
@@ -43,7 +45,7 @@ CREATE TABLE letter
     bottle_id             BIGINT                             NOT NULL,
     user_id               BIGINT                             NOT NULL,
     letters               JSON                               NOT NULL,
-    image_url             TEXT,
+    is_show_image         BOOLEAN  DEFAULT FALSE             NOT NULL,
     is_read_by_other_user BOOLEAN  DEFAULT FALSE             NOT NULL,
     created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL

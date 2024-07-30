@@ -2,6 +2,7 @@ package com.nexters.bottles.bottle.controller
 
 import com.nexters.bottles.bottle.facade.BottleFacade
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottleImageShareRequest
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleMatchRequest
 import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1/bottles")
@@ -92,11 +91,15 @@ class BottleController(
         return bottleFacade.getBottlePingPong(userId, bottleId)
     }
 
-    @ApiOperation("보틀 보관함 - 사진 전송하기")
-    @PostMapping("/ping-pong/{bottleId}/images")
+    @ApiOperation("사진 공유 선택하기")
+    @PostMapping("/ping-pong/{bottleId}/image")
     @AuthRequired
-    fun uploadImage(@AuthUserId userId: Long, @PathVariable bottleId: Long, @RequestPart file: MultipartFile) {
-        bottleFacade.uploadImage(userId, bottleId, file)
+    fun selectShareImage(
+        @AuthUserId userId: Long,
+        @PathVariable bottleId: Long,
+        @RequestBody bottleImageShareRequest: BottleImageShareRequest
+    ) {
+        bottleFacade.selectShareImage(userId, bottleId, bottleImageShareRequest.willShare)
     }
 
     @ApiOperation("최종 선택하기")
