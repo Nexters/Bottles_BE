@@ -3,6 +3,7 @@ package com.nexters.bottles.user.controller
 import com.nexters.bottles.global.interceptor.AuthRequired
 import com.nexters.bottles.global.resolver.AuthUserId
 import com.nexters.bottles.user.facade.UserProfileFacade
+import com.nexters.bottles.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
 import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
@@ -48,5 +49,12 @@ class UserProfileController(
     @AuthRequired
     fun getProfile(@AuthUserId userId: Long): UserProfileResponseDto {
         return profileFacade.getProfile(userId)
+    }
+
+    @ApiOperation("자기소개 작성 여부 조회하기")
+    @GetMapping("/introduction/exist")
+    @AuthRequired
+    fun existIntroduction(@AuthUserId userId: Long): ExistIntroductionResponse {
+        return profileFacade.existIntroduction(userId)
     }
 }
