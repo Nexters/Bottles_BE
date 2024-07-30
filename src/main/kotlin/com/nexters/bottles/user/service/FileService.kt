@@ -1,4 +1,4 @@
-package com.nexters.bottles.bottle.service
+package com.nexters.bottles.user.service
 
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL

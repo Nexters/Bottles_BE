@@ -1,6 +1,6 @@
 package com.nexters.bottles.user.component
 
-import com.nexters.bottles.bottle.service.FileService
+import com.nexters.bottles.user.service.FileService
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
