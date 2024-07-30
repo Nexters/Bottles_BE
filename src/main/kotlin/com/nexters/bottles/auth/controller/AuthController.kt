@@ -9,6 +9,8 @@ import com.nexters.bottles.auth.facade.dto.SignUpRequest
 import com.nexters.bottles.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.auth.facade.dto.SmsSendRequest
 import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.global.interceptor.AuthRequired
+import com.nexters.bottles.global.resolver.AuthUserId
 import com.nexters.bottles.global.resolver.RefreshTokenUserId
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
@@ -50,5 +52,12 @@ class AuthController(
     @PostMapping("/sms/send/check")
     fun authSms(@RequestBody authSmsRequest: AuthSmsRequest) {
         authFacade.authSms(authSmsRequest)
+    }
+
+    @ApiOperation("로그아웃하기")
+    @PostMapping("/logout")
+    @AuthRequired
+    fun logout(@AuthUserId userId: Long) {
+        authFacade.logout(userId)
     }
 }

@@ -10,4 +10,6 @@ interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
     fun findByUserId(userId: Long): RefreshToken?
 
     fun findByToken(token: String): RefreshToken?
+
+    fun findAllByUserId(): List<RefreshToken>
 }
