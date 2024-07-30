@@ -15,21 +15,17 @@ import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
 import com.nexters.bottles.bottle.service.BottleService
-import com.nexters.bottles.bottle.service.FileService
 import com.nexters.bottles.bottle.service.LetterService
 import com.nexters.bottles.user.domain.User
+import com.nexters.bottles.user.domain.UserProfile
 import com.nexters.bottles.user.service.UserService
 import org.springframework.stereotype.Component
-import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Component
 class BottleFacade(
     private val bottleService: BottleService,
     private val letterService: LetterService,
     private val userService: UserService,
-    private val fileService: FileService,
 ) {
 
     fun getNewBottles(userId: Long): BottleListResponseDto {
@@ -138,7 +134,12 @@ class BottleFacade(
             ),
             introduction = otherUser.userProfile?.introduction,
             letters = getPingPongLetters(myLetter = myLetter, otherLetter = otherLetter),
-            photo = getPhoto(myLetter = myLetter, otherLetter = otherLetter),
+            photo = getPhoto(
+                myLetter = myLetter,
+                otherLetter = otherLetter,
+                myProfile = me.userProfile!!,
+                otherProfile = otherUser.userProfile!!
+            ),
             matchResult = MatchResult(
                 isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
                 contact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요")
@@ -172,29 +173,20 @@ class BottleFacade(
         otherLetter: Letter
     ) = (index == 0) || (myLetter.letters[index - 1].answer != null && otherLetter.letters[index - 1].answer != null)
 
-    private fun getPhoto(myLetter: Letter, otherLetter: Letter): Photo {
+    private fun getPhoto(
+        myLetter: Letter,
+        otherLetter: Letter,
+        myProfile: UserProfile,
+        otherProfile: UserProfile
+    ): Photo {
 
         return Photo(
-            myImageUrl = myLetter.imageUrl,
-            otherImageUrl = otherLetter.imageUrl,
-            shouldAnswer = myLetter.imageUrl == null,
-            changeFinished = (myLetter.imageUrl != null) && (otherLetter.imageUrl != null)
+            myImageUrl = myProfile.imageUrlOriginal,
+            otherImageUrl = otherProfile.imageUrlOriginal,
+            shouldAnswer = myLetter.isShowImage == null,
+            changeFinished = (myLetter.isShowImage != null) && (otherLetter.isShowImage != null)
         )
     }
-
-    fun uploadImage(userId: Long, bottleId: Long, file: MultipartFile) {
-        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = userService.findById(userId)
-        val path = makePathWithUserId(file, me.id)
-        val imageUrl = fileService.upload(file, path)
-        letterService.uploadImageURl(pingPongBottle, me, imageUrl.toString())
-    }
-
-    private fun makePathWithUserId(
-        file: MultipartFile,
-        userId: Long
-    ) = file.originalFilename + FILE_NAME_DELIMITER +
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
 
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
         val user = userService.findById(userId)
@@ -208,9 +200,5 @@ class BottleFacade(
         val afterStatus = pingPongBottle.pingPongStatus
 
         // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
-    }
-
-    companion object {
-        private const val FILE_NAME_DELIMITER = "_"
     }
 }

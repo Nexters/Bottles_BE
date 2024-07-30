@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1/bottles")
@@ -90,13 +88,6 @@ class BottleController(
     @AuthRequired
     fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingpongResponseDto {
         return bottleFacade.getBottlePingPong(userId, bottleId)
-    }
-
-    @ApiOperation("보틀 보관함 - 사진 전송하기")
-    @PostMapping("/ping-pong/{bottleId}/images")
-    @AuthRequired
-    fun uploadImage(@AuthUserId userId: Long, @PathVariable bottleId: Long, @RequestPart file: MultipartFile) {
-        bottleFacade.uploadImage(userId, bottleId, file)
     }
 
     @ApiOperation("최종 선택하기")

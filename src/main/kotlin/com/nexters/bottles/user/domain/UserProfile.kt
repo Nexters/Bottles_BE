@@ -28,6 +28,10 @@ class UserProfile(
 
     @Convert(converter = QuestionAndAnswerConverter::class)
     var introduction: List<QuestionAndAnswer> = arrayListOf(),
+
+    var imageUrlOriginal: String? = null,
+
+    var imageUrlBlur: String? = null,
 ) : BaseEntity()
 
 data class UserProfileSelect(

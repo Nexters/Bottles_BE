@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -48,5 +50,12 @@ class UserProfileController(
     @AuthRequired
     fun getProfile(@AuthUserId userId: Long): UserProfileResponseDto {
         return profileFacade.getProfile(userId)
+    }
+
+    @ApiOperation("마이페이지 사진 등록하기")
+    @PostMapping("/images")
+    @AuthRequired
+    fun uploadImage(@AuthUserId userId: Long, @RequestPart file: MultipartFile) {
+        profileFacade.uploadImage(userId, file)
     }
 }

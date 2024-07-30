@@ -1,5 +1,6 @@
 package com.nexters.bottles.user.facade
 
+import com.nexters.bottles.bottle.service.FileService
 import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
 import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
@@ -9,12 +10,16 @@ import com.nexters.bottles.user.service.UserProfileService
 import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
 import regions
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class UserProfileFacade(
     private val profileService: UserProfileService,
     private val userService: UserService,
+    private val fileService: FileService,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -96,5 +101,24 @@ class UserProfileFacade(
             "자주 찾는 편이에요" -> profileDto.smoking = "술을 즐겨요"
         }
         return profileDto
+    }
+
+    fun uploadImage(userId: Long, file: MultipartFile) {
+        val me = userService.findById(userId)
+        val path = makePathWithUserId(file, me.id)
+        val imageUrlOriginal = fileService.upload(file, path)
+        // TODO blur 처리된 Image 저장
+        val imageUrlBlur = fileService.upload(file, path)
+        profileService.uploadImageUrl(me, imageUrlOriginal.toString(), imageUrlBlur.toString())
+    }
+
+    private fun makePathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ) = file.originalFilename + FILE_NAME_DELIMITER +
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
+
+    companion object {
+        private const val FILE_NAME_DELIMITER = "_"
     }
 }
