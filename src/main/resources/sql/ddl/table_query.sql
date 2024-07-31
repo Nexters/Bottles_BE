@@ -25,17 +25,6 @@ CREATE TABLE user_profile
     updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE random_bottle
-(
-    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
-    target_user_id BIGINT                                NOT NULL,
-    source_user_id BIGINT                                NOT NULL,
-    expired_at     DATETIME                              NOT NULL,
-    status         VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
-    created_at     DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at     DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
-);
-
 CREATE TABLE bottle
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -43,8 +32,10 @@ CREATE TABLE bottle
     target_user_select BOOLEAN     DEFAULT FALSE             NOT NULL,
     source_user_id     BIGINT                                NOT NULL,
     source_user_select BOOLEAN     DEFAULT FALSE             NOT NULL,
+    like_message       VARCHAR(255),
     expired_at         DATETIME                              NOT NULL,
     stopped_user_id    BIGINT,
+    bottles_status     VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL,
     ping_pong_status   VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
     created_at         DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at         DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL

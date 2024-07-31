@@ -2,6 +2,7 @@ package com.nexters.bottles.bottle.facade
 
 import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
+import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleDto
@@ -30,32 +31,27 @@ class BottleFacade(
 
     fun getNewBottles(userId: Long): BottleListResponseDto {
         val user = userService.findByIdAndNotDeleted(userId)
-        val randomBottles = bottleService.getRandomBottles(user)
-        val sentBottles = bottleService.getSentBottles(user)
+        val bottles = bottleService.getNewBottles(user)
+        val groupByStatus = bottles.groupBy { it.bottleStatus }
+
+        val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it) } ?: emptyList()
+        val sentBottles = groupByStatus[BottleStatus.SENT]?.map { toBottleDto(it) } ?: emptyList()
 
         return BottleListResponseDto(
-            randomBottles = randomBottles.map {
-                BottleDto(
-                    id = it.id,
-                    userName = it.sourceUser.name,
-                    age = it.sourceUser.getKoreanAge(),
-                    mbti = it.sourceUser.userProfile?.profileSelect?.mbti,
-                    keyword = it.sourceUser.userProfile?.profileSelect?.keyword,
-                    userImageUrl = it.sourceUser.userProfile?.blurredImageUrl,
-                    expiredAt = it.expiredAt
-                )
-            },
-            sentBottles = sentBottles.map {
-                BottleDto(
-                    id = it.id,
-                    userName = it.sourceUser.name,
-                    age = it.sourceUser.getKoreanAge(),
-                    mbti = it.sourceUser.userProfile?.profileSelect?.mbti,
-                    keyword = it.sourceUser.userProfile?.profileSelect?.keyword,
-                    userImageUrl = it.sourceUser.userProfile?.blurredImageUrl,
-                    expiredAt = it.expiredAt
-                )
-            }
+            randomBottles = randomBottles,
+            sentBottles = sentBottles
+        )
+    }
+
+    private fun toBottleDto(bottle: Bottle): BottleDto {
+        return BottleDto(
+            id = bottle.id,
+            userName = bottle.sourceUser.name,
+            age = bottle.sourceUser.getKoreanAge(),
+            mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
+            keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
+            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
+            expiredAt = bottle.expiredAt
         )
     }
 
@@ -163,12 +159,7 @@ class BottleFacade(
         )
     }
 
-    private fun getPingPongLetters(myLetter: Letter?, otherLetter: Letter?): List<PingPongLetter> {
-        if (myLetter == null || otherLetter == null) {
-            // TODO: 편지가 언제 들어갈지 정하기. (ex. 보틀 매칭할 때 함께 넣어줄지)
-            throw IllegalArgumentException("고객센터에 문의하세요")
-        }
-
+    private fun getPingPongLetters(myLetter: Letter, otherLetter: Letter): List<PingPongLetter> {
         return myLetter.letters.zip(otherLetter.letters).mapIndexed { index, (mySingleLetter, otherSingleLetter) ->
 
             PingPongLetter(

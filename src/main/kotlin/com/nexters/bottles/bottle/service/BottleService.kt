@@ -3,13 +3,10 @@ package com.nexters.bottles.bottle.service
 import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.LetterQuestionAndAnswer
-import com.nexters.bottles.bottle.domain.RandomBottle
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
-import com.nexters.bottles.bottle.domain.enum.RandomBottleStatus
 import com.nexters.bottles.bottle.repository.BottleRepository
 import com.nexters.bottles.bottle.repository.LetterRepository
 import com.nexters.bottles.bottle.repository.QuestionRepository
-import com.nexters.bottles.bottle.repository.RandomBottleRepository
 import com.nexters.bottles.user.domain.User
 import com.nexters.bottles.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -20,23 +17,13 @@ import java.time.LocalDateTime
 @Service
 class BottleService(
     private val bottleRepository: BottleRepository,
-    private val randomBottleRepository: RandomBottleRepository,
     private val userRepository: UserRepository,
     private val letterRepository: LetterRepository,
     private val questionRepository: QuestionRepository
 ) {
 
     @Transactional(readOnly = true)
-    fun getRandomBottles(user: User): List<RandomBottle> {
-        return randomBottleRepository.findAllByTargetUserAndStatusAndNotExpired(
-            user,
-            RandomBottleStatus.NONE,
-            LocalDateTime.now()
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getSentBottles(user: User): List<Bottle> {
+    fun getNewBottles(user: User): List<Bottle> {
         return bottleRepository.findAllByTargetUserAndStatusAndNotExpired(
             user,
             PingPongStatus.NONE,

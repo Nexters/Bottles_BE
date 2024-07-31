@@ -1,5 +1,6 @@
 package com.nexters.bottles.bottle.domain
 
+import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.global.BaseEntity
 import com.nexters.bottles.user.domain.User
@@ -33,7 +34,7 @@ class Bottle(
 
     var sourceUserSelect: Boolean = false,
 
-    var message: String? = null,
+    var likeMessage: String? = null,
 
     @Column
     val expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
@@ -41,6 +42,10 @@ class Bottle(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stopped_user_id")
     var stoppedUser: User? = null,
+
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    var bottleStatus: BottleStatus = BottleStatus.RANDOM,
 
     @Column
     @Enumerated(value = EnumType.STRING)
@@ -53,7 +58,7 @@ class Bottle(
 
     fun refuse(refusedBy: User) {
         this.stoppedUser = refusedBy
-        this.pingPongStatus = PingPongStatus.STOPPED
+        this.pingPongStatus = PingPongStatus.REFUSED
     }
 
     fun findOtherUser(user: User): User {
@@ -65,8 +70,8 @@ class Bottle(
     }
 
     fun stop(stoppedBy: User) {
-        pingPongStatus = PingPongStatus.STOPPED
-        stoppedUser = stoppedBy
+        this.stoppedUser = stoppedBy
+        this.pingPongStatus = PingPongStatus.STOPPED
     }
 
     fun selectMatch(userId: Long, willMatch: Boolean) {
