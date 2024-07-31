@@ -3,7 +3,16 @@ package com.nexters.bottles.auth.facade
 import com.nexters.bottles.auth.component.AuthCodeGenerator
 import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
-import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.auth.facade.dto.AuthSmsRequest
+import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
+import com.nexters.bottles.auth.facade.dto.MessageDTO
+import com.nexters.bottles.auth.facade.dto.RefreshAccessTokenResponse
+import com.nexters.bottles.auth.facade.dto.SendSmsResponse
+import com.nexters.bottles.auth.facade.dto.SignUpRequest
+import com.nexters.bottles.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.auth.facade.dto.SmsSignInRequest
+import com.nexters.bottles.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.auth.service.AuthSmsService
 import com.nexters.bottles.auth.service.RefreshTokenService
 import com.nexters.bottles.infra.WebClientAdapter
@@ -47,6 +56,9 @@ class AuthFacade(
     }
 
     fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
+        val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
+        lastAuthSms.validate(signUpRequest.authCode)
+
         val user = userService.signUp(signUpRequest)
 
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
@@ -97,7 +109,8 @@ class AuthFacade(
         val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
         lastAuthSms.validate(smsSignInRequest.authCode)
 
-        val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber) ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
+        val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)
+            ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
 
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
