@@ -6,7 +6,7 @@ import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
-import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottlePingPongResponseDto
 import com.nexters.bottles.bottle.facade.dto.MatchResult
 import com.nexters.bottles.bottle.facade.dto.Photo
 import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
@@ -29,16 +29,30 @@ class BottleFacade(
 ) {
 
     fun getNewBottles(userId: Long): BottleListResponseDto {
-        val bottles = bottleService.getNewBottles(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
+        val randomBottles = bottleService.getRandomBottles(user)
+        val sentBottles = bottleService.getSentBottles(user)
 
         return BottleListResponseDto(
-            bottles.map {
+            randomBottles = randomBottles.map {
                 BottleDto(
                     id = it.id,
                     userName = it.sourceUser.name,
                     age = it.sourceUser.getKoreanAge(),
                     mbti = it.sourceUser.userProfile?.profileSelect?.mbti,
                     keyword = it.sourceUser.userProfile?.profileSelect?.keyword,
+                    userImageUrl = it.sourceUser.userProfile?.blurredImageUrl,
+                    expiredAt = it.expiredAt
+                )
+            },
+            sentBottles = sentBottles.map {
+                BottleDto(
+                    id = it.id,
+                    userName = it.sourceUser.name,
+                    age = it.sourceUser.getKoreanAge(),
+                    mbti = it.sourceUser.userProfile?.profileSelect?.mbti,
+                    keyword = it.sourceUser.userProfile?.profileSelect?.keyword,
+                    userImageUrl = it.sourceUser.userProfile?.blurredImageUrl,
                     expiredAt = it.expiredAt
                 )
             }

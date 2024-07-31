@@ -3,7 +3,6 @@ package com.nexters.bottles.bottle.domain
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.global.BaseEntity
 import com.nexters.bottles.user.domain.User
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -33,6 +32,8 @@ class Bottle(
     val sourceUser: User,
 
     var sourceUserSelect: Boolean = false,
+
+    var message: String? = null,
 
     @Column
     val expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),

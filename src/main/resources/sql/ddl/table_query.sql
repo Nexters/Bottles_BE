@@ -25,6 +25,17 @@ CREATE TABLE user_profile
     updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE TABLE random_bottle
+(
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+    target_user_id BIGINT                                NOT NULL,
+    source_user_id BIGINT                                NOT NULL,
+    expired_at     DATETIME                              NOT NULL,
+    status         VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
+    created_at     DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at     DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
+
 CREATE TABLE bottle
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
