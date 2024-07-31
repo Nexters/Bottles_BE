@@ -24,13 +24,13 @@ class Bottle(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_user_id")
-    val targetUser: User,
+    var targetUser: User,
 
     var targetUserSelect: Boolean = false,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_user_id")
-    val sourceUser: User,
+    var sourceUser: User,
 
     var sourceUserSelect: Boolean = false,
 
@@ -52,7 +52,14 @@ class Bottle(
     var pingPongStatus: PingPongStatus = PingPongStatus.NONE,
 ) : BaseEntity() {
 
-    fun accept() {
+    fun sendLikeMessage(from: User, to: User, likeMessage: String) {
+        this.targetUser = to
+        this.sourceUser = from
+        this.likeMessage = likeMessage
+        this.bottleStatus = BottleStatus.SENT
+    }
+
+    fun startPingPong() {
         this.pingPongStatus = PingPongStatus.ACTIVE
     }
 

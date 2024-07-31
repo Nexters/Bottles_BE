@@ -3,6 +3,7 @@ package com.nexters.bottles.bottle.service
 import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.LetterQuestionAndAnswer
+import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.repository.BottleRepository
 import com.nexters.bottles.bottle.repository.LetterRepository
@@ -38,7 +39,7 @@ class BottleService(
     }
 
     @Transactional
-    fun acceptBottle(userId: Long, bottleId: Long) {
+    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(bottleId, setOf(PingPongStatus.NONE), LocalDateTime.now())
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
@@ -47,11 +48,24 @@ class BottleService(
         val sourceUser = userRepository.findByIdOrNull(bottle.sourceUser.id)
             ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
-        bottle.accept()
+        when (bottle.bottleStatus) {
+            BottleStatus.RANDOM -> {
+                requireNotNull(likeMessage) { "고객센터에 문의해주세요" }
+                bottle.sendLikeMessage(
+                    from = targetUser,
+                    to = sourceUser,
+                    likeMessage = likeMessage
+                )
+            }
 
-        val letters = findRandomQuestions()
-        saveLetter(bottle, targetUser, letters)
-        saveLetter(bottle, sourceUser, letters)
+            BottleStatus.SENT -> {
+                require(likeMessage == null) { "고객센터에 문의해주세요" }
+                bottle.startPingPong()
+                val letters = findRandomQuestions()
+                saveLetter(bottle, targetUser, letters)
+                saveLetter(bottle, sourceUser, letters)
+            }
+        }
     }
 
     private fun findRandomQuestions() = questionRepository.findAll()

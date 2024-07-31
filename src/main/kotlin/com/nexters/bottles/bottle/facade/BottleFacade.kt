@@ -4,6 +4,7 @@ import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.bottle.facade.dto.AcceptBottleRequestDto
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
@@ -63,12 +64,13 @@ class BottleFacade(
             userName = bottle.sourceUser.name,
             age = bottle.sourceUser.getKoreanAge(),
             introduction = bottle.sourceUser.userProfile?.introduction,
-            profileSelect = bottle.sourceUser.userProfile?.profileSelect
+            profileSelect = bottle.sourceUser.userProfile?.profileSelect,
+            likeMessage = bottle.likeMessage,
         )
     }
 
-    fun acceptBottle(userId: Long, bottleId: Long) {
-        bottleService.acceptBottle(userId, bottleId)
+    fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequestDto: AcceptBottleRequestDto) {
+        bottleService.acceptBottle(userId, bottleId, acceptBottleRequestDto.likeMessage)
     }
 
     fun refuseBottle(userId: Long, bottleId: Long) {

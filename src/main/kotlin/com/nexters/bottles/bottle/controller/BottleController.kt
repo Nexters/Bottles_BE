@@ -1,6 +1,7 @@
 package com.nexters.bottles.bottle.controller
 
 import com.nexters.bottles.bottle.facade.BottleFacade
+import com.nexters.bottles.bottle.facade.dto.AcceptBottleRequestDto
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleImageShareRequest
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
@@ -41,8 +42,12 @@ class BottleController(
     @ApiOperation("홈 - 보틀에 내 소개 보내기(수락하기)")
     @PostMapping("/{bottleId}/accept")
     @AuthRequired
-    fun acceptBottle(@AuthUserId userId: Long, @PathVariable bottleId: Long) {
-        bottleFacade.acceptBottle(userId, bottleId)
+    fun acceptBottle(
+        @AuthUserId userId: Long,
+        @PathVariable bottleId: Long,
+        @RequestBody acceptBottleRequestDto: AcceptBottleRequestDto
+    ) {
+        bottleFacade.acceptBottle(userId, bottleId, acceptBottleRequestDto)
     }
 
     @ApiOperation("홈 - 보틀 떠내려 보내기(거절하기)")
