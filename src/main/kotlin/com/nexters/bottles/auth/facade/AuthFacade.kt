@@ -92,6 +92,21 @@ class AuthFacade(
     fun delete(userId: Long) {
         userService.softDelete(userId)
     }
+
+    fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
+        val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
+        lastAuthSms.validate(smsSignInRequest.authCode)
+
+        val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber) ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
+
+        val accessToken = jwtTokenProvider.createAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
+
+        return SmsSignInResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+        )
+    }
 }
 
 fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {
