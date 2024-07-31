@@ -8,6 +8,7 @@ import com.nexters.bottles.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import com.nexters.bottles.admin.facade.dto.ForceAfterProfileResponse
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -16,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController
 class AdminController(
     private val adminFacade: AdminFacade,
 ) {
+
+    @ApiOperation("카카오 회원가입하고 프로필 작성한 상태 만들기")
+    @PostMapping("/after-profile")
+    fun forceAfterProfile(): ForceAfterProfileResponse {
+        return adminFacade.forceAfterProfile()
+    }
 
     @ApiOperation("만료시간 입력받아서 토큰 발급받기")
     @PostMapping("/custom-token")
