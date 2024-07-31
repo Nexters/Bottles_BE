@@ -65,26 +65,27 @@ class UserProfileFacade(
         return UserProfileResponseDto(
             userName = user.name,
             age = user.getKoreanAge(),
-            introduction = userProfile?.introduction,
+            imageUrl = userProfile?.imageUrl,
+            introduction = userProfile?.introduction ?: emptyList(),
             profileSelect = userProfile?.profileSelect
         )
     }
 
     private fun validateProfile(profileDto: RegisterProfileRequestDto) {
-        require(profileDto.keyword.size <= 5) {
-            "키워드는 5개 이하여야 해요"
+        require(profileDto.keyword.size in 3..5) {
+            "키워드는 최소 3개, 최대 5개까지 선택할 수 있어요"
         }
         val interestCount = profileDto.interest.culture.size + profileDto.interest.sports.size +
                 profileDto.interest.entertainment.size + profileDto.interest.etc.size
-        require(interestCount <= 5) {
-            "취미는 5개 이하여야 해요"
+        require(interestCount in 3..10) {
+            "취미는 최소 3개, 최대 10개까지 선택할 수 있어요"
         }
     }
 
     private fun validateIntroduction(introductionDto: RegisterIntroductionRequestDto) {
         introductionDto.introduction.forEach {
-//            require(it.answer.length > 30 && it.answer.length <= 100) {
-//                "소개는 30자 이상 100자 이하로 써야 해요"
+//            require(it.answer.length >= 30 && it.answer.length <= 300) {
+//                "소개는 30자 이상 300자 이하로 써야 해요"
 //            }
             // TODO: 개발 환경에서 빠르게 테스트 하기 위해 일단 주석 처리하고 라이브 서비스 나가기전 해제할 예정입니다.
         }
