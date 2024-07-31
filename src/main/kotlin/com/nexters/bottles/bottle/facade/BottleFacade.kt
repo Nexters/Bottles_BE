@@ -87,7 +87,8 @@ class BottleFacade(
             userName = otherUser.name,
             age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
-            keyword = otherUser.userProfile?.profileSelect?.keyword
+            keyword = otherUser.userProfile?.profileSelect?.keyword,
+            userImageUrl = otherUser.userProfile?.blurredImageUrl,
         )
     }
 
@@ -117,20 +118,21 @@ class BottleFacade(
         pingPongBottle.stop(me)
     }
 
-    fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingpongResponseDto {
+    fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponseDto {
         val me = userService.findByIdAndNotDeleted(userId)
         val bottle = bottleService.getPingPongBottle(bottleId)
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
 
-        return BottlePingpongResponseDto(
+        return BottlePingPongResponseDto(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
             userProfile = PingPongUserProfile(
                 userName = otherUser.name,
                 age = otherUser.getKoreanAge(),
-                profileSelect = otherUser.userProfile?.profileSelect
+                profileSelect = otherUser.userProfile?.profileSelect,
+                userImageUrl = otherUser.userProfile?.blurredImageUrl
             ),
             introduction = otherUser.userProfile?.introduction,
             letters = getPingPongLetters(myLetter = myLetter, otherLetter = otherLetter),

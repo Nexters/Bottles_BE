@@ -5,7 +5,7 @@ import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleImageShareRequest
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleMatchRequest
-import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottlePingPongResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
 import com.nexters.bottles.global.interceptor.AuthRequired
@@ -87,7 +87,7 @@ class BottleController(
     @ApiOperation("보틀의 핑퐁 조회하기")
     @GetMapping("/ping-pong/{bottleId}")
     @AuthRequired
-    fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingpongResponseDto {
+    fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingPongResponseDto {
         return bottleFacade.getBottlePingPong(userId, bottleId)
     }
 
