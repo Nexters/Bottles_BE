@@ -89,14 +89,14 @@ class BottleController(
         bottleFacade.stopBottle(userId, bottleId)
     }
 
-    @ApiOperation("보틀의 핑퐁 조회하기")
+    @ApiOperation("보틀 보관함 - 보틀의 핑퐁 조회하기")
     @GetMapping("/ping-pong/{bottleId}")
     @AuthRequired
     fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingPongResponseDto {
         return bottleFacade.getBottlePingPong(userId, bottleId)
     }
 
-    @ApiOperation("사진 공유 선택하기")
+    @ApiOperation("보틀 보관함 - 사진 공유 선택하기")
     @PostMapping("/ping-pong/{bottleId}/image")
     @AuthRequired
     fun selectShareImage(
@@ -107,7 +107,7 @@ class BottleController(
         bottleFacade.selectShareImage(userId, bottleId, bottleImageShareRequest.willShare)
     }
 
-    @ApiOperation("최종 선택하기")
+    @ApiOperation("보틀 보관함 - 최종 선택하기")
     @PostMapping("/ping-pong/{bottleId}/match")
     @AuthRequired
     fun selectMatch(

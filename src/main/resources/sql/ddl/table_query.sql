@@ -35,7 +35,7 @@ CREATE TABLE bottle
     like_message       VARCHAR(255),
     expired_at         DATETIME                              NOT NULL,
     stopped_user_id    BIGINT,
-    bottles_status     VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL,
+    bottle_status      VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL,
     ping_pong_status   VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
     created_at         DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at         DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
