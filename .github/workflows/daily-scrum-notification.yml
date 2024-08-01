@@ -2,7 +2,7 @@ name: Send Discord Notification
 
 on:
   schedule:
-    - cron: '1 * * * * 1-5'
+    - cron: '* * * * *'
 
 jobs:
   notify:
