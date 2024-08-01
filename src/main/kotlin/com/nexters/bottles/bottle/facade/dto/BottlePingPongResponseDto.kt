@@ -3,11 +3,11 @@ package com.nexters.bottles.bottle.facade.dto
 import com.nexters.bottles.user.domain.QuestionAndAnswer
 import com.nexters.bottles.user.domain.UserProfileSelect
 
-data class BottlePingpongResponseDto(
+data class BottlePingPongResponseDto(
     val isStopped: Boolean = false,
     val stopUserName: String? = null,
     val userProfile: PingPongUserProfile,
-    val introduction:  List<QuestionAndAnswer>? = emptyList(),
+    val introduction: List<QuestionAndAnswer>? = emptyList(),
     val letters: List<PingPongLetter> = emptyList(),
     val photo: Photo,
     val matchResult: MatchResult,
@@ -17,6 +17,7 @@ data class PingPongUserProfile(
     val userName: String,
     val age: Int,
     val profileSelect: UserProfileSelect? = null,
+    val userImageUrl: String? = null,
 )
 
 data class PingPongLetter(
