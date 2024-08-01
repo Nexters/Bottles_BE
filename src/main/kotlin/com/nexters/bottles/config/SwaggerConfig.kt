@@ -1,6 +1,7 @@
 package com.nexters.bottles.config
 
 import com.nexters.bottles.global.interceptor.AuthRequired
+import com.nexters.bottles.global.interceptor.RefreshAuthRequired
 import com.nexters.bottles.global.resolver.AuthUserId
 import com.nexters.bottles.global.resolver.RefreshTokenUserId
 import org.springframework.context.annotation.Bean
@@ -34,8 +35,9 @@ class SwaggerConfig {
             .securityReferences(defaultAuth())
             .operationSelector { operationContext ->
                 operationContext.requestMappingPattern().let { _ ->
-                    val handlerMethod = operationContext.findAnnotation(AuthRequired::class.java)
-                    !handlerMethod.isEmpty
+                    val authRequired = operationContext.findAnnotation(AuthRequired::class.java)
+                    val refreshAuthRequired = operationContext.findAnnotation(RefreshAuthRequired::class.java)
+                    !authRequired.isEmpty || !refreshAuthRequired.isEmpty
                 }
             }
             .build()
