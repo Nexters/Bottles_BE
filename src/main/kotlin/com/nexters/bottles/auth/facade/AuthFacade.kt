@@ -3,16 +3,7 @@ package com.nexters.bottles.auth.facade
 import com.nexters.bottles.auth.component.AuthCodeGenerator
 import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
-import com.nexters.bottles.auth.facade.dto.AuthSmsRequest
-import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
-import com.nexters.bottles.auth.facade.dto.MessageDTO
-import com.nexters.bottles.auth.facade.dto.RefreshAccessTokenResponse
-import com.nexters.bottles.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.auth.facade.dto.SignUpRequest
-import com.nexters.bottles.auth.facade.dto.SignUpResponse
-import com.nexters.bottles.auth.facade.dto.SmsSignInRequest
-import com.nexters.bottles.auth.facade.dto.SmsSignInResponse
+import com.nexters.bottles.auth.facade.dto.*
 import com.nexters.bottles.auth.service.AuthSmsService
 import com.nexters.bottles.auth.service.RefreshTokenService
 import com.nexters.bottles.infra.WebClientAdapter
@@ -51,8 +42,9 @@ class AuthFacade(
 
     fun refreshToken(userId: Long): RefreshAccessTokenResponse {
         val accessToken = jwtTokenProvider.createAccessToken(userId)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(userId)
 
-        return RefreshAccessTokenResponse(accessToken = accessToken)
+        return RefreshAccessTokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
     fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
