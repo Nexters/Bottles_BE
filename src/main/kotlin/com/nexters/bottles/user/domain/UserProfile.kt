@@ -5,7 +5,13 @@ import com.nexters.bottles.user.facade.dto.InterestDto
 import com.nexters.bottles.user.facade.dto.RegionDto
 import com.nexters.bottles.user.repository.converter.QuestionAndAnswerConverter
 import com.nexters.bottles.user.repository.converter.UserProfileSelectConverter
-import javax.persistence.*
+import javax.persistence.Convert
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.OneToOne
 
 @Entity
 class UserProfile(
@@ -15,14 +21,18 @@ class UserProfile(
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    var user: User? = null,
+    val user: User,
 
     @Convert(converter = UserProfileSelectConverter::class)
     var profileSelect: UserProfileSelect? = null,
 
     @Convert(converter = QuestionAndAnswerConverter::class)
     var introduction: List<QuestionAndAnswer> = arrayListOf(),
-) :  BaseEntity()
+
+    var imageUrl: String? = null,
+
+    var blurredImageUrl: String? = null,
+) : BaseEntity()
 
 data class UserProfileSelect(
     val mbti: String,

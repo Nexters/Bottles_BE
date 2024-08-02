@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
 
-    fun findByUserId(userId: Long): List<RefreshToken>
+    fun findByUserId(userId: Long): RefreshToken?
 
     fun findByToken(token: String): RefreshToken?
+
+    fun findAllByUserId(userId: Long): List<RefreshToken>
 }

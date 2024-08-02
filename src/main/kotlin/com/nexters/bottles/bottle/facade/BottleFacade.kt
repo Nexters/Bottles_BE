@@ -2,11 +2,13 @@ package com.nexters.bottles.bottle.facade
 
 import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
+import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.bottle.facade.dto.AcceptBottleRequestDto
 import com.nexters.bottles.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.bottle.facade.dto.BottleDto
 import com.nexters.bottles.bottle.facade.dto.BottleListResponseDto
-import com.nexters.bottles.bottle.facade.dto.BottlePingpongResponseDto
+import com.nexters.bottles.bottle.facade.dto.BottlePingPongResponseDto
 import com.nexters.bottles.bottle.facade.dto.MatchResult
 import com.nexters.bottles.bottle.facade.dto.Photo
 import com.nexters.bottles.bottle.facade.dto.PingPongBottleDto
@@ -15,36 +17,42 @@ import com.nexters.bottles.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.bottle.facade.dto.RegisterLetterRequestDto
 import com.nexters.bottles.bottle.service.BottleService
-import com.nexters.bottles.bottle.service.FileService
 import com.nexters.bottles.bottle.service.LetterService
 import com.nexters.bottles.user.domain.User
+import com.nexters.bottles.user.domain.UserProfile
+import com.nexters.bottles.user.service.UserService
 import org.springframework.stereotype.Component
-import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Component
 class BottleFacade(
     private val bottleService: BottleService,
     private val letterService: LetterService,
-    private val fileService: FileService,
+    private val userService: UserService,
 ) {
 
-    fun getNewBottles(): BottleListResponseDto {
-        val bottles = bottleService.getNewBottles()
+    fun getNewBottles(userId: Long): BottleListResponseDto {
+        val user = userService.findByIdAndNotDeleted(userId)
+        val bottles = bottleService.getNewBottles(user)
+        val groupByStatus = bottles.groupBy { it.bottleStatus }
+
+        val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it) } ?: emptyList()
+        val sentBottles = groupByStatus[BottleStatus.SENT]?.map { toBottleDto(it) } ?: emptyList()
 
         return BottleListResponseDto(
-            bottles.map {
-                BottleDto(
-                    id = it.id,
-                    userName = "it.sourceUser.name",
-                    age = 20, // TODO User에 age 추가된 후 수정
-                    mbti = it.sourceUser.userProfile?.profileSelect?.mbti,
-                    keyword = it.sourceUser.userProfile?.profileSelect?.keyword,
-                    expiredAt = it.expiredAt
-                )
-            }
+            randomBottles = randomBottles,
+            sentBottles = sentBottles
+        )
+    }
+
+    private fun toBottleDto(bottle: Bottle): BottleDto {
+        return BottleDto(
+            id = bottle.id,
+            userName = bottle.sourceUser.name,
+            age = bottle.sourceUser.getKoreanAge(),
+            mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
+            keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
+            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
+            expiredAt = bottle.expiredAt
         )
     }
 
@@ -53,24 +61,25 @@ class BottleFacade(
 
         return BottleDetailResponseDto(
             id = bottle.id,
-            userName = "bottle.sourceUser.name", // TODO User 변경된 후 수정
-            age = 20,
+            userName = bottle.sourceUser.name,
+            age = bottle.sourceUser.getKoreanAge(),
             introduction = bottle.sourceUser.userProfile?.introduction,
-            profileSelect = bottle.sourceUser.userProfile?.profileSelect
+            profileSelect = bottle.sourceUser.userProfile?.profileSelect,
+            likeMessage = bottle.likeMessage,
         )
     }
 
-    fun acceptBottle(bottleId: Long) {
-        bottleService.acceptBottle(bottleId)
+    fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequestDto: AcceptBottleRequestDto) {
+        bottleService.acceptBottle(userId, bottleId, acceptBottleRequestDto.likeMessage)
     }
 
-    fun refuseBottle(bottleId: Long) {
-        bottleService.refuseBottle(bottleId)
+    fun refuseBottle(userId: Long, bottleId: Long) {
+        bottleService.refuseBottle(userId, bottleId)
     }
 
-    fun getPingPongBottles(): PingPongListResponseDto {
-        val pingPongBottles = bottleService.getPingPongBottles()
-        val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+    fun getPingPongBottles(userId: Long): PingPongListResponseDto {
+        val pingPongBottles = bottleService.getPingPongBottles(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
 
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
         val activeBottles =
@@ -87,16 +96,17 @@ class BottleFacade(
         return PingPongBottleDto(
             id = bottle.id,
             isRead = otherUserLetter.isReadByOtherUser,
-            userName = "otherUser.name", // TODO User 변경된 후 수정
-            age = 20,
+            userName = otherUser.name,
+            age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
-            keyword = otherUser.userProfile?.profileSelect?.keyword
+            keyword = otherUser.userProfile?.profileSelect?.keyword,
+            userImageUrl = otherUser.userProfile?.blurredImageUrl,
         )
     }
 
-    fun registerLetter(bottleId: Long, registerLetterRequestDto: RegisterLetterRequestDto) {
+    fun registerLetter(userId: Long, bottleId: Long, registerLetterRequestDto: RegisterLetterRequestDto) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+        val user = userService.findByIdAndNotDeleted(userId)
 
         letterService.registerLetter(
             pingPongBottle,
@@ -106,38 +116,44 @@ class BottleFacade(
         )
     }
 
-    fun readPingPongBottle(bottleId: Long) {
+    fun readPingPongBottle(userId: Long, bottleId: Long) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+        val me = userService.findByIdAndNotDeleted(userId)
         val otherUser = pingPongBottle.findOtherUser(me)
         letterService.readOtherUserLetter(pingPongBottle, otherUser)
     }
 
-    fun stopBottle(bottleId: Long) {
+    fun stopBottle(userId: Long, bottleId: Long) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+        val me = userService.findByIdAndNotDeleted(userId)
 
         pingPongBottle.stop(me)
     }
 
-    fun getBottlePingPong(bottleId: Long): BottlePingpongResponseDto {
-        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO: 회원 기능 갖추고 수정
+    fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponseDto {
+        val me = userService.findByIdAndNotDeleted(userId)
         val bottle = bottleService.getPingPongBottle(bottleId)
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
 
-        return BottlePingpongResponseDto(
+        return BottlePingPongResponseDto(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
             userProfile = PingPongUserProfile(
                 userName = otherUser.name,
                 age = otherUser.getKoreanAge(),
-                profileSelect = otherUser.userProfile?.profileSelect
+                profileSelect = otherUser.userProfile?.profileSelect,
+                userImageUrl = otherUser.userProfile?.blurredImageUrl
             ),
             introduction = otherUser.userProfile?.introduction,
             letters = getPingPongLetters(myLetter = myLetter, otherLetter = otherLetter),
-            photo = getPhoto(myLetter = myLetter, otherLetter = otherLetter),
+            photo = getPhoto(
+                myLetter = myLetter,
+                otherLetter = otherLetter,
+                myProfile = me.userProfile!!,
+                otherProfile = otherUser.userProfile!!
+            ),
             matchResult = MatchResult(
                 isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
                 contact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요")
@@ -145,12 +161,7 @@ class BottleFacade(
         )
     }
 
-    private fun getPingPongLetters(myLetter: Letter?, otherLetter: Letter?): List<PingPongLetter> {
-        if (myLetter == null || otherLetter == null) {
-            // TODO: 편지가 언제 들어갈지 정하기. (ex. 보틀 매칭할 때 함께 넣어줄지)
-            throw IllegalArgumentException("고객센터에 문의하세요")
-        }
-
+    private fun getPingPongLetters(myLetter: Letter, otherLetter: Letter): List<PingPongLetter> {
         return myLetter.letters.zip(otherLetter.letters).mapIndexed { index, (mySingleLetter, otherSingleLetter) ->
 
             PingPongLetter(
@@ -171,32 +182,36 @@ class BottleFacade(
         otherLetter: Letter
     ) = (index == 0) || (myLetter.letters[index - 1].answer != null && otherLetter.letters[index - 1].answer != null)
 
-    private fun getPhoto(myLetter: Letter, otherLetter: Letter): Photo {
+    private fun getPhoto(
+        myLetter: Letter,
+        otherLetter: Letter,
+        myProfile: UserProfile,
+        otherProfile: UserProfile
+    ): Photo {
 
         return Photo(
-            myImageUrl = myLetter.imageUrl,
-            otherImageUrl = otherLetter.imageUrl,
-            shouldAnswer = myLetter.imageUrl == null,
-            changeFinished = (myLetter.imageUrl != null) && (otherLetter.imageUrl != null)
+            myImageUrl = myProfile.imageUrl,
+            otherImageUrl = otherProfile.imageUrl,
+            shouldAnswer = myLetter.isShowImage == null,
+            changeFinished = (myLetter.isShowImage != null) && (otherLetter.isShowImage != null)
         )
     }
 
-    fun uploadImage(bottleId: Long, file: MultipartFile) {
+    fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
+        val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
-        val path = makePathWithUserId(file, me.id)
-        val imageUrl = fileService.upload(file, path)
-        letterService.uploadImageURl(pingPongBottle, me, imageUrl.toString())
+
+        val letter = letterService.findLetter(pingPongBottle, user)
+        letter.shareImage(willShare)
+        letter.markUnread()
+
+        if (!willShare) {
+            pingPongBottle.stop(user)
+        }
     }
 
-    private fun makePathWithUserId(
-        file: MultipartFile,
-        userId: Long
-    ) = file.originalFilename + FILE_NAME_DELIMITER +
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + userId
-
-    fun selectMatch(bottleId: Long, willMatch: Boolean) {
-        val user = User(1L, LocalDate.of(2000, 1, 1), "보틀즈") // TODO 회원 기능 구현 후 수정
+    fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
+        val user = userService.findByIdAndNotDeleted(userId)
 
         val previousStatus = bottleService.getPingPongBottle(bottleId).pingPongStatus
         val pingPongBottle = bottleService.selectMatch(
@@ -207,9 +222,5 @@ class BottleFacade(
         val afterStatus = pingPongBottle.pingPongStatus
 
         // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
-    }
-
-    companion object {
-        private const val FILE_NAME_DELIMITER = "_"
     }
 }

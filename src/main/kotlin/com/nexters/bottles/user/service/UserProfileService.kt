@@ -1,6 +1,7 @@
 package com.nexters.bottles.user.service
 
 import com.nexters.bottles.user.domain.QuestionAndAnswer
+import com.nexters.bottles.user.domain.User
 import com.nexters.bottles.user.domain.UserProfile
 import com.nexters.bottles.user.domain.UserProfileSelect
 import com.nexters.bottles.user.repository.UserProfileRepository
@@ -19,12 +20,10 @@ class UserProfileService(
     private val log = KotlinLogging.logger { }
 
     @Transactional
-    fun upsertProfile(profileSelect: UserProfileSelect) {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun upsertProfile(userId: Long, profileSelect: UserProfileSelect) {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         profileRepository.findByUserId(user.id)?.let {
-            it.user = user
             it.profileSelect = profileSelect
         } ?: run {
             profileRepository.save(
@@ -37,9 +36,8 @@ class UserProfileService(
     }
 
     @Transactional
-    fun saveIntroduction(introduction: List<QuestionAndAnswer>) {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun saveIntroduction(userId: Long, introduction: List<QuestionAndAnswer>) {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         profileRepository.findByUserId(user.id)?.let {
             it.introduction = introduction
@@ -56,5 +54,13 @@ class UserProfileService(
     @Transactional(readOnly = true)
     fun findUserProfile(userId: Long): UserProfile? {
         return profileRepository.findByUserId(userId)
+    }
+
+    @Transactional
+    fun uploadImageUrl(user: User, imageUrl: String, blurredImageUrl: String) {
+        profileRepository.findByUserId(user.id)?.let {
+            it.imageUrl = imageUrl
+            it.blurredImageUrl = blurredImageUrl
+        } ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
 }

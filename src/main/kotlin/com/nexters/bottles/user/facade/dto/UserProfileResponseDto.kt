@@ -6,7 +6,8 @@ import com.nexters.bottles.user.domain.UserProfileSelect
 data class UserProfileResponseDto(
     val userName: String,
     val age: Int,
-    val introduction: List<QuestionAndAnswer>? = null,
+    val imageUrl: String? = null,
+    val introduction: List<QuestionAndAnswer>,
     val profileSelect: UserProfileSelect? = null,
 ) {
 }

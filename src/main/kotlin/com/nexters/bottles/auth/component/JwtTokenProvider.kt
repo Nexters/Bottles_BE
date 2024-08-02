@@ -7,10 +7,11 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
-import java.time.Duration
+import javax.servlet.http.HttpServletRequest
 
 @Component
 class JwtTokenProvider(
@@ -44,7 +45,7 @@ class JwtTokenProvider(
             .compact()
     }
 
-    fun createRefreshToken(userId: Long): String {
+    fun upsertRefreshToken(userId: Long): String {
         val now = LocalDateTime.now()
         val expiryDate = now.plus(Duration.ofMillis(refreshTokenValidityInMilliseconds))
 
@@ -55,14 +56,16 @@ class JwtTokenProvider(
             .signWith(refreshKey)
             .compact()
 
-        val refreshToken = RefreshToken(
-            userId = userId,
-            token = token,
-            expiryDate = expiryDate
-        )
-        refreshTokenRepository.save(refreshToken)
+        upsertRefreshToken(userId = userId, refreshToken = token, expiryDate = expiryDate)
 
         return token
+    }
+
+    fun resolveToken(request: HttpServletRequest): String? {
+        val bearerToken = request.getHeader("Authorization")
+        return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken.substring(7)
+        } else null
     }
 
     fun getUserIdFromToken(token: String, isAccessToken: Boolean): Long? {
@@ -76,12 +79,6 @@ class JwtTokenProvider(
         return claims != null && !claims.expiration.before(now)
     }
 
-    fun validateRefreshToken(token: String): Boolean {
-        val refreshToken = refreshTokenRepository.findByToken(token)
-        val now = LocalDateTime.now()
-        return refreshToken != null && !now.isAfter(refreshToken.expiryDate)
-    }
-
     private fun getClaimsFromToken(token: String, isAccessToken: Boolean): Claims? {
         return try {
             val parser = Jwts.parserBuilder()
@@ -92,6 +89,31 @@ class JwtTokenProvider(
             parser.parseClaimsJws(token).body
         } catch (e: Exception) {
             null
+        }
+    }
+
+    private fun upsertRefreshToken(userId: Long, refreshToken: String, expiryDate: LocalDateTime) {
+        val refreshTokens = refreshTokenRepository.findAllByUserId(userId)
+
+        if (refreshTokens.isNotEmpty()) {
+            refreshTokens.forEach {
+                refreshTokenRepository.deleteById(it.id)
+            }
+            refreshTokenRepository.save(
+                RefreshToken(
+                    userId = userId,
+                    token = refreshToken,
+                    expiryDate = expiryDate
+                )
+            )
+        } else {
+            refreshTokenRepository.save(
+                RefreshToken(
+                    userId = userId,
+                    token = refreshToken,
+                    expiryDate = expiryDate
+                )
+            )
         }
     }
 }

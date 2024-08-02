@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source /home/$SERVER_USER_NAME/deploy/env_vars.sh
+source /home/${SERVER_USER_NAME}/deploy/env_vars.sh
+
+sed 's/^export //' /home/${SERVER_USER_NAME}/deploy/env_vars.sh > /home/${SERVER_USER_NAME}/docker/.env
 
 sudo docker pull ${DOCKER_USERNAME}/bottles:${DOCKER_TAG}
 cd ../docker

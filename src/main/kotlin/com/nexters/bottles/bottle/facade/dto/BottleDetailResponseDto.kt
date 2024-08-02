@@ -9,5 +9,6 @@ data class BottleDetailResponseDto(
     val age: Int,
     val introduction: List<QuestionAndAnswer>? = null,
     val profileSelect: UserProfileSelect? = null,
+    val likeMessage: String? = null,
 ) {
 }

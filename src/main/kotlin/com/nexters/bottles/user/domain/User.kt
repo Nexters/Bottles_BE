@@ -2,8 +2,17 @@ package com.nexters.bottles.user.domain
 
 import com.nexters.bottles.global.BaseEntity
 import com.nexters.bottles.user.domain.enum.Gender
+import com.nexters.bottles.user.domain.enum.SignUpType
 import java.time.LocalDate
-import javax.persistence.*
+import java.time.LocalDateTime
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.OneToOne
 
 @Entity
 class User(
@@ -25,9 +34,21 @@ class User(
     @Enumerated(EnumType.STRING)
     var gender: Gender = Gender.MALE,
 
-) : BaseEntity() {
+    @Enumerated(EnumType.STRING)
+    var signUpType: SignUpType = SignUpType.NORMAL,
+
+    var deleted: Boolean = false,
+
+    var deletedAt: LocalDateTime? = null,
+
+    ) : BaseEntity() {
 
     fun getKoreanAge(): Int {
         return LocalDate.now().year - birthdate.year + 1
+    }
+
+    fun softDelete() {
+        this.deleted = true
+        this.deletedAt = LocalDateTime.now()
     }
 }

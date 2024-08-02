@@ -4,34 +4,41 @@ CREATE TABLE user
     name         VARCHAR(255) DEFAULT NULL,
     birthdate    DATE         DEFAULT NULL,
     kakao_id     VARCHAR(255) DEFAULT NULL,
-    phone_number VARCHAR(255) DEFAULT NULL  comment 'ex) 01012345678',
+    phone_number VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
     gender       VARCHAR(10)  DEFAULT 'MALE',
-    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    sign_up_type VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
+    deleted      BOOLEAN      DEFAULT FALSE             NOT NULL,
+    deleted_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE user_profile
 (
-    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id        BIGINT                             NOT NULL,
-    profile_select JSON,
-    introduction   JSON,
-    created_at     DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id           BIGINT                             NOT NULL,
+    profile_select    JSON,
+    introduction      JSON,
+    image_url         VARCHAR(2048),
+    blurred_image_url VARCHAR(2048),
+    created_at        DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE bottle
 (
-    id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
-    target_user_id      BIGINT                                NOT NULL,
-    target_user_select  BOOLEAN  DEFAULT FALSE                NOT NULL
-    source_user_id      BIGINT                                NOT NULL,
-    source_user_select  BOOLEAN  DEFAULT FALSE                NOT NULL
-    expired_at          DATETIME                              NOT NULL,
-    stopped_user_id     BIGINT,
-    ping_pong_status    VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
-    created_at          DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at          DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
+    target_user_id     BIGINT                                NOT NULL,
+    target_user_select BOOLEAN     DEFAULT FALSE             NOT NULL,
+    source_user_id     BIGINT                                NOT NULL,
+    source_user_select BOOLEAN     DEFAULT FALSE             NOT NULL,
+    like_message       VARCHAR(255),
+    expired_at         DATETIME                              NOT NULL,
+    stopped_user_id    BIGINT,
+    bottle_status      VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL,
+    ping_pong_status   VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
+    created_at         DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at         DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE letter
@@ -40,7 +47,7 @@ CREATE TABLE letter
     bottle_id             BIGINT                             NOT NULL,
     user_id               BIGINT                             NOT NULL,
     letters               JSON                               NOT NULL,
-    image_url             TEXT,
+    is_show_image         BOOLEAN  DEFAULT FALSE             NOT NULL,
     is_read_by_other_user BOOLEAN  DEFAULT FALSE             NOT NULL,
     created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
@@ -52,13 +59,24 @@ CREATE TABLE question
     question VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE refresh_tokens (
-    id BIGINT   AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE refresh_tokens
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT                             NOT NULL,
     token       VARCHAR(2048)                      NOT NULL,
     expiry_date DATETIME                           NOT NULL,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE auth_sms
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    phone_number VARCHAR(255)                       NOT NULL,
+    auth_code    VARCHAR(255)                       NOT NULL,
+    expired_at   DATETIME                           NOT NULL,
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE bottle_history
@@ -70,3 +88,5 @@ CREATE TABLE bottle_history
     created_at      DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE INDEX idx_phone_number ON auth_sms (phone_number);

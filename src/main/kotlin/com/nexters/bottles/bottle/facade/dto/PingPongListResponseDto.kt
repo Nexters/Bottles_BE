@@ -11,5 +11,6 @@ data class PingPongBottleDto(
     val userName: String,
     val age: Int,
     val mbti: String?,
-    val keyword: List<String>?
+    val keyword: List<String>?,
+    val userImageUrl: String?,
 )

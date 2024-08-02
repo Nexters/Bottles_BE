@@ -3,6 +3,7 @@ package com.nexters.bottles.bottle.service
 import com.nexters.bottles.bottle.domain.Bottle
 import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.LetterQuestionAndAnswer
+import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.bottle.repository.BottleRepository
 import com.nexters.bottles.bottle.repository.LetterRepository
@@ -23,10 +24,7 @@ class BottleService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getNewBottles(): List<Bottle> {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-
+    fun getNewBottles(user: User): List<Bottle> {
         return bottleRepository.findAllByTargetUserAndStatusAndNotExpired(
             user,
             PingPongStatus.NONE,
@@ -41,21 +39,33 @@ class BottleService(
     }
 
     @Transactional
-    fun acceptBottle(bottleId: Long) {
+    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(bottleId, setOf(PingPongStatus.NONE), LocalDateTime.now())
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        // TODO User 회원 가입 기능 구현후 수정
-        val targetUser = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val targetUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         val sourceUser = userRepository.findByIdOrNull(bottle.sourceUser.id)
             ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
-        bottle.accept()
+        when (bottle.bottleStatus) {
+            BottleStatus.RANDOM -> {
+                requireNotNull(likeMessage) { "고객센터에 문의해주세요" }
+                bottle.sendLikeMessage(
+                    from = targetUser,
+                    to = sourceUser,
+                    likeMessage = likeMessage
+                )
+            }
 
-        val letters = findRandomQuestions()
-        saveLetter(bottle, targetUser, letters)
-        saveLetter(bottle, sourceUser, letters)
+            BottleStatus.SENT -> {
+                require(likeMessage == null) { "고객센터에 문의해주세요" }
+                bottle.startPingPong()
+                val letters = findRandomQuestions()
+                saveLetter(bottle, targetUser, letters)
+                saveLetter(bottle, sourceUser, letters)
+            }
+        }
     }
 
     private fun findRandomQuestions() = questionRepository.findAll()
@@ -75,22 +85,20 @@ class BottleService(
     }
 
     @Transactional
-    fun refuseBottle(bottleId: Long) {
+    fun refuseBottle(userId: Long, bottleId: Long) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(bottleId, setOf(PingPongStatus.NONE), LocalDateTime.now())
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        // TODO User 회원 가입 기능 구현후 수정
-        val targetUser = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val targetUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         userRepository.findByIdOrNull(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
         bottle.refuse(targetUser)
     }
 
     @Transactional(readOnly = true)
-    fun getPingPongBottles(): List<Bottle> {
-        // TODO User 회원 가입 기능 구현후 수정
-        val user = userRepository.findByIdOrNull(1L) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    fun getPingPongBottles(userId: Long): List<Bottle> {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         return bottleRepository.findAllByUserAndStatus(
             user,
