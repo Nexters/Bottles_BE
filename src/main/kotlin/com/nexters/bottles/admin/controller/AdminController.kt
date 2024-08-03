@@ -3,12 +3,13 @@ package com.nexters.bottles.admin.controller
 import com.nexters.bottles.admin.facade.AdminFacade
 import com.nexters.bottles.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.admin.facade.dto.CustomTokenResponse
+import com.nexters.bottles.admin.facade.dto.ExpireTokenRequest
+import com.nexters.bottles.admin.facade.dto.ForceAfterProfileResponse
 import com.nexters.bottles.global.interceptor.AuthRequired
 import com.nexters.bottles.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import com.nexters.bottles.admin.facade.dto.ForceAfterProfileResponse
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -32,5 +33,21 @@ class AdminController(
         @RequestBody createCustomTokenRequest: CreateCustomTokenRequest
     ): CustomTokenResponse {
         return adminFacade.createCustomValidityToken(userId, createCustomTokenRequest)
+    }
+
+    @ApiOperation("액세스 토큰 만료시키기")
+    @PostMapping("/expire/access-token")
+    fun expireAccessToken(
+        @RequestBody expireTokenRequest: ExpireTokenRequest
+    ) {
+        return adminFacade.expireToken(expireTokenRequest, true)
+    }
+
+    @ApiOperation("리프레시 토큰 만료시키기")
+    @PostMapping("/expire/refresh-token")
+    fun expireRefreshToken(
+        @RequestBody expireTokenRequest: ExpireTokenRequest
+    ) {
+        return adminFacade.expireToken(expireTokenRequest, false)
     }
 }
