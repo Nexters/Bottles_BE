@@ -52,6 +52,10 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): Bottle?
 
+    fun findAllByTargetUser(user: User): List<Bottle>
+
+    fun findAllBySourceUser(user: User): List<Bottle>
+
     fun findByTargetUserAndBottleStatusAndCreatedAtAfter(
         targetUser: User,
         bottleStatus: BottleStatus,

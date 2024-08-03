@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface LetterRepository : JpaRepository<Letter, Long> {
 
     fun findByBottleAndUser(bottle: Bottle, user: User): Letter?
+
+    fun findAllByUserId(userId: Long): List<Letter>
 }
