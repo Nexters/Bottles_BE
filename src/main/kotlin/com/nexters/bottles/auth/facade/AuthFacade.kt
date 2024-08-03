@@ -3,8 +3,18 @@ package com.nexters.bottles.auth.facade
 import com.nexters.bottles.auth.component.AuthCodeGenerator
 import com.nexters.bottles.auth.component.JwtTokenProvider
 import com.nexters.bottles.auth.component.NaverSmsEncoder
-import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.auth.facade.dto.AuthSmsRequest
+import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.auth.facade.dto.KakaoUserInfoResponse
+import com.nexters.bottles.auth.facade.dto.MessageDTO
+import com.nexters.bottles.auth.facade.dto.RefreshAccessTokenResponse
+import com.nexters.bottles.auth.facade.dto.SendSmsResponse
+import com.nexters.bottles.auth.facade.dto.SignUpRequest
+import com.nexters.bottles.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.auth.facade.dto.SmsSignInRequest
+import com.nexters.bottles.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.auth.service.AuthSmsService
+import com.nexters.bottles.auth.service.BlackListService
 import com.nexters.bottles.auth.service.RefreshTokenService
 import com.nexters.bottles.infra.WebClientAdapter
 import com.nexters.bottles.user.service.UserService
@@ -17,6 +27,7 @@ import java.time.LocalDateTime
 class AuthFacade(
     private val userService: UserService,
     private val authSmsService: AuthSmsService,
+    private val blackListService: BlackListService,
     private val refreshTokenService: RefreshTokenService,
     private val webClientAdapter: WebClientAdapter,
     private val jwtTokenProvider: JwtTokenProvider,
@@ -88,8 +99,8 @@ class AuthFacade(
         lastAuthSms.validate(lastAuthSms.authCode)
     }
 
-    fun logout(userId: Long) {
-        //TODO: 액세스 토큰에 관해 블랙리스트 운영할지 말지 고민중
+    fun logout(userId: Long, accessToken: String) {
+        blackListService.add(accessToken)
         refreshTokenService.delete(userId)
     }
 

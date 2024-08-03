@@ -2,6 +2,7 @@ package com.nexters.bottles.config
 
 import com.nexters.bottles.global.interceptor.AuthInterceptor
 import com.nexters.bottles.global.interceptor.RefreshAuthInterceptor
+import com.nexters.bottles.global.resolver.AccessTokenArgumentResolver
 import com.nexters.bottles.global.resolver.AuthUserIdArgumentResolver
 import com.nexters.bottles.global.resolver.RefreshTokenArgumentResolver
 import org.springframework.context.annotation.Configuration
@@ -15,6 +16,7 @@ class WebConfig(
     private val refreshAuthInterceptor: RefreshAuthInterceptor,
     private val authUserIdArgumentResolver: AuthUserIdArgumentResolver,
     private val refreshAuthUserIdArgumentResolver: RefreshTokenArgumentResolver,
+    private val accessTokenArgumentResolver: AccessTokenArgumentResolver,
 ) : WebMvcConfigurer {
 
     override fun addInterceptors(registry: InterceptorRegistry) {
@@ -25,5 +27,6 @@ class WebConfig(
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(authUserIdArgumentResolver)
         resolvers.add(refreshAuthUserIdArgumentResolver)
+        resolvers.add(accessTokenArgumentResolver)
     }
 }
