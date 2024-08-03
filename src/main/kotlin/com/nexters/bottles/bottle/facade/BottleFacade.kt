@@ -223,4 +223,8 @@ class BottleFacade(
 
         // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
     }
+
+    fun matchRandomBottle(userId: Long) {
+        bottleService.matchRandomBottle(userId)
+    }
 }

@@ -117,4 +117,11 @@ class BottleController(
     ) {
         bottleFacade.selectMatch(userId, bottleId, bottleMatchRequest.willMatch)
     }
+
+    @ApiOperation("보틀 랜덤 매칭 받기")
+    @PostMapping("/matching")
+    @AuthRequired
+    fun matchRandomBottle(@AuthUserId userId: Long) {
+        bottleFacade.matchRandomBottle(userId)
+    }
 }

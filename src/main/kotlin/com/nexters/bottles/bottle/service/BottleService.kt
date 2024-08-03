@@ -1,13 +1,17 @@
 package com.nexters.bottles.bottle.service
 
 import com.nexters.bottles.bottle.domain.Bottle
+import com.nexters.bottles.bottle.domain.BottleHistory
 import com.nexters.bottles.bottle.domain.Letter
 import com.nexters.bottles.bottle.domain.LetterQuestionAndAnswer
 import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.bottle.repository.BottleHistoryRepository
+import com.nexters.bottles.bottle.repository.BottleMatchingRepository
 import com.nexters.bottles.bottle.repository.BottleRepository
 import com.nexters.bottles.bottle.repository.LetterRepository
 import com.nexters.bottles.bottle.repository.QuestionRepository
+import com.nexters.bottles.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.user.domain.User
 import com.nexters.bottles.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -20,7 +24,9 @@ class BottleService(
     private val bottleRepository: BottleRepository,
     private val userRepository: UserRepository,
     private val letterRepository: LetterRepository,
-    private val questionRepository: QuestionRepository
+    private val questionRepository: QuestionRepository,
+    private val bottleMatchingRepository: BottleMatchingRepository,
+    private val bottleHistoryRepository: BottleHistoryRepository,
 ) {
 
     @Transactional(readOnly = true)
@@ -134,13 +140,29 @@ class BottleService(
     }
 
     @Transactional
-    fun saveBottle(targetUserId: Long, sourceUserId: Long) {
-        val targetUser = userRepository.findByIdOrNull(targetUserId)
-        val sourceUser = userRepository.findByIdOrNull(sourceUserId)
-        // 이런 경우에는 매칭을 실패한 것인데 어떻게 처리?
-        if (targetUser == null || sourceUser == null) return
+    fun matchRandomBottle(userId: Long) {
+        val me = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(userId)
+        if (usersCanBeMatched.isEmpty()) return
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, me)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
-        val bottle = Bottle(targetUser = targetUser, sourceUser = sourceUser)
+        val bottle = Bottle(targetUser = me, sourceUser = matchingUser)
         bottleRepository.save(bottle)
+        val bottleHistory = BottleHistory(userId = me.id, matchedUserId = matchingUser.id)
+        bottleHistoryRepository.save(bottleHistory)
+    }
+
+    private fun findUserSameRegionOrRandom(
+        usersCanBeMatchedDtos: List<UsersCanBeMatchedDto>,
+        targetUser: User
+    ): UsersCanBeMatchedDto {
+        val userProfile = targetUser.userProfile ?: throw IllegalArgumentException("프로필 작성을 해주세요")
+        return usersCanBeMatchedDtos.shuffled()
+            .firstOrNull {
+                targetUser.gender.name != it.willMatchUserGender
+                userProfile.profileSelect?.region?.city == it.willMatchUserProfileSelect.region.city
+            } ?: usersCanBeMatchedDtos[0]
     }
 }

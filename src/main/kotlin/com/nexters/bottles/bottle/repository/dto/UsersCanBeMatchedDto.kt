@@ -1,9 +1,6 @@
 package com.nexters.bottles.bottle.repository.dto
 
 data class UsersCanBeMatchedDto(
-    val targetUserId: Long,
-    val targetUserGender: String,
-    val targetUserProfileSelect: UserProfileSelectDto,
     val willMatchUserId: Long,
     val willMatchUserGender: String,
     val willMatchUserProfileSelect: UserProfileSelectDto
