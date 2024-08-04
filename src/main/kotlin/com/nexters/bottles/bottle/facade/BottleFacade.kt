@@ -21,6 +21,7 @@ import com.nexters.bottles.bottle.service.LetterService
 import com.nexters.bottles.user.domain.User
 import com.nexters.bottles.user.domain.UserProfile
 import com.nexters.bottles.user.service.UserService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
@@ -28,10 +29,16 @@ class BottleFacade(
     private val bottleService: BottleService,
     private val letterService: LetterService,
     private val userService: UserService,
+
+    @Value("\${matching.isActive}")
+    private val isActiveMatching: Boolean,
 ) {
 
     fun getNewBottles(userId: Long): BottleListResponseDto {
         val user = userService.findByIdAndNotDeleted(userId)
+        if (isActiveMatching) {
+            bottleService.matchRandomBottle(user)
+        }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
 
@@ -222,9 +229,5 @@ class BottleFacade(
         val afterStatus = pingPongBottle.pingPongStatus
 
         // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
-    }
-
-    fun matchRandomBottle(userId: Long) {
-        bottleService.matchRandomBottle(userId)
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 class BottleService(
@@ -140,17 +141,25 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(userId: Long) {
-        val me = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(userId)
+    fun matchRandomBottle(user: User) {
+        val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
+        val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
+            targetUser = user,
+            bottleStatus = BottleStatus.RANDOM,
+            matchingTime = matchingTime
+        )
+        if (todayMatchingBottle.isNotEmpty()) return
+
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id)
         if (usersCanBeMatched.isEmpty()) return
-        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, me)
+
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
         val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
             ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
-        val bottle = Bottle(targetUser = me, sourceUser = matchingUser)
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser)
         bottleRepository.save(bottle)
-        val bottleHistory = BottleHistory(userId = me.id, matchedUserId = matchingUser.id)
+        val bottleHistory = BottleHistory(userId = user.id, matchedUserId = matchingUser.id)
         bottleHistoryRepository.save(bottleHistory)
     }
 
