@@ -2,11 +2,7 @@ package com.nexters.bottles.user.facade
 
 import com.nexters.bottles.user.component.ImageUploader
 import com.nexters.bottles.user.domain.UserProfileSelect
-import com.nexters.bottles.user.facade.dto.ExistIntroductionResponse
-import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
-import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
-import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
-import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
+import com.nexters.bottles.user.facade.dto.*
 import com.nexters.bottles.user.service.UserProfileService
 import com.nexters.bottles.user.service.UserService
 import mu.KotlinLogging
@@ -123,6 +119,11 @@ class UserProfileFacade(
     fun existIntroduction(userId: Long): ExistIntroductionResponse {
         val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
         return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
+    }
+
+    fun findUserInfo(userId: Long): UserInfoResponse {
+        val user = userService.findByIdAndNotDeleted(userId)
+        return UserInfoResponse(name = user.name)
     }
 
     companion object {

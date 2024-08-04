@@ -1,6 +1,7 @@
 package com.nexters.bottles.auth.component
 
 import com.nexters.bottles.auth.domain.RefreshToken
+import com.nexters.bottles.auth.repository.BlackListRepository
 import com.nexters.bottles.auth.repository.RefreshTokenRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -28,6 +29,7 @@ class JwtTokenProvider(
     private val refreshTokenValidityInMilliseconds: Long,
 
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val blackListRepository: BlackListRepository,
 ) {
 
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
@@ -74,9 +76,10 @@ class JwtTokenProvider(
     }
 
     fun validateToken(token: String, isAccessToken: Boolean): Boolean {
+        val expiredAccessToken = blackListRepository.findByExpiredAccessToken(token)
         val claims = getClaimsFromToken(token, isAccessToken)
         val now = Date()
-        return claims != null && !claims.expiration.before(now)
+        return expiredAccessToken == null && claims != null && !claims.expiration.before(now)
     }
 
     private fun getClaimsFromToken(token: String, isAccessToken: Boolean): Claims? {

@@ -2,6 +2,7 @@ package com.nexters.bottles.config
 
 import com.nexters.bottles.global.interceptor.AuthRequired
 import com.nexters.bottles.global.interceptor.RefreshAuthRequired
+import com.nexters.bottles.global.resolver.AccessToken
 import com.nexters.bottles.global.resolver.AuthUserId
 import com.nexters.bottles.global.resolver.RefreshTokenUserId
 import org.springframework.context.annotation.Bean
@@ -25,7 +26,7 @@ class SwaggerConfig {
             .apis(RequestHandlerSelectors.basePackage("com.nexters.bottles"))
             .paths(PathSelectors.any())
             .build()
-            .ignoredParameterTypes(AuthUserId::class.java, RefreshTokenUserId::class.java)
+            .ignoredParameterTypes(AuthUserId::class.java, RefreshTokenUserId::class.java, AccessToken::class.java)
             .securityContexts(listOf(securityContext()))
             .securitySchemes(listOf(ApiKey("Authorization", "Authorization", "header")))
     }

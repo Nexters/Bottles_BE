@@ -3,6 +3,8 @@ package com.nexters.bottles.admin.controller
 import com.nexters.bottles.admin.facade.AdminFacade
 import com.nexters.bottles.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.admin.facade.dto.CustomTokenResponse
+import com.nexters.bottles.admin.facade.dto.ExpireTokenRequest
+import com.nexters.bottles.admin.facade.dto.ForceAfterProfileResponse
 import com.nexters.bottles.global.interceptor.AuthRequired
 import com.nexters.bottles.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
@@ -17,6 +19,12 @@ class AdminController(
     private val adminFacade: AdminFacade,
 ) {
 
+    @ApiOperation("카카오 회원가입하고 프로필 작성한 상태 만들기")
+    @PostMapping("/after-profile")
+    fun forceAfterProfile(): ForceAfterProfileResponse {
+        return adminFacade.forceAfterProfile()
+    }
+
     @ApiOperation("만료시간 입력받아서 토큰 발급받기")
     @PostMapping("/custom-token")
     @AuthRequired
@@ -25,5 +33,21 @@ class AdminController(
         @RequestBody createCustomTokenRequest: CreateCustomTokenRequest
     ): CustomTokenResponse {
         return adminFacade.createCustomValidityToken(userId, createCustomTokenRequest)
+    }
+
+    @ApiOperation("액세스 토큰 만료시키기")
+    @PostMapping("/expire/access-token")
+    fun expireAccessToken(
+        @RequestBody expireTokenRequest: ExpireTokenRequest
+    ) {
+        return adminFacade.expireToken(expireTokenRequest, true)
+    }
+
+    @ApiOperation("리프레시 토큰 만료시키기")
+    @PostMapping("/expire/refresh-token")
+    fun expireRefreshToken(
+        @RequestBody expireTokenRequest: ExpireTokenRequest
+    ) {
+        return adminFacade.expireToken(expireTokenRequest, false)
     }
 }

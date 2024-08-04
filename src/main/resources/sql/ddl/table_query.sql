@@ -89,4 +89,13 @@ CREATE TABLE bottle_history
     updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
+
+CREATE TABLE black_list
+(
+    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    expired_access_token VARCHAR(2048)                      NOT NULL,
+    created_at           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
+
 CREATE INDEX idx_phone_number ON auth_sms (phone_number);

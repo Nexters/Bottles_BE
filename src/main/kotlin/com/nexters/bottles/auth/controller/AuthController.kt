@@ -4,13 +4,16 @@ import com.nexters.bottles.auth.facade.AuthFacade
 import com.nexters.bottles.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.auth.facade.dto.SignUpRequest
 import com.nexters.bottles.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.auth.facade.dto.SmsSendRequest
-import com.nexters.bottles.auth.facade.dto.*
+import com.nexters.bottles.auth.facade.dto.SmsSignInRequest
+import com.nexters.bottles.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.global.interceptor.AuthRequired
 import com.nexters.bottles.global.interceptor.RefreshAuthRequired
+import com.nexters.bottles.global.resolver.AccessToken
 import com.nexters.bottles.global.resolver.AuthUserId
 import com.nexters.bottles.global.resolver.RefreshTokenUserId
 import io.swagger.annotations.ApiOperation
@@ -65,8 +68,8 @@ class AuthController(
     @ApiOperation("로그아웃하기")
     @PostMapping("/logout")
     @AuthRequired
-    fun logout(@AuthUserId userId: Long) {
-        authFacade.logout(userId)
+    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String) {
+        authFacade.logout(userId, accessToken)
     }
 
     @ApiOperation("회원 탈퇴하기")
