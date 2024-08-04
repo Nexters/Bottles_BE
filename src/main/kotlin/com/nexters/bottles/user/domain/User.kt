@@ -9,6 +9,7 @@ import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -28,7 +29,7 @@ class User(
 
     var phoneNumber: String? = null,
 
-    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
     var userProfile: UserProfile? = null,
 
     @Enumerated(EnumType.STRING)
