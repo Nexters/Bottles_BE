@@ -2,7 +2,7 @@ name: Send Discord Notification
 
 on:
   schedule:
-    - cron: '*/10 * * *'  # 매주 월~금 오전 1시 UTC에 실행 (한국 시간으로는 오전 10시)
+    - cron: '*/10 * * * *'  # 매주 월~금 오전 1시 UTC에 실행 (한국 시간으로는 오전 10시)
 
 jobs:
   notify:
