@@ -18,7 +18,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Service
 class BottleService(
@@ -141,8 +140,7 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(user: User) {
-        val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
+    fun matchRandomBottle(user: User, matchingTime: LocalDateTime) {
         val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
             targetUser = user,
             bottleStatus = BottleStatus.RANDOM,

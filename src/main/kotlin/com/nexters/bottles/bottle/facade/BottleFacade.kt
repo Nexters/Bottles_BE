@@ -23,6 +23,8 @@ import com.nexters.bottles.user.domain.UserProfile
 import com.nexters.bottles.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Component
 class BottleFacade(
@@ -37,7 +39,8 @@ class BottleFacade(
     fun getNewBottles(userId: Long): BottleListResponseDto {
         val user = userService.findByIdAndNotDeleted(userId)
         if (isActiveMatching) {
-            bottleService.matchRandomBottle(user)
+            val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
+            bottleService.matchRandomBottle(user, matchingTime)
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
