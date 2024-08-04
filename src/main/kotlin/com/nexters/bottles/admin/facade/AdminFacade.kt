@@ -3,6 +3,7 @@ package com.nexters.bottles.admin.facade
 import com.nexters.bottles.admin.component.TestJwtTokenProvider
 import com.nexters.bottles.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.admin.facade.dto.CustomTokenResponse
+import com.nexters.bottles.admin.facade.dto.ExpireTokenRequest
 import com.nexters.bottles.admin.facade.dto.ForceAfterProfileResponse
 import com.nexters.bottles.admin.service.AdminService
 import com.nexters.bottles.auth.component.JwtTokenProvider
@@ -96,5 +97,15 @@ class AdminFacade(
         )
         adminService.saveMockUser(mockUser)
         return mockUser
+    }
+
+    fun expireToken(expireTokenRequest: ExpireTokenRequest, isAccessToken: Boolean) {
+        if (isAccessToken) {
+            adminService.expireAccessToken(expireTokenRequest.token)
+        } else {
+            val userId = jwtTokenProvider.getUserIdFromToken(expireTokenRequest.token, false)
+                ?: throw IllegalArgumentException("유효하지 않은 리프레시 토큰입니다")
+            adminService.expireRefreshToken(expireTokenRequest.token, userId)
+        }
     }
 }
