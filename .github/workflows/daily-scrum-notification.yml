@@ -2,7 +2,7 @@ name: Send Discord Notification
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # 매주 월~금 오전 1시 UTC에 실행 (한국 시간으로는 오전 10시)
+    - cron: '57 0 * * 1-5'  # 매주 월~금 오전 1시 UTC에 실행 (한국 시간으로는 오전 9시 57로 버퍼둠)
 
 jobs:
   notify:
@@ -13,9 +13,9 @@ jobs:
         env:
           DATA: |
             {
-              "content": "<@&${{ secrets.DISCORD_ROLE_ID }}> :calendar: 보틀즈 데일리 스크럼 :calendar:**\n\n**:1: Yesterday's Progress:**\n- 완료된 작업 내용\n\n**:2: Today's Plan:**\n- 오늘 해야 할 작업\n\n**:3: Blockers:**\n- 겪고 있는 문제나 도움이 필요한 사항\n\n오늘도 화이팅! :muscle:"
+              "content": "<@&${{ secrets.DISCORD_SCRUM_ROLE_ID }}> :calendar: 보틀즈 데일리 스크럼 :calendar:**\n\n**:one: - 완료된 작업 내용\n\n**:two: - 오늘 해야 할 작업\n\n**:three: - 겪고 있는 문제나 도움이 필요한 사항\n\n오늘도 화이팅! :muscle:"
             }
         run: |
           curl -X POST -H "Content-Type: application/json" \
           -d "$DATA" \
-          ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ${{ secrets.DISCORD_SCRUM_BOT_WEBHOOK }}
