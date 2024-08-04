@@ -3,11 +3,7 @@ package com.nexters.bottles.user.controller
 import com.nexters.bottles.global.interceptor.AuthRequired
 import com.nexters.bottles.global.resolver.AuthUserId
 import com.nexters.bottles.user.facade.UserProfileFacade
-import com.nexters.bottles.user.facade.dto.ExistIntroductionResponse
-import com.nexters.bottles.user.facade.dto.ProfileChoiceResponseDto
-import com.nexters.bottles.user.facade.dto.RegisterIntroductionRequestDto
-import com.nexters.bottles.user.facade.dto.RegisterProfileRequestDto
-import com.nexters.bottles.user.facade.dto.UserProfileResponseDto
+import com.nexters.bottles.user.facade.dto.*
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -65,5 +61,12 @@ class UserProfileController(
     @AuthRequired
     fun existIntroduction(@AuthUserId userId: Long): ExistIntroductionResponse {
         return profileFacade.existIntroduction(userId)
+    }
+
+    @ApiOperation("유저 이름 (정보 조회)")
+    @GetMapping("/info")
+    @AuthRequired
+    fun findInfo(@AuthUserId userId: Long): UserInfoResponse {
+        return profileFacade.findUserInfo(userId)
     }
 }
