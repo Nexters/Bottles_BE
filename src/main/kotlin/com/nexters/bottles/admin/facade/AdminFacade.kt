@@ -45,15 +45,24 @@ class AdminFacade(
         adminService.cleanUpMockUpData(mockMaleUser)
         adminService.cleanUpMockUpData(mockFemaleUser)
 
-        var mockUser1 = saveMockUser(mockMaleUser)
-        saveMockProfile(mockMaleUserProfile)
-        var mockUser2 = saveMockUser(mockFemaleUser)
-        saveMockProfile(mockFemaleUserProfile)
+        val accessToken1 = jwtTokenProvider.createAccessToken(mockMaleUser.id)
+        val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockMaleUser.id)
+        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser.id)
+        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser.id)
 
-        val accessToken1 = jwtTokenProvider.createAccessToken(mockUser1.id)
-        val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockUser1.id)
-        val accessToken2 = jwtTokenProvider.createAccessToken(mockUser2.id)
-        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockUser2.id)
+        return ForceAfterProfileResponse(
+            accessToken1 = accessToken1,
+            refreshToken1 = refreshToken1,
+            accessToken2 = accessToken2,
+            refreshToken2 = refreshToken2,
+        )
+    }
+
+    fun forceLogin(): ForceAfterProfileResponse {
+        val accessToken1 = jwtTokenProvider.createAccessToken(mockMaleUser.id)
+        val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockMaleUser.id)
+        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser.id)
+        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser.id)
 
         return ForceAfterProfileResponse(
             accessToken1 = accessToken1,
@@ -77,8 +86,8 @@ class AdminFacade(
     }
 
     companion object {
-        private const val mockMaleUserId = 0L
-        private const val mockFemaleUserId = 1L
+        private const val mockMaleUserId = 1L
+        private const val mockFemaleUserId = 2L
 
         val mockMaleUser = User(
             id = mockMaleUserId,
