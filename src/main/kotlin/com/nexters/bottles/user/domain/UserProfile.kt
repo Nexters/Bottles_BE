@@ -7,6 +7,7 @@ import com.nexters.bottles.user.repository.converter.QuestionAndAnswerConverter
 import com.nexters.bottles.user.repository.converter.UserProfileSelectConverter
 import javax.persistence.Convert
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -19,7 +20,7 @@ class UserProfile(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User,
 

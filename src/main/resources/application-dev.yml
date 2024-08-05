@@ -50,5 +50,8 @@ naver-cloud-sms:
   secretKey: ${NAVER_SMS_SECRET_KEY}
   senderPhone: ${NAVER_SMS_SENDER_PHONE}
 
+matching:
+  isActive: false
+
 firebase:
   service-account-key-path: ${FCM_ADMIN_KEY_PATH}

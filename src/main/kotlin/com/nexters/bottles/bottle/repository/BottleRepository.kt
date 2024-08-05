@@ -1,6 +1,7 @@
 package com.nexters.bottles.bottle.repository
 
 import com.nexters.bottles.bottle.domain.Bottle
+import com.nexters.bottles.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.user.domain.User
 import org.springframework.data.jpa.repository.JpaRepository
@@ -50,4 +51,10 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         @Param("bottleId") bottleId: Long,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): Bottle?
+
+    fun findByTargetUserAndBottleStatusAndCreatedAtAfter(
+        targetUser: User,
+        bottleStatus: BottleStatus,
+        matchingTime: LocalDateTime
+    ): List<Bottle>
 }
