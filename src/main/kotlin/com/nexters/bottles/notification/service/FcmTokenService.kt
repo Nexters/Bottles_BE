@@ -16,4 +16,11 @@ class FcmTokenService(
         val fcmToken = FcmToken(userId = user.id, token = token)
         fcmTokenRepository.save(fcmToken)
     }
+
+    @Transactional(readOnly = true)
+    fun findByUsers(users: List<User>): List<FcmToken> {
+        return users.flatMap {
+            fcmTokenRepository.findAllByUserId(it.id)
+        }
+    }
 }
