@@ -25,6 +25,12 @@ class AdminController(
         return adminFacade.forceAfterProfile()
     }
 
+    @ApiOperation("보틀 도착한 상태 만들기")
+    @PostMapping("/after-bottle-receive")
+    fun forceBottleReceive() {
+        adminFacade.forceBottleReceive()
+    }
+
     @ApiOperation("만료시간 입력받아서 토큰 발급받기")
     @PostMapping("/custom-token")
     @AuthRequired
