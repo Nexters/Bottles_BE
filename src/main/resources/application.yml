@@ -53,3 +53,6 @@ naver-cloud-sms:
   accessKey: ${NAVER_SMS_API_KEY}
   secretKey: ${NAVER_SMS_SECRET_KEY}
   senderPhone: ${NAVER_SMS_SENDER_PHONE}
+
+firebase:
+  service-account-key-path: ${FCM_ADMIN_KEY_PATH}
