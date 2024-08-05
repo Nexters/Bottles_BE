@@ -25,6 +25,12 @@ class AdminController(
         return adminFacade.forceAfterProfile()
     }
 
+    @ApiOperation("로그인 하기")
+    @PostMapping("/login")
+    fun login(): ForceAfterProfileResponse {
+        return adminFacade.forceAfterProfile()
+    }
+
     @ApiOperation("보틀 도착한 상태 만들기")
     @PostMapping("/after-bottle-receive")
     fun forceBottleReceive() {
