@@ -101,6 +101,8 @@ jobs:
             echo "export NAVER_SMS_API_KEY=${{ secrets.NAVER_SMS_API_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export NAVER_SMS_SECRET_KEY=${{ secrets.NAVER_SMS_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export NAVER_SMS_SENDER_PHONE=${{ secrets.NAVER_SMS_SENDER_PHONE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
+            echo "export FCM_ADMIN_KEY_PATH=${{ secrets.FCM_ADMIN_KEY_PATH }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
 

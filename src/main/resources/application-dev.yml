@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+webclient:
+  kakao-auth-url: https://kapi.kakao.com
+
+logging:
+  level:
+    org:
+      springframework: INFO
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ${S3_REGION}
+      auto: false
+    stack:
+      auto: false
+
+jwt:
+  access-token-secret-key: ${ACCESS_TOKEN_SECRET_KEY}
+  refresh-token-secret-key: ${REFRESH_TOKEN_SECRET_KEY}
+  access-token-validity: 36000000  # 1000 * 60 * 60 * 10 (10시간)
+  refresh-token-validity: 14515200000  # 1000 * 60 * 60 * 24 * 7 * 4 * 6 (6개월)
+
+naver-cloud-sms:
+  serviceId: ${NAVER_SMS_SERVICE_ID}
+  accessKey: ${NAVER_SMS_API_KEY}
+  secretKey: ${NAVER_SMS_SECRET_KEY}
+  senderPhone: ${NAVER_SMS_SENDER_PHONE}
+
+matching:
+  isActive: false
+
+firebase:
+  service-account-key-path: ${FCM_ADMIN_KEY_PATH}

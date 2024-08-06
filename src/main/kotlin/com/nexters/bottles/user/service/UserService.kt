@@ -83,4 +83,9 @@ class UserService(
             it.softDelete()
         } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
+
+    @Transactional(readOnly = true)
+    fun findAllByNotDeleted(): List<User> {
+        return userRepository.findAllByDeletedFalse()
+    }
 }

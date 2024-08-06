@@ -98,4 +98,13 @@ CREATE TABLE black_list
     updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE TABLE fcm_token
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id    BIGINT                             NOT NULL,
+    token      VARCHAR(255)                       NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
+
 CREATE INDEX idx_phone_number ON auth_sms (phone_number);
