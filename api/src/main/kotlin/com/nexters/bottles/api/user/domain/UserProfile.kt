@@ -1,0 +1,54 @@
+package com.nexters.bottles.api.user.domain
+
+import com.nexters.bottles.api.global.BaseEntity
+import com.nexters.bottles.api.user.facade.dto.InterestDto
+import com.nexters.bottles.api.user.facade.dto.RegionDto
+import com.nexters.bottles.api.user.repository.converter.QuestionAndAnswerConverter
+import com.nexters.bottles.api.user.repository.converter.UserProfileSelectConverter
+import javax.persistence.Convert
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.OneToOne
+
+@Entity
+class UserProfile(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L,
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    val user: User,
+
+    @Convert(converter = UserProfileSelectConverter::class)
+    var profileSelect: UserProfileSelect? = null,
+
+    @Convert(converter = QuestionAndAnswerConverter::class)
+    var introduction: List<QuestionAndAnswer> = arrayListOf(),
+
+    var imageUrl: String? = null,
+
+    var blurredImageUrl: String? = null,
+) : BaseEntity()
+
+data class UserProfileSelect(
+    val mbti: String,
+    val keyword: List<String> = arrayListOf(),
+    val interest: InterestDto,
+    val job: String,
+    val height: Int,
+    val smoking: String,
+    val alcohol: String,
+    val religion: String,
+    val region: RegionDto,
+)
+
+data class QuestionAndAnswer(
+    val question: String,
+    val answer: String,
+)
+

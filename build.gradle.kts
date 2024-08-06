@@ -1,75 +1,57 @@
 plugins {
     id("org.springframework.boot") version "2.6.6"
-    id("io.spring.dependency-management") version "1.1.5"
-    kotlin("plugin.jpa") version "1.9.24"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
-    kotlin("plugin.allopen") version "1.5.31"
-    kotlin("plugin.noarg") version "1.5.31"
+    kotlin("plugin.jpa") version "1.9.24"
+    kotlin("plugin.allopen") version "1.9.24"
+    kotlin("plugin.noarg") version "1.9.24"
 }
 
-allOpen {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.Convert")
-}
+allprojects {
+    group = "com.nexters"
+    version = "0.0.1-SNAPSHOT"
 
-noArg {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.Convert")
-}
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
+    apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
+    apply(plugin = "org.jetbrains.kotlin.plugin.noarg")
 
-group = "com.nexters"
-version = "0.0.1-SNAPSHOT"
+    allOpen {
+        annotation("javax.persistence.Entity")
+        annotation("javax.persistence.Convert")
+    }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+    noArg {
+        annotation("javax.persistence.Entity")
+        annotation("javax.persistence.Convert")
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+        compilerOptions {
+            freeCompilerArgs.addAll("-Xjsr305=strict")
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 }
 
-repositories {
-    mavenCentral()
+tasks.named("jar") {
+    enabled = true
 }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-
-    implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation("io.springfox:springfox-swagger-ui:3.0.0")
-
-    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
-
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-
-    implementation("io.github.microutils:kotlin-logging:3.0.5")
-    implementation("org.slf4j:slf4j-simple:2.0.7")
-
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
-    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
-
-    implementation("com.google.firebase:firebase-admin:9.2.0")
-
-    runtimeOnly("com.h2database:h2")
-    runtimeOnly("mysql:mysql-connector-java")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+tasks.named("bootJar") {
+    enabled = false
 }

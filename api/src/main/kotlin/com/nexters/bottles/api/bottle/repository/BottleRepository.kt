@@ -1,0 +1,63 @@
+package com.nexters.bottles.api.bottle.repository
+
+import com.nexters.bottles.api.bottle.domain.Bottle
+import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.api.user.domain.User
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import java.time.LocalDateTime
+
+interface BottleRepository : JpaRepository<Bottle, Long> {
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "JOIN FETCH b.sourceUser " +
+                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus"
+    )
+    fun findAllByTargetUserAndStatusAndNotExpired(
+        @Param("targetUser") targetUser: User,
+        @Param("pingPongStatus") pingPongStatus: com.nexters.bottles.api.bottle.domain.enum.PingPongStatus,
+        @Param("currentDateTime") currentDateTime: LocalDateTime
+    ): List<Bottle>
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "JOIN FETCH b.sourceUser " +
+                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus IN :pingPongStatus"
+    )
+    fun findByIdAndStatusAndNotExpired(
+        @Param("bottleId") bottleId: Long,
+        @Param("pingPongStatus") pingPongStatus: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>,
+        @Param("currentDateTime") currentDateTime: LocalDateTime
+    ): Bottle?
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
+                "AND b.pingPongStatus IN :pingPongStatus"
+    )
+    fun findAllByUserAndStatus(
+        @Param("user") user: User,
+        @Param("pingPongStatus") pingPongStatus: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>
+    ): List<Bottle>
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus"
+    )
+    fun findByIdAndStatus(
+        @Param("bottleId") bottleId: Long,
+        @Param("pingPongStatus") pingPongStatus: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>
+    ): Bottle?
+
+    fun findAllByTargetUser(user: User): List<Bottle>
+
+    fun findAllBySourceUser(user: User): List<Bottle>
+
+    fun findByTargetUserAndBottleStatusAndCreatedAtAfter(
+        targetUser: User,
+        bottleStatus: BottleStatus,
+        matchingTime: LocalDateTime
+    ): List<Bottle>
+}
