@@ -29,11 +29,11 @@ services:
       NAVER_SMS_API_KEY: ${NAVER_SMS_API_KEY}
       NAVER_SMS_SECRET_KEY: ${NAVER_SMS_SECRET_KEY}
       NAVER_SMS_SENDER_PHONE: ${NAVER_SMS_SENDER_PHONE}
+      FCM_ADMIN_KEY_PATH: ${FCM_ADMIN_KEY_PATH}
     ports:
       - "8080:8080"
     depends_on:
       - db
-    restart: on-failure
 
   db:
     container_name: mysql
