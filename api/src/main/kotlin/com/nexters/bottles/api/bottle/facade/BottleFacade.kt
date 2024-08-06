@@ -3,6 +3,7 @@ package com.nexters.bottles.api.bottle.facade
 import com.nexters.bottles.api.bottle.domain.Bottle
 import com.nexters.bottles.api.bottle.domain.Letter
 import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.api.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequestDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleDto
@@ -68,7 +69,7 @@ class BottleFacade(
     fun getBottle(bottleId: Long): BottleDetailResponseDto {
         val bottle = bottleService.getNotExpiredBottle(
             bottleId,
-            setOf(com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.NONE)
+            setOf(PingPongStatus.NONE)
         )
 
         return BottleDetailResponseDto(
@@ -95,9 +96,9 @@ class BottleFacade(
 
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
         val activeBottles =
-            (groupByStatus[com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.ACTIVE].orEmpty() + groupByStatus[com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.STOPPED].orEmpty())
+            (groupByStatus[PingPongStatus.ACTIVE].orEmpty() + groupByStatus[PingPongStatus.STOPPED].orEmpty())
                 .map { toPingPongBottleDto(it, user) }
-        val doneBottles = groupByStatus[com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.MATCHED]?.map {
+        val doneBottles = groupByStatus[PingPongStatus.MATCHED]?.map {
             toPingPongBottleDto(
                 it,
                 user
@@ -155,7 +156,7 @@ class BottleFacade(
         val otherLetter = letterService.findLetter(bottle, otherUser)
 
         return BottlePingPongResponseDto(
-            isStopped = bottle.pingPongStatus == com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.STOPPED,
+            isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
             userProfile = PingPongUserProfile(
                 userName = otherUser.name,
@@ -172,7 +173,7 @@ class BottleFacade(
                 otherProfile = otherUser.userProfile!!
             ),
             matchResult = MatchResult(
-                isMatched = bottle.pingPongStatus == com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.MATCHED,
+                isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
                 contact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요")
             )
         )

@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.bottle.domain
 
 import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.api.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.api.global.BaseEntity
 import com.nexters.bottles.api.user.domain.User
 import java.time.LocalDateTime
@@ -48,7 +49,7 @@ class Bottle(
 
     @Column
     @Enumerated(value = EnumType.STRING)
-    var pingPongStatus: com.nexters.bottles.api.bottle.domain.enum.PingPongStatus = com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.NONE,
+    var pingPongStatus: PingPongStatus = PingPongStatus.NONE,
 ) : BaseEntity() {
 
     fun sendLikeMessage(from: User, to: User, likeMessage: String) {
@@ -59,12 +60,12 @@ class Bottle(
     }
 
     fun startPingPong() {
-        this.pingPongStatus = com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.ACTIVE
+        this.pingPongStatus = PingPongStatus.ACTIVE
     }
 
     fun refuse(refusedBy: User) {
         this.stoppedUser = refusedBy
-        this.pingPongStatus = com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.REFUSED
+        this.pingPongStatus = PingPongStatus.REFUSED
     }
 
     fun findOtherUser(user: User): User {
@@ -77,7 +78,7 @@ class Bottle(
 
     fun stop(stoppedBy: User) {
         this.stoppedUser = stoppedBy
-        this.pingPongStatus = com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.STOPPED
+        this.pingPongStatus = PingPongStatus.STOPPED
     }
 
     fun selectMatch(userId: Long, willMatch: Boolean) {
@@ -87,7 +88,7 @@ class Bottle(
             else -> throw IllegalArgumentException("고객센터에 문의해주세요")
         }
         if (targetUserSelect && sourceUserSelect) {
-            pingPongStatus = com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.MATCHED
+            pingPongStatus = PingPongStatus.MATCHED
         }
     }
 }

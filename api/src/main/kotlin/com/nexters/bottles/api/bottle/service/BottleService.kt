@@ -5,6 +5,7 @@ import com.nexters.bottles.api.bottle.domain.BottleHistory
 import com.nexters.bottles.api.bottle.domain.Letter
 import com.nexters.bottles.api.bottle.domain.LetterQuestionAndAnswer
 import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.api.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.api.bottle.repository.BottleHistoryRepository
 import com.nexters.bottles.api.bottle.repository.BottleMatchingRepository
 import com.nexters.bottles.api.bottle.repository.BottleRepository
@@ -32,7 +33,7 @@ class BottleService(
     fun getNewBottles(user: User): List<Bottle> {
         return bottleRepository.findAllByTargetUserAndStatusAndNotExpired(
             user,
-            com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.NONE,
+            PingPongStatus.NONE,
             LocalDateTime.now()
         )
     }
@@ -40,7 +41,7 @@ class BottleService(
     @Transactional(readOnly = true)
     fun getNotExpiredBottle(
         bottleId: Long,
-        statusSet: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>
+        statusSet: Set<PingPongStatus>
     ): Bottle {
         return bottleRepository.findByIdAndStatusAndNotExpired(bottleId, statusSet, LocalDateTime.now())
             ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
@@ -51,7 +52,7 @@ class BottleService(
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(
                 bottleId,
-                setOf(com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.NONE),
+                setOf(PingPongStatus.NONE),
                 LocalDateTime.now()
             )
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
@@ -101,7 +102,7 @@ class BottleService(
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(
                 bottleId,
-                setOf(com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.NONE),
+                setOf(PingPongStatus.NONE),
                 LocalDateTime.now()
             )
                 ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
@@ -119,9 +120,9 @@ class BottleService(
         return bottleRepository.findAllByUserAndStatus(
             user,
             setOf(
-                com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.ACTIVE,
-                com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.MATCHED,
-                com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.STOPPED
+                PingPongStatus.ACTIVE,
+                PingPongStatus.MATCHED,
+                PingPongStatus.STOPPED
             )
         )
     }
@@ -131,9 +132,9 @@ class BottleService(
         return bottleRepository.findByIdAndStatus(
             bottleId,
             setOf(
-                com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.ACTIVE,
-                com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.MATCHED,
-                com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.STOPPED
+                PingPongStatus.ACTIVE,
+                PingPongStatus.MATCHED,
+                PingPongStatus.STOPPED
             )
         ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
@@ -142,7 +143,7 @@ class BottleService(
     fun getActivePingPongBottle(bottleId: Long): Bottle {
         return bottleRepository.findByIdAndStatus(
             bottleId,
-            setOf(com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.ACTIVE)
+            setOf(PingPongStatus.ACTIVE)
         ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
 
@@ -150,7 +151,7 @@ class BottleService(
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean): Bottle {
         val pingPongBottle = bottleRepository.findByIdAndStatus(
             bottleId,
-            setOf(com.nexters.bottles.api.bottle.domain.enum.PingPongStatus.ACTIVE)
+            setOf(PingPongStatus.ACTIVE)
         ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
 
         pingPongBottle.selectMatch(userId, willMatch)

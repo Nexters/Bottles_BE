@@ -26,9 +26,4 @@ class FcmNotificationService(
         )
         fcmClient.sendNotificationAll(userTokens = tokens, fcmNotification = fcmNotification)
     }
-
-    @Scheduled(cron = "10 * * * * *")
-    fun test() {
-        println("안녕~")
-    }
 }

@@ -5,6 +5,7 @@ import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequestDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleImageShareRequest
 import com.nexters.bottles.api.bottle.facade.dto.BottleListResponseDto
+import com.nexters.bottles.api.bottle.facade.dto.BottleMatchRequest
 import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponseDto
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequestDto
@@ -112,7 +113,7 @@ class BottleController(
     fun selectMatch(
         @AuthUserId userId: Long,
         @PathVariable bottleId: Long,
-        @RequestBody bottleMatchRequest: com.nexters.bottles.api.bottle.facade.dto.BottleMatchRequest
+        @RequestBody bottleMatchRequest: BottleMatchRequest
     ) {
         bottleFacade.selectMatch(userId, bottleId, bottleMatchRequest.willMatch)
     }

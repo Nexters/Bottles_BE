@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.admin.controller
 
+import com.nexters.bottles.api.admin.facade.AdminFacade
 import com.nexters.bottles.api.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.api.admin.facade.dto.CustomTokenResponse
 import com.nexters.bottles.api.admin.facade.dto.ExpireTokenRequest
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/admin")
 class AdminController(
-    private val adminFacade: com.nexters.bottles.api.admin.facade.AdminFacade,
+    private val adminFacade: AdminFacade,
 ) {
 
     @ApiOperation("카카오 회원가입하고 프로필 작성한 상태 만들기")

@@ -42,17 +42,13 @@ class AdminFacade(
     }
 
     fun forceAfterProfile(): ForceAfterProfileResponse {
-        adminService.cleanUpMockUpData(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser)
-        adminService.cleanUpMockUpData(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser)
+        adminService.cleanUpMockUpData(mockMaleUser)
+        adminService.cleanUpMockUpData(mockFemaleUser)
 
-        val accessToken1 =
-            jwtTokenProvider.createAccessToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser.id)
-        val refreshToken1 =
-            jwtTokenProvider.upsertRefreshToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser.id)
-        val accessToken2 =
-            jwtTokenProvider.createAccessToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser.id)
-        val refreshToken2 =
-            jwtTokenProvider.upsertRefreshToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser.id)
+        val accessToken1 = jwtTokenProvider.createAccessToken(mockMaleUser.id)
+        val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockMaleUser.id)
+        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser.id)
+        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser.id)
 
         return ForceAfterProfileResponse(
             accessToken1 = accessToken1,
@@ -63,14 +59,10 @@ class AdminFacade(
     }
 
     fun forceLogin(): ForceAfterProfileResponse {
-        val accessToken1 =
-            jwtTokenProvider.createAccessToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser.id)
-        val refreshToken1 =
-            jwtTokenProvider.upsertRefreshToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser.id)
-        val accessToken2 =
-            jwtTokenProvider.createAccessToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser.id)
-        val refreshToken2 =
-            jwtTokenProvider.upsertRefreshToken(com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser.id)
+        val accessToken1 = jwtTokenProvider.createAccessToken(mockMaleUser.id)
+        val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockMaleUser.id)
+        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser.id)
+        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser.id)
 
         return ForceAfterProfileResponse(
             accessToken1 = accessToken1,
@@ -82,8 +74,8 @@ class AdminFacade(
 
     fun forceBottleReceive() {
         adminService.forceBottleReceive(
-            com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser,
-            com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser
+            mockMaleUser,
+            mockFemaleUser
         )
     }
 
@@ -101,7 +93,7 @@ class AdminFacade(
         private const val mockFemaleUserId = 2L
 
         val mockMaleUser = User(
-            id = com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUserId,
+            id = mockMaleUserId,
             birthdate = LocalDate.of(1999, 8, 1),
             name = "차은우",
             gender = Gender.MALE,
@@ -111,7 +103,7 @@ class AdminFacade(
         )
 
         val mockFemaleUser = User(
-            id = com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUserId,
+            id = mockFemaleUserId,
             birthdate = LocalDate.of(1999, 3, 1),
             name = "카리나",
             gender = Gender.FEMALE,
@@ -121,7 +113,7 @@ class AdminFacade(
         )
 
         val mockMaleUserProfile = UserProfile(
-            user = com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockMaleUser,
+            user = mockMaleUser,
             profileSelect = UserProfileSelect(
                 mbti = "intj",
                 keyword = listOf("다정한", "적극적인", "신중한"),
@@ -149,7 +141,7 @@ class AdminFacade(
         )
 
         val mockFemaleUserProfile = UserProfile(
-            user = com.nexters.bottles.api.admin.facade.AdminFacade.Companion.mockFemaleUser,
+            user = mockFemaleUser,
             profileSelect = UserProfileSelect(
                 mbti = "intj",
                 keyword = listOf("다정한", "적극적인", "신중한"),

@@ -2,6 +2,7 @@ package com.nexters.bottles.api.infra
 
 import com.nexters.bottles.api.auth.facade.dto.KakaoUserInfoResponse
 import com.nexters.bottles.api.auth.facade.dto.MessageDTO
+import com.nexters.bottles.api.auth.facade.dto.SmsRequestDTO
 import com.nexters.bottles.api.auth.facade.dto.SmsResponseDTO
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -54,7 +55,7 @@ class WebClientAdapter(
             }
             .build()
 
-        val request = com.nexters.bottles.api.auth.facade.dto.SmsRequestDTO(
+        val request = SmsRequestDTO(
             type = "SMS",
             contentType = "COMM",
             countryCode = "82",

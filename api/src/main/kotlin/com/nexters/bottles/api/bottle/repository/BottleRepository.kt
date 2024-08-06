@@ -2,6 +2,7 @@ package com.nexters.bottles.api.bottle.repository
 
 import com.nexters.bottles.api.bottle.domain.Bottle
 import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.api.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.api.user.domain.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -17,7 +18,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     )
     fun findAllByTargetUserAndStatusAndNotExpired(
         @Param("targetUser") targetUser: User,
-        @Param("pingPongStatus") pingPongStatus: com.nexters.bottles.api.bottle.domain.enum.PingPongStatus,
+        @Param("pingPongStatus") pingPongStatus: PingPongStatus,
         @Param("currentDateTime") currentDateTime: LocalDateTime
     ): List<Bottle>
 
@@ -28,7 +29,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     )
     fun findByIdAndStatusAndNotExpired(
         @Param("bottleId") bottleId: Long,
-        @Param("pingPongStatus") pingPongStatus: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>,
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>,
         @Param("currentDateTime") currentDateTime: LocalDateTime
     ): Bottle?
 
@@ -39,7 +40,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     )
     fun findAllByUserAndStatus(
         @Param("user") user: User,
-        @Param("pingPongStatus") pingPongStatus: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): List<Bottle>
 
     @Query(
@@ -48,7 +49,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     )
     fun findByIdAndStatus(
         @Param("bottleId") bottleId: Long,
-        @Param("pingPongStatus") pingPongStatus: Set<com.nexters.bottles.api.bottle.domain.enum.PingPongStatus>
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): Bottle?
 
     fun findAllByTargetUser(user: User): List<Bottle>
