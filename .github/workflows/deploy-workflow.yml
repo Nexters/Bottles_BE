@@ -33,9 +33,12 @@ jobs:
         env:
           DOCKER_TAG: ${{ env.DATETIME_TAG }}
         run: |
+          cd ./api
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build --platform linux/amd64 -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/bottles:$DOCKER_TAG .
-          docker push ${{ secrets.DOCKER_USERNAME }}/bottles:$DOCKER_TAG
+          docker build --platform linux/amd64 -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/bottles-api:$DOCKER_TAG .
+          docker push ${{ secrets.DOCKER_USERNAME }}/bottles-api:$DOCKER_TAG
+
+      #          운영 전에 batch image build 및 batch 서버 띄우기
 
       - name: Get Github Actions IP
         id: ip

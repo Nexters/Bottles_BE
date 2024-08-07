@@ -4,7 +4,7 @@ source /home/${SERVER_USER_NAME}/deploy/env_vars.sh
 
 sed 's/^export //' /home/${SERVER_USER_NAME}/deploy/env_vars.sh > /home/${SERVER_USER_NAME}/docker/.env
 
-sudo docker pull ${DOCKER_USERNAME}/bottles:${DOCKER_TAG}
+sudo docker pull ${DOCKER_USERNAME}/bottles-api:${DOCKER_TAG}
 cd ../docker
 docker-compose up -d
 
@@ -18,7 +18,7 @@ if [ -n "$EXIT_CONTAINERS" ]; then
 fi
 
 LATEST_TAG=${DOCKER_TAG}
-RUNNING_TAG=$(docker-compose ps --format "{{.Image}}" | grep "${DOCKER_USERNAME}/bottles" | awk -F: '{print $2}')
+RUNNING_TAG=$(docker-compose ps --format "{{.Image}}" | grep "${DOCKER_USERNAME}/bottles-api" | awk -F: '{print $2}')
 
 if [ "$LATEST_TAG" != "$RUNNING_TAG" ]; then
   ../deploy/notify_error.sh "bottles:$LATEST_TAG 배포를 실패했습니다.\n현재 bottles:$RUNNING_TAG 가 실행중입니다."
