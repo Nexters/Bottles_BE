@@ -1,7 +1,7 @@
 package com.nexters.bottles.api.global.interceptor
 
-import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.global.exception.UnauthorizedException
+import com.nexters.bottles.app.auth.service.JwtTokenProvider
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor

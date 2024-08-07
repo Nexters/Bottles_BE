@@ -1,9 +1,5 @@
 package com.nexters.bottles.api.bottle.facade
 
-import com.nexters.bottles.api.bottle.domain.Bottle
-import com.nexters.bottles.api.bottle.domain.Letter
-import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
-import com.nexters.bottles.api.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequestDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponseDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleDto
@@ -16,11 +12,15 @@ import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponseDto
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequestDto
-import com.nexters.bottles.api.bottle.service.BottleService
-import com.nexters.bottles.api.bottle.service.LetterService
-import com.nexters.bottles.api.user.domain.User
-import com.nexters.bottles.api.user.domain.UserProfile
-import com.nexters.bottles.api.user.service.UserService
+import com.nexters.bottles.app.bottle.domain.Bottle
+import com.nexters.bottles.app.bottle.domain.Letter
+import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.app.bottle.service.BottleService
+import com.nexters.bottles.app.bottle.service.LetterService
+import com.nexters.bottles.app.user.domain.User
+import com.nexters.bottles.app.user.domain.UserProfile
+import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

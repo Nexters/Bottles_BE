@@ -1,23 +1,23 @@
 package com.nexters.bottles.api.auth.facade
 
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
-import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.KakaoUserInfoResponse
 import com.nexters.bottles.api.auth.facade.dto.MessageDTO
 import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.api.auth.facade.dto.SignUpRequest
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
 import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
-import com.nexters.bottles.api.auth.service.AuthSmsService
-import com.nexters.bottles.api.auth.service.BlackListService
-import com.nexters.bottles.api.auth.service.RefreshTokenService
 import com.nexters.bottles.api.infra.WebClientAdapter
-import com.nexters.bottles.api.user.service.UserService
+import com.nexters.bottles.app.auth.service.AuthSmsService
+import com.nexters.bottles.app.auth.service.BlackListService
+import com.nexters.bottles.app.auth.service.JwtTokenProvider
+import com.nexters.bottles.app.auth.service.RefreshTokenService
+import com.nexters.bottles.app.user.service.UserService
+import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
+import com.nexters.bottles.app.user.service.dto.SignUpRequest
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -39,7 +39,7 @@ class AuthFacade(
 
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
-        val signInUpDto = userService.findUserOrSignUp(userInfoResponse)
+        val signInUpDto = userService.findKakaoUserOrSignUp(userInfoResponse)
 
         val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)

@@ -1,9 +1,9 @@
 package com.nexters.bottles.batch.service
 
-import com.nexters.bottles.api.notification.component.FcmClient
-import com.nexters.bottles.api.notification.component.dto.FcmNotification
-import com.nexters.bottles.api.notification.service.FcmTokenService
-import com.nexters.bottles.api.user.service.UserService
+import com.nexters.bottles.app.notification.component.FcmClient
+import com.nexters.bottles.app.notification.component.dto.FcmNotification
+import com.nexters.bottles.app.notification.service.FcmTokenService
+import com.nexters.bottles.app.user.service.UserService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 

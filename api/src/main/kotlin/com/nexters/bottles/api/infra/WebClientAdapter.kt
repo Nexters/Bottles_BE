@@ -1,9 +1,9 @@
 package com.nexters.bottles.api.infra
 
-import com.nexters.bottles.api.auth.facade.dto.KakaoUserInfoResponse
 import com.nexters.bottles.api.auth.facade.dto.MessageDTO
 import com.nexters.bottles.api.auth.facade.dto.SmsRequestDTO
 import com.nexters.bottles.api.auth.facade.dto.SmsResponseDTO
+import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component

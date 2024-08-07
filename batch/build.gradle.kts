@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":api"))
+    implementation(project(":app"))
 
     implementation("org.springframework.boot:spring-boot-starter")
 }

@@ -1,20 +1,20 @@
 package com.nexters.bottles.api.admin.facade
 
-import com.nexters.bottles.api.admin.component.TestJwtTokenProvider
 import com.nexters.bottles.api.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.api.admin.facade.dto.CustomTokenResponse
 import com.nexters.bottles.api.admin.facade.dto.ExpireTokenRequest
 import com.nexters.bottles.api.admin.facade.dto.ForceAfterProfileResponse
-import com.nexters.bottles.api.admin.service.AdminService
-import com.nexters.bottles.api.auth.component.JwtTokenProvider
-import com.nexters.bottles.api.user.domain.QuestionAndAnswer
-import com.nexters.bottles.api.user.domain.User
-import com.nexters.bottles.api.user.domain.UserProfile
-import com.nexters.bottles.api.user.domain.UserProfileSelect
-import com.nexters.bottles.api.user.domain.enum.Gender
-import com.nexters.bottles.api.user.domain.enum.SignUpType
 import com.nexters.bottles.api.user.facade.dto.InterestDto
 import com.nexters.bottles.api.user.facade.dto.RegionDto
+import com.nexters.bottles.app.admin.component.TestJwtTokenProvider
+import com.nexters.bottles.app.admin.service.AdminService
+import com.nexters.bottles.app.auth.service.JwtTokenProvider
+import com.nexters.bottles.app.user.domain.QuestionAndAnswer
+import com.nexters.bottles.app.user.domain.User
+import com.nexters.bottles.app.user.domain.UserProfile
+import com.nexters.bottles.app.user.domain.UserProfileSelect
+import com.nexters.bottles.app.user.domain.enum.Gender
+import com.nexters.bottles.app.user.domain.enum.SignUpType
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -122,13 +122,13 @@ class AdminFacade(
                     sports = listOf("헬스", "러닝"),
                     entertainment = listOf("독서"),
                     etc = listOf()
-                ),
+                ).toDomain(),
                 job = "직장인",
                 height = 175,
                 smoking = "가끔 피워요",
                 alcohol = "때에 따라 적당히 즐겨요",
                 religion = "무교",
-                region = RegionDto("서울특별시", "강남구")
+                region = RegionDto("서울특별시", "강남구").toDomain()
             ),
             introduction = listOf(
                 QuestionAndAnswer(
@@ -150,13 +150,13 @@ class AdminFacade(
                     sports = listOf("헬스", "러닝"),
                     entertainment = listOf("독서"),
                     etc = listOf()
-                ),
+                ).toDomain(),
                 job = "직장인",
                 height = 163,
                 smoking = "가끔 피워요",
                 alcohol = "때에 따라 적당히 즐겨요",
                 religion = "무교",
-                region = RegionDto("서울특별시", "강남구")
+                region = RegionDto("서울특별시", "강남구").toDomain()
             ),
             introduction = listOf(
                 QuestionAndAnswer(
