@@ -13,7 +13,7 @@ services:
 
   springboot:
     container_name: springboot
-    image: ${DOCKER_USERNAME}/bottles:${DOCKER_TAG}
+    image: ${DOCKER_USERNAME}/bottles-api:${DOCKER_TAG}
     environment:
       TZ: Asia/Seoul
       DB_USER_NAME: ${DB_USER_NAME}

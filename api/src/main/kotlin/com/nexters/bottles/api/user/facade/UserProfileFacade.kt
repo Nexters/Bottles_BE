@@ -1,0 +1,137 @@
+package com.nexters.bottles.api.user.facade
+
+import com.nexters.bottles.api.user.component.ImageUploader
+import com.nexters.bottles.api.user.domain.UserProfileSelect
+import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
+import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponseDto
+import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequestDto
+import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequestDto
+import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
+import com.nexters.bottles.api.user.facade.dto.UserProfileResponseDto
+import com.nexters.bottles.api.user.service.UserProfileService
+import com.nexters.bottles.api.user.service.UserService
+import mu.KotlinLogging
+import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
+import regions
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+@Component
+class UserProfileFacade(
+    private val profileService: UserProfileService,
+    private val userService: UserService,
+    private val imageUploader: ImageUploader,
+) {
+
+    private val log = KotlinLogging.logger { }
+
+    fun upsertProfile(userId: Long, profileDto: RegisterProfileRequestDto) {
+        validateProfile(profileDto)
+        val convertedProfileDto = convertProfileDto(profileDto)
+
+        profileService.upsertProfile(
+            userId = userId,
+            profileSelect = UserProfileSelect(
+                mbti = convertedProfileDto.mbti,
+                keyword = convertedProfileDto.keyword,
+                interest = convertedProfileDto.interest,
+                job = convertedProfileDto.job,
+                height = convertedProfileDto.height,
+                smoking = convertedProfileDto.smoking,
+                alcohol = convertedProfileDto.alcohol,
+                religion = convertedProfileDto.religion,
+                region = convertedProfileDto.region,
+            )
+        )
+        userService.addKakaoId(userId = userId, kakaoId = profileDto.kakaoId)
+    }
+
+    fun getProfileChoice(): ProfileChoiceResponseDto {
+        return ProfileChoiceResponseDto(
+            regions = regions
+        )
+    }
+
+    fun upsertIntroduction(userId: Long, registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
+        validateIntroduction(registerIntroductionRequestDto)
+
+        profileService.saveIntroduction(userId, registerIntroductionRequestDto.introduction)
+    }
+
+    fun getProfile(userId: Long): UserProfileResponseDto {
+
+        val userProfile = profileService.findUserProfile(userId)
+        val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
+        return UserProfileResponseDto(
+            userName = user.name,
+            age = user.getKoreanAge(),
+            imageUrl = userProfile?.imageUrl,
+            introduction = userProfile?.introduction ?: emptyList(),
+            profileSelect = userProfile?.profileSelect
+        )
+    }
+
+    private fun validateProfile(profileDto: RegisterProfileRequestDto) {
+        require(profileDto.keyword.size in 3..5) {
+            "키워드는 최소 3개, 최대 5개까지 선택할 수 있어요"
+        }
+        val interestCount = profileDto.interest.culture.size + profileDto.interest.sports.size +
+                profileDto.interest.entertainment.size + profileDto.interest.etc.size
+        require(interestCount in 3..10) {
+            "취미는 최소 3개, 최대 10개까지 선택할 수 있어요"
+        }
+    }
+
+    private fun validateIntroduction(introductionDto: RegisterIntroductionRequestDto) {
+        introductionDto.introduction.forEach {
+//            require(it.answer.length >= 30 && it.answer.length <= 300) {
+//                "소개는 30자 이상 300자 이하로 써야 해요"
+//            }
+            // TODO: 개발 환경에서 빠르게 테스트 하기 위해 일단 주석 처리하고 라이브 서비스 나가기전 해제할 예정입니다.
+        }
+    }
+
+    private fun convertProfileDto(profileDto: RegisterProfileRequestDto): RegisterProfileRequestDto {
+        when (profileDto.smoking) {
+            "전혀 피우지 않아요" -> profileDto.smoking = "흡연 안해요"
+            "가끔 피워요" -> profileDto.smoking = "흡연은 가끔"
+            "자주 피워요" -> profileDto.smoking = "흡연해요"
+        }
+        when (profileDto.alcohol) {
+            "한 방울도 마시지 않아요" -> profileDto.smoking = "술은 안해요"
+            "때에 따라 적당히 즐겨요" -> profileDto.smoking = "술은 적당히"
+            "자주 찾는 편이에요" -> profileDto.smoking = "술을 즐겨요"
+        }
+        return profileDto
+    }
+
+    fun uploadImage(userId: Long, file: MultipartFile) {
+        val me = userService.findByIdAndNotDeleted(userId)
+        val path = makePathWithUserId(file, me.id)
+        val originalImageUrl = imageUploader.upload(file, path);
+        val blurredImageUrl = imageUploader.uploadWithBlur(file, path);
+
+        profileService.uploadImageUrl(me, originalImageUrl.toString(), blurredImageUrl.toString())
+    }
+
+    private fun makePathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
+        .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
+
+    fun existIntroduction(userId: Long): ExistIntroductionResponse {
+        val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
+    }
+
+    fun findUserInfo(userId: Long): UserInfoResponse {
+        val user = userService.findByIdAndNotDeleted(userId)
+        return UserInfoResponse(name = user.name)
+    }
+
+    companion object {
+        private const val FILE_NAME_DELIMITER = "_"
+    }
+}
