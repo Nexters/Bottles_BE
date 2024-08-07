@@ -3,7 +3,7 @@ package com.nexters.bottles.api.bottle.facade.dto
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 
-data class BottlePingPongResponseDto(
+data class BottlePingPongResponse(
     val isStopped: Boolean = false,
     val stopUserName: String? = null,
     val userProfile: PingPongUserProfile,

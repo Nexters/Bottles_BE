@@ -1,14 +1,14 @@
 package com.nexters.bottles.api.bottle.controller
 
 import com.nexters.bottles.api.bottle.facade.BottleFacade
-import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequestDto
-import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponseDto
+import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
+import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottleImageShareRequest
-import com.nexters.bottles.api.bottle.facade.dto.BottleListResponseDto
+import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottleMatchRequest
-import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponseDto
-import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponseDto
-import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequestDto
+import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
+import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
+import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
@@ -28,14 +28,14 @@ class BottleController(
     @ApiOperation("홈 - 받은 보틀 목록 조회하기")
     @GetMapping
     @AuthRequired
-    fun getBottlesList(@AuthUserId userId: Long): BottleListResponseDto {
+    fun getBottlesList(@AuthUserId userId: Long): BottleListResponse {
         return bottleFacade.getNewBottles(userId)
     }
 
     @ApiOperation("홈 - 보틀 상세 정보 조회하기")
     @GetMapping("/{bottleId}")
     @AuthRequired
-    fun getBottleDetail(@PathVariable bottleId: Long): BottleDetailResponseDto {
+    fun getBottleDetail(@PathVariable bottleId: Long): BottleDetailResponse {
         return bottleFacade.getBottle(bottleId)
     }
 
@@ -45,9 +45,9 @@ class BottleController(
     fun acceptBottle(
         @AuthUserId userId: Long,
         @PathVariable bottleId: Long,
-        @RequestBody acceptBottleRequestDto: AcceptBottleRequestDto
+        @RequestBody acceptBottleRequest: AcceptBottleRequest
     ) {
-        bottleFacade.acceptBottle(userId, bottleId, acceptBottleRequestDto)
+        bottleFacade.acceptBottle(userId, bottleId, acceptBottleRequest)
     }
 
     @ApiOperation("홈 - 보틀 떠내려 보내기(거절하기)")
@@ -60,7 +60,7 @@ class BottleController(
     @ApiOperation("보틀 보관함 - 보틀 보관함 조회하기")
     @GetMapping("/ping-pong")
     @AuthRequired
-    fun getPingPongList(@AuthUserId userId: Long): PingPongListResponseDto {
+    fun getPingPongList(@AuthUserId userId: Long): PingPongListResponse {
         return bottleFacade.getPingPongBottles(userId)
     }
 
@@ -70,9 +70,9 @@ class BottleController(
     fun registerLetter(
         @AuthUserId userId: Long,
         @PathVariable bottleId: Long,
-        @RequestBody registerLetterRequestDto: RegisterLetterRequestDto
+        @RequestBody registerLetterRequest: RegisterLetterRequest
     ) {
-        bottleFacade.registerLetter(userId, bottleId, registerLetterRequestDto)
+        bottleFacade.registerLetter(userId, bottleId, registerLetterRequest)
     }
 
     @ApiOperation("보틀 보관함 - 보틀 읽음 표시하기")
@@ -92,7 +92,7 @@ class BottleController(
     @ApiOperation("보틀 보관함 - 보틀의 핑퐁 조회하기")
     @GetMapping("/ping-pong/{bottleId}")
     @AuthRequired
-    fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingPongResponseDto {
+    fun getBottlePingPong(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottlePingPongResponse {
         return bottleFacade.getBottlePingPong(userId, bottleId)
     }
 

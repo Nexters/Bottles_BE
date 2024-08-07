@@ -1,6 +1,6 @@
 package com.nexters.bottles.api.bottle.facade.dto
 
-data class PingPongListResponseDto(
+data class PingPongListResponse(
     val activeBottles: List<PingPongBottleDto>,
     val doneBottles: List<PingPongBottleDto>
 )

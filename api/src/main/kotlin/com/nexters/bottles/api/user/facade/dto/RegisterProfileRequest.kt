@@ -3,7 +3,7 @@ package com.nexters.bottles.api.user.facade.dto
 import com.nexters.bottles.app.user.domain.Interest
 import com.nexters.bottles.app.user.domain.Region
 
-data class RegisterProfileRequestDto(
+data class RegisterProfileRequest(
     val mbti: String,
     val keyword: List<String>,
     val interest: InterestDto,

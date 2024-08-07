@@ -3,7 +3,7 @@ package com.nexters.bottles.api.bottle.facade.dto
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 
-data class BottleDetailResponseDto(
+data class BottleDetailResponse(
     val id: Long,
     val userName: String,
     val age: Int,

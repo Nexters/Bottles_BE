@@ -2,7 +2,7 @@ package com.nexters.bottles.api.auth.facade.dto
 
 import java.time.LocalDateTime
 
-data class SmsResponseDTO(
+data class SmsResponse(
     val requestId: String,
     val requestTime: LocalDateTime,
     val statusCode: String,

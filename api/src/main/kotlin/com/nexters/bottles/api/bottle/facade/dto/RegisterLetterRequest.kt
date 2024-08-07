@@ -1,6 +1,6 @@
 package com.nexters.bottles.api.bottle.facade.dto
 
-data class RegisterLetterRequestDto(
+data class RegisterLetterRequest(
     val order: Int,
     val answer: String
 )

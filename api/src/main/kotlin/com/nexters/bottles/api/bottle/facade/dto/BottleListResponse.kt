@@ -3,7 +3,7 @@ package com.nexters.bottles.api.bottle.facade.dto
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
-data class BottleListResponseDto(
+data class BottleListResponse(
     val randomBottles: List<BottleDto>,
     val sentBottles: List<BottleDto>
 )

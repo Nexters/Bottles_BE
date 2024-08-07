@@ -4,7 +4,7 @@ import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.MessageDTO
+import com.nexters.bottles.api.auth.facade.dto.MessageDto
 import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
@@ -80,7 +80,7 @@ class AuthFacade(
         val authCode = authCodeGenerator.createRandomNumbers()
         val smsResponse = webClientAdapter.sendSms(
             time = currentTimeMillis,
-            messageDto = MessageDTO(to = phoneNumber, content = authCode),
+            messageDto = MessageDto(to = phoneNumber, content = authCode),
             signature = signature,
         )
         log.info { "requestId: ${smsResponse?.requestId}, statusCode: ${smsResponse?.statusCode}" }
