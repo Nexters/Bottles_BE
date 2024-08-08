@@ -25,13 +25,19 @@ class AdminController(
         return adminFacade.forceAfterProfile()
     }
 
+    @ApiOperation("남녀 테스트 계정 매칭 초기화하기")
+    @PostMapping("/cleanup")
+    fun forceCleanUp() {
+        return adminFacade.forceCleanUp()
+    }
+
     @ApiOperation("로그인 하기")
     @PostMapping("/login")
     fun login(): ForceAfterProfileResponse {
         return adminFacade.forceAfterProfile()
     }
 
-    @ApiOperation("보틀 도착한 상태 만들기")
+    @ApiOperation("차은우에게 보틀 도착한 상태 만들기 - 떠다니는 것 1개, 마음이 담긴것 1개")
     @PostMapping("/after-bottle-receive")
     fun forceBottleReceive() {
         adminFacade.forceBottleReceive()

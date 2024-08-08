@@ -9,6 +9,7 @@ import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.user.facade.dto.InterestDto
 import com.nexters.bottles.api.user.facade.dto.RegionDto
 import com.nexters.bottles.app.admin.service.AdminService
+import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
@@ -42,13 +43,10 @@ class AdminFacade(
     }
 
     fun forceAfterProfile(): ForceAfterProfileResponse {
-        adminService.cleanUpMockUpData(mockMaleUser)
-        adminService.cleanUpMockUpData(mockFemaleUser)
-
         val accessToken1 = jwtTokenProvider.createAccessToken(mockMaleUser.id)
         val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockMaleUser.id)
-        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser.id)
-        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser.id)
+        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser1.id)
+        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser1.id)
 
         return ForceAfterProfileResponse(
             accessToken1 = accessToken1,
@@ -61,8 +59,8 @@ class AdminFacade(
     fun forceLogin(): ForceAfterProfileResponse {
         val accessToken1 = jwtTokenProvider.createAccessToken(mockMaleUser.id)
         val refreshToken1 = jwtTokenProvider.upsertRefreshToken(mockMaleUser.id)
-        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser.id)
-        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser.id)
+        val accessToken2 = jwtTokenProvider.createAccessToken(mockFemaleUser1.id)
+        val refreshToken2 = jwtTokenProvider.upsertRefreshToken(mockFemaleUser1.id)
 
         return ForceAfterProfileResponse(
             accessToken1 = accessToken1,
@@ -74,8 +72,16 @@ class AdminFacade(
 
     fun forceBottleReceive() {
         adminService.forceBottleReceive(
-            mockMaleUser,
-            mockFemaleUser
+            mockMaleUser = mockMaleUser,
+            mockFemaleUser = mockFemaleUser1,
+            bottleStatus = BottleStatus.RANDOM,
+            likeMessage = null,
+        )
+        adminService.forceBottleReceive(
+            mockMaleUser = mockMaleUser,
+            mockFemaleUser = mockFemaleUser2,
+            bottleStatus = BottleStatus.SENT,
+            likeMessage = "이상형이에요 ☺"
         )
     }
 
@@ -90,7 +96,8 @@ class AdminFacade(
 
     companion object {
         private const val mockMaleUserId = 1L
-        private const val mockFemaleUserId = 2L
+        private const val mockFemaleUserId1 = 2L
+        private const val mockFemaleUserId2 = 9L
 
         val mockMaleUser = User(
             id = mockMaleUserId,
@@ -102,8 +109,18 @@ class AdminFacade(
             signUpType = SignUpType.KAKAO,
         )
 
-        val mockFemaleUser = User(
-            id = mockFemaleUserId,
+        val mockFemaleUser1 = User(
+            id = mockFemaleUserId1,
+            birthdate = LocalDate.of(1999, 3, 1),
+            name = "carina",
+            gender = Gender.FEMALE,
+            kakaoId = "carina123",
+            phoneNumber = "01011112222",
+            signUpType = SignUpType.KAKAO,
+        )
+
+        val mockFemaleUser2 = User(
+            id = mockFemaleUserId2,
             birthdate = LocalDate.of(1999, 3, 1),
             name = "카리나",
             gender = Gender.FEMALE,
@@ -140,8 +157,36 @@ class AdminFacade(
             imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
         )
 
-        val mockFemaleUserProfile = UserProfile(
-            user = mockFemaleUser,
+        val mockFemaleUserProfile1 = UserProfile(
+            user = mockFemaleUser1,
+            profileSelect = UserProfileSelect(
+                mbti = "intj",
+                keyword = listOf("다정한", "적극적인", "신중한"),
+                interest = InterestDto(
+                    culture = listOf("전시회 방문", "공연 관람"),
+                    sports = listOf("헬스", "러닝"),
+                    entertainment = listOf("독서"),
+                    etc = listOf()
+                ).toDomain(),
+                job = "직장인",
+                height = 163,
+                smoking = "가끔 피워요",
+                alcohol = "때에 따라 적당히 즐겨요",
+                religion = "무교",
+                region = RegionDto("서울특별시", "강남구").toDomain()
+            ),
+            introduction = listOf(
+                QuestionAndAnswer(
+                    "보틀에 담을 소개를 작성해 주세요", """호기심 많고 새로운 경험을 즐깁니다.
+                |주말엔 책을 읽거나 맛집을 찾아 다니며 여유를 즐기고, 친구들과 소소한 모임으로 충전해요. 일상에서 소소한 행복을 찾아요.""".trimMargin()
+                )
+            ),
+            blurredImageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/blurred_%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1",
+            imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
+        )
+
+        val mockFemaleUserProfile2 = UserProfile(
+            user = mockFemaleUser2,
             profileSelect = UserProfileSelect(
                 mbti = "intj",
                 keyword = listOf("다정한", "적극적인", "신중한"),
@@ -177,5 +222,11 @@ class AdminFacade(
                 ?: throw IllegalArgumentException("유효하지 않은 리프레시 토큰입니다")
             adminService.expireRefreshToken(expireTokenRequest.token, userId)
         }
+    }
+
+    fun forceCleanUp() {
+        adminService.cleanUpMockUpData(mockMaleUser)
+        adminService.cleanUpMockUpData(mockFemaleUser1)
+        adminService.cleanUpMockUpData(mockFemaleUser2)
     }
 }
