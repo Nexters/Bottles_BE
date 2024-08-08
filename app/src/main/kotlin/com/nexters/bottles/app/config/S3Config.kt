@@ -1,4 +1,4 @@
-package com.nexters.bottles.api.config
+package com.nexters.bottles.app.config
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
