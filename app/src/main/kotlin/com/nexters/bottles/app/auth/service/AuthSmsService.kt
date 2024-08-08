@@ -24,7 +24,7 @@ class AuthSmsService(
 
     @Transactional(readOnly = true)
     fun findLastAuthSms(phoneNumber: String): AuthSms {
-        return authSmsRepository.findByPhoneNumberOrderByIdDesc(phoneNumber)
+        return authSmsRepository.findFirstByPhoneNumberOrderByIdDesc(phoneNumber)
             ?: throw IllegalArgumentException("다시 확인해주세요")
     }
 }

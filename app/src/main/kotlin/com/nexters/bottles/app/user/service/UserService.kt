@@ -1,5 +1,6 @@
 package com.nexters.bottles.app.user.service
 
+import com.nexters.bottles.app.common.exception.ConflictException
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.domain.enum.SignUpType
@@ -23,6 +24,9 @@ class UserService(
     fun findKakaoUserOrSignUp(userInfoResponse: KakaoUserInfoResponse): SignInUpDto {
         userRepository.findByPhoneNumberAndDeletedFalse(userInfoResponse.kakao_account.phone_number)?.let { user ->
             log.info { "전화번호 ${userInfoResponse.kakao_account.phone_number} 유저 존재하여 조회 후 반환" }
+            if (user.signUpType == SignUpType.NORMAL) {
+                throw ConflictException("이미 가입한 회원이에요")
+            }
             return SignInUpDto(userId = user.id, isSignUp = false)
         } ?: run {
             log.info { "전화번호 ${userInfoResponse.kakao_account.phone_number} 유저 존재하지 않아 회원가입" }
@@ -46,7 +50,7 @@ class UserService(
     @Transactional
     fun signUp(signUpRequest: SignUpRequest): User {
         userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
-            throw IllegalArgumentException("이미 가입한 회원이에요")
+            throw ConflictException("이미 가입한 회원이에요")
         } ?: run {
             return userRepository.save(
                 User(

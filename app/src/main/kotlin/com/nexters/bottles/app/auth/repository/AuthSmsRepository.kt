@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface AuthSmsRepository : JpaRepository<AuthSms, Long> {
 
-    fun findByPhoneNumberOrderByIdDesc(phoneNumber: String): AuthSms?
+    fun findFirstByPhoneNumberOrderByIdDesc(phoneNumber: String): AuthSms?
 }
