@@ -10,6 +10,6 @@ data class BottleDetailResponse(
     val introduction: List<QuestionAndAnswer>? = null,
     val profileSelect: UserProfileSelect? = null,
     val likeMessage: String? = null,
-    val userImageUrl: String?,
+    val userImageUrl: String? = null,
 ) {
 }
