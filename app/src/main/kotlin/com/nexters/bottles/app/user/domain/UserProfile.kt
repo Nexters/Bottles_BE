@@ -31,7 +31,12 @@ class UserProfile(
     var imageUrl: String? = null,
 
     var blurredImageUrl: String? = null,
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun hasCompleteIntroduction() :Boolean {
+        return introduction.isNotEmpty()
+    }
+}
 
 data class UserProfileSelect(
     val mbti: String,

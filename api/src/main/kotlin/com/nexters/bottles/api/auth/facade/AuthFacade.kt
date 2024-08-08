@@ -15,6 +15,7 @@ import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
 import com.nexters.bottles.app.auth.service.RefreshTokenService
+import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
@@ -26,6 +27,7 @@ import java.time.LocalDateTime
 @Component
 class AuthFacade(
     private val userService: UserService,
+    private val userProfileService: UserProfileService,
     private val authSmsService: AuthSmsService,
     private val blackListService: BlackListService,
     private val refreshTokenService: RefreshTokenService,
@@ -40,6 +42,7 @@ class AuthFacade(
     fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
         val signInUpDto = userService.findKakaoUserOrSignUp(userInfoResponse)
+        val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
 
         val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
@@ -48,6 +51,7 @@ class AuthFacade(
             accessToken = accessToken,
             refreshToken = refreshToken,
             isSignUp = signInUpDto.isSignUp,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
 
@@ -115,12 +119,15 @@ class AuthFacade(
         val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)
             ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
 
+        val userProfile = userProfileService.findUserProfile(user.id)
+
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
 
         return SmsSignInResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
 }
