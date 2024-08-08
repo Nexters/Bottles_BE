@@ -51,7 +51,7 @@ class AuthFacade(
             accessToken = accessToken,
             refreshToken = refreshToken,
             isSignUp = signInUpDto.isSignUp,
-            hasUserProfile = userProfile?.hasCompleteIntroduction() ?: false,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
 
@@ -127,7 +127,7 @@ class AuthFacade(
         return SmsSignInResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            hasUserProfile = userProfile?.hasCompleteIntroduction() ?: false,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
 }
