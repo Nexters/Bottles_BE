@@ -47,7 +47,7 @@ CREATE TABLE letter
     bottle_id             BIGINT                             NOT NULL,
     user_id               BIGINT                             NOT NULL,
     letters               JSON                               NOT NULL,
-    is_show_image         BOOLEAN  DEFAULT FALSE             NOT NULL,
+    is_show_image         BOOLEAN  DEFAULT FALSE,
     is_read_by_other_user BOOLEAN  DEFAULT FALSE             NOT NULL,
     created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL

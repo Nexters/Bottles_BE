@@ -1,9 +1,9 @@
 package com.nexters.bottles.api.infra
 
-import com.nexters.bottles.api.auth.facade.dto.KakaoUserInfoResponse
-import com.nexters.bottles.api.auth.facade.dto.MessageDTO
-import com.nexters.bottles.api.auth.facade.dto.SmsRequestDTO
-import com.nexters.bottles.api.auth.facade.dto.SmsResponseDTO
+import com.nexters.bottles.api.auth.facade.dto.MessageDto
+import com.nexters.bottles.api.auth.facade.dto.SmsRequest
+import com.nexters.bottles.api.auth.facade.dto.SmsResponse
+import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -38,7 +38,7 @@ class WebClientAdapter(
             .block() ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
     }
 
-    fun sendSms(time: Long, messageDto: MessageDTO, signature: String): SmsResponseDTO? {
+    fun sendSms(time: Long, messageDto: MessageDto, signature: String): SmsResponse? {
         val headers = mapOf(
             "Content-Type" to MediaType.APPLICATION_JSON_VALUE,
             "x-ncp-apigw-timestamp" to time.toString(),
@@ -55,7 +55,7 @@ class WebClientAdapter(
             }
             .build()
 
-        val request = SmsRequestDTO(
+        val request = SmsRequest(
             type = "SMS",
             contentType = "COMM",
             countryCode = "82",
@@ -64,11 +64,11 @@ class WebClientAdapter(
             messages = listOf(messageDto)
         )
 
-        val response: SmsResponseDTO? = webClient.post()
+        val response: SmsResponse? = webClient.post()
             .uri("/sms/v2/services/$naverSmsServiceId/messages")
             .body(BodyInserters.fromValue(request))
             .retrieve()
-            .bodyToMono(SmsResponseDTO::class.java)
+            .bodyToMono(SmsResponse::class.java)
             .block()
 
         return response

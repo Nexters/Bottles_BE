@@ -1,8 +1,7 @@
 package com.nexters.bottles.api.auth.component
 
-import com.nexters.bottles.api.auth.domain.RefreshToken
-import com.nexters.bottles.api.auth.repository.BlackListRepository
-import com.nexters.bottles.api.auth.repository.RefreshTokenRepository
+import com.nexters.bottles.app.auth.service.BlackListService
+import com.nexters.bottles.app.auth.service.RefreshTokenService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -28,8 +27,8 @@ class JwtTokenProvider(
     @Value("\${jwt.refresh-token-validity}")
     private val refreshTokenValidityInMilliseconds: Long,
 
-    private val refreshTokenRepository: RefreshTokenRepository,
-    private val blackListRepository: BlackListRepository,
+    private val refreshTokenService: RefreshTokenService,
+    private val blackListService: BlackListService,
 ) {
 
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
@@ -58,7 +57,7 @@ class JwtTokenProvider(
             .signWith(refreshKey)
             .compact()
 
-        upsertRefreshToken(userId = userId, refreshToken = token, expiryDate = expiryDate)
+        refreshTokenService.upsertRefreshToken(userId = userId, refreshToken = token, expiryDate = expiryDate)
 
         return token
     }
@@ -76,7 +75,7 @@ class JwtTokenProvider(
     }
 
     fun validateToken(token: String, isAccessToken: Boolean): Boolean {
-        val expiredAccessToken = blackListRepository.findByExpiredAccessToken(token)
+        val expiredAccessToken = blackListService.findByExpiredToken(token)
         val claims = getClaimsFromToken(token, isAccessToken)
         val now = Date()
         return expiredAccessToken == null && claims != null && !claims.expiration.before(now)
@@ -94,31 +93,6 @@ class JwtTokenProvider(
             null
         }
     }
-
-    private fun upsertRefreshToken(userId: Long, refreshToken: String, expiryDate: LocalDateTime) {
-        val refreshTokens = refreshTokenRepository.findAllByUserId(userId)
-
-        if (refreshTokens.isNotEmpty()) {
-            refreshTokens.forEach {
-                refreshTokenRepository.deleteById(it.id)
-            }
-            refreshTokenRepository.save(
-                RefreshToken(
-                    userId = userId,
-                    token = refreshToken,
-                    expiryDate = expiryDate
-                )
-            )
-        } else {
-            refreshTokenRepository.save(
-                RefreshToken(
-                    userId = userId,
-                    token = refreshToken,
-                    expiryDate = expiryDate
-                )
-            )
-        }
-    }
 }
 
 fun toDate(localDateTime: LocalDateTime): Date {
@@ -128,3 +102,4 @@ fun toDate(localDateTime: LocalDateTime): Date {
 fun toLocalDateTime(date: Date): LocalDateTime {
     return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 }
+

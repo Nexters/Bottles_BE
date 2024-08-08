@@ -1,26 +1,26 @@
 package com.nexters.bottles.api.bottle.facade
 
-import com.nexters.bottles.api.bottle.domain.Bottle
-import com.nexters.bottles.api.bottle.domain.Letter
-import com.nexters.bottles.api.bottle.domain.enum.BottleStatus
-import com.nexters.bottles.api.bottle.domain.enum.PingPongStatus
-import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequestDto
-import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponseDto
+import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
+import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottleDto
-import com.nexters.bottles.api.bottle.facade.dto.BottleListResponseDto
-import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponseDto
+import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
+import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
 import com.nexters.bottles.api.bottle.facade.dto.MatchResult
 import com.nexters.bottles.api.bottle.facade.dto.Photo
 import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
 import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
-import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponseDto
+import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
-import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequestDto
-import com.nexters.bottles.api.bottle.service.BottleService
-import com.nexters.bottles.api.bottle.service.LetterService
-import com.nexters.bottles.api.user.domain.User
-import com.nexters.bottles.api.user.domain.UserProfile
-import com.nexters.bottles.api.user.service.UserService
+import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
+import com.nexters.bottles.app.bottle.domain.Bottle
+import com.nexters.bottles.app.bottle.domain.Letter
+import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.app.bottle.service.BottleService
+import com.nexters.bottles.app.bottle.service.LetterService
+import com.nexters.bottles.app.user.domain.User
+import com.nexters.bottles.app.user.domain.UserProfile
+import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -36,7 +36,7 @@ class BottleFacade(
     private val isActiveMatching: Boolean,
 ) {
 
-    fun getNewBottles(userId: Long): BottleListResponseDto {
+    fun getNewBottles(userId: Long): BottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
         if (isActiveMatching) {
             val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
@@ -48,7 +48,7 @@ class BottleFacade(
         val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it) } ?: emptyList()
         val sentBottles = groupByStatus[BottleStatus.SENT]?.map { toBottleDto(it) } ?: emptyList()
 
-        return BottleListResponseDto(
+        return BottleListResponse(
             randomBottles = randomBottles,
             sentBottles = sentBottles
         )
@@ -66,13 +66,13 @@ class BottleFacade(
         )
     }
 
-    fun getBottle(bottleId: Long): BottleDetailResponseDto {
+    fun getBottle(bottleId: Long): BottleDetailResponse {
         val bottle = bottleService.getNotExpiredBottle(
             bottleId,
             setOf(PingPongStatus.NONE)
         )
 
-        return BottleDetailResponseDto(
+        return BottleDetailResponse(
             id = bottle.id,
             userName = bottle.sourceUser.name,
             age = bottle.sourceUser.getKoreanAge(),
@@ -82,15 +82,15 @@ class BottleFacade(
         )
     }
 
-    fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequestDto: AcceptBottleRequestDto) {
-        bottleService.acceptBottle(userId, bottleId, acceptBottleRequestDto.likeMessage)
+    fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequest: AcceptBottleRequest) {
+        bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage)
     }
 
     fun refuseBottle(userId: Long, bottleId: Long) {
         bottleService.refuseBottle(userId, bottleId)
     }
 
-    fun getPingPongBottles(userId: Long): PingPongListResponseDto {
+    fun getPingPongBottles(userId: Long): PingPongListResponse {
         val pingPongBottles = bottleService.getPingPongBottles(userId)
         val user = userService.findByIdAndNotDeleted(userId)
 
@@ -104,7 +104,7 @@ class BottleFacade(
                 user
             )
         } ?: emptyList()
-        return PingPongListResponseDto(activeBottles = activeBottles, doneBottles = doneBottles)
+        return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
     private fun toPingPongBottleDto(bottle: Bottle, user: User): PingPongBottleDto {
@@ -122,15 +122,15 @@ class BottleFacade(
         )
     }
 
-    fun registerLetter(userId: Long, bottleId: Long, registerLetterRequestDto: RegisterLetterRequestDto) {
+    fun registerLetter(userId: Long, bottleId: Long, registerLetterRequest: RegisterLetterRequest) {
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
         val user = userService.findByIdAndNotDeleted(userId)
 
         letterService.registerLetter(
             pingPongBottle,
             user,
-            registerLetterRequestDto.order,
-            registerLetterRequestDto.answer
+            registerLetterRequest.order,
+            registerLetterRequest.answer
         )
     }
 
@@ -148,14 +148,14 @@ class BottleFacade(
         pingPongBottle.stop(me)
     }
 
-    fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponseDto {
+    fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponse {
         val me = userService.findByIdAndNotDeleted(userId)
         val bottle = bottleService.getPingPongBottle(bottleId)
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
 
-        return BottlePingPongResponseDto(
+        return BottlePingPongResponse(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
             userProfile = PingPongUserProfile(

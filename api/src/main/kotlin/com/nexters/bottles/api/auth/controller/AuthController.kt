@@ -6,7 +6,6 @@ import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.api.auth.facade.dto.SignUpRequest
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.api.auth.facade.dto.SmsSendRequest
 import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
@@ -16,6 +15,7 @@ import com.nexters.bottles.api.global.interceptor.RefreshAuthRequired
 import com.nexters.bottles.api.global.resolver.AccessToken
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.global.resolver.RefreshTokenUserId
+import com.nexters.bottles.app.user.service.dto.SignUpRequest
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

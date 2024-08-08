@@ -1,8 +1,7 @@
 package com.nexters.bottles.api.admin.component
 
 import com.nexters.bottles.api.auth.component.toDate
-import com.nexters.bottles.api.auth.domain.RefreshToken
-import com.nexters.bottles.api.auth.repository.RefreshTokenRepository
+import com.nexters.bottles.app.auth.service.RefreshTokenService
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +17,7 @@ class TestJwtTokenProvider(
     @Value("\${jwt.refresh-token-secret-key}")
     private val refreshTokenSecretKey: String,
 
-    private val refreshTokenRepository: RefreshTokenRepository,
+    private val refreshTokenService: RefreshTokenService,
 ) {
 
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
@@ -50,33 +49,8 @@ class TestJwtTokenProvider(
             .signWith(refreshKey)
             .compact()
 
-        upsertRefreshToken(userId = userId, refreshToken = token, expiryDate = expiryDate)
+        refreshTokenService.upsertRefreshToken(userId = userId, refreshToken = token, expiryDate = expiryDate)
 
         return token
-    }
-
-    private fun upsertRefreshToken(userId: Long, refreshToken: String, expiryDate: LocalDateTime) {
-        val refreshTokens = refreshTokenRepository.findAllByUserId(userId)
-
-        if (refreshTokens.isNotEmpty()) {
-            refreshTokens.forEach {
-                refreshTokenRepository.deleteById(it.id)
-            }
-            refreshTokenRepository.save(
-                RefreshToken(
-                    userId = userId,
-                    token = refreshToken,
-                    expiryDate = expiryDate
-                )
-            )
-        } else {
-            refreshTokenRepository.save(
-                RefreshToken(
-                    userId = userId,
-                    token = refreshToken,
-                    expiryDate = expiryDate
-                )
-            )
-        }
     }
 }

@@ -1,15 +1,15 @@
 package com.nexters.bottles.api.user.facade
 
-import com.nexters.bottles.api.user.component.ImageUploader
-import com.nexters.bottles.api.user.domain.UserProfileSelect
 import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
-import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponseDto
-import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequestDto
-import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequestDto
+import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
+import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
+import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
 import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
-import com.nexters.bottles.api.user.facade.dto.UserProfileResponseDto
-import com.nexters.bottles.api.user.service.UserProfileService
-import com.nexters.bottles.api.user.service.UserService
+import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
+import com.nexters.bottles.app.common.component.ImageUploader
+import com.nexters.bottles.app.user.domain.UserProfileSelect
+import com.nexters.bottles.app.user.service.UserProfileService
+import com.nexters.bottles.app.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -26,7 +26,7 @@ class UserProfileFacade(
 
     private val log = KotlinLogging.logger { }
 
-    fun upsertProfile(userId: Long, profileDto: RegisterProfileRequestDto) {
+    fun upsertProfile(userId: Long, profileDto: RegisterProfileRequest) {
         validateProfile(profileDto)
         val convertedProfileDto = convertProfileDto(profileDto)
 
@@ -35,35 +35,35 @@ class UserProfileFacade(
             profileSelect = UserProfileSelect(
                 mbti = convertedProfileDto.mbti,
                 keyword = convertedProfileDto.keyword,
-                interest = convertedProfileDto.interest,
+                interest = convertedProfileDto.interest.toDomain(),
                 job = convertedProfileDto.job,
                 height = convertedProfileDto.height,
                 smoking = convertedProfileDto.smoking,
                 alcohol = convertedProfileDto.alcohol,
                 religion = convertedProfileDto.religion,
-                region = convertedProfileDto.region,
+                region = convertedProfileDto.region.toDomain(),
             )
         )
         userService.addKakaoId(userId = userId, kakaoId = profileDto.kakaoId)
     }
 
-    fun getProfileChoice(): ProfileChoiceResponseDto {
-        return ProfileChoiceResponseDto(
+    fun getProfileChoice(): ProfileChoiceResponse {
+        return ProfileChoiceResponse(
             regions = regions
         )
     }
 
-    fun upsertIntroduction(userId: Long, registerIntroductionRequestDto: RegisterIntroductionRequestDto) {
-        validateIntroduction(registerIntroductionRequestDto)
+    fun upsertIntroduction(userId: Long, registerIntroductionRequest: RegisterIntroductionRequest) {
+        validateIntroduction(registerIntroductionRequest)
 
-        profileService.saveIntroduction(userId, registerIntroductionRequestDto.introduction)
+        profileService.saveIntroduction(userId, registerIntroductionRequest.introduction)
     }
 
-    fun getProfile(userId: Long): UserProfileResponseDto {
+    fun getProfile(userId: Long): UserProfileResponse {
 
         val userProfile = profileService.findUserProfile(userId)
         val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
-        return UserProfileResponseDto(
+        return UserProfileResponse(
             userName = user.name,
             age = user.getKoreanAge(),
             imageUrl = userProfile?.imageUrl,
@@ -72,7 +72,7 @@ class UserProfileFacade(
         )
     }
 
-    private fun validateProfile(profileDto: RegisterProfileRequestDto) {
+    private fun validateProfile(profileDto: RegisterProfileRequest) {
         require(profileDto.keyword.size in 3..5) {
             "키워드는 최소 3개, 최대 5개까지 선택할 수 있어요"
         }
@@ -83,16 +83,15 @@ class UserProfileFacade(
         }
     }
 
-    private fun validateIntroduction(introductionDto: RegisterIntroductionRequestDto) {
+    private fun validateIntroduction(introductionDto: RegisterIntroductionRequest) {
         introductionDto.introduction.forEach {
-//            require(it.answer.length >= 30 && it.answer.length <= 300) {
-//                "소개는 30자 이상 300자 이하로 써야 해요"
-//            }
-            // TODO: 개발 환경에서 빠르게 테스트 하기 위해 일단 주석 처리하고 라이브 서비스 나가기전 해제할 예정입니다.
+            require(it.answer.length >= 30 && it.answer.length <= 300) {
+                "소개는 30자 이상 300자 이하로 써야 해요"
+            }
         }
     }
 
-    private fun convertProfileDto(profileDto: RegisterProfileRequestDto): RegisterProfileRequestDto {
+    private fun convertProfileDto(profileDto: RegisterProfileRequest): RegisterProfileRequest {
         when (profileDto.smoking) {
             "전혀 피우지 않아요" -> profileDto.smoking = "흡연 안해요"
             "가끔 피워요" -> profileDto.smoking = "흡연은 가끔"

@@ -4,11 +4,11 @@ import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserProfileFacade
 import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
-import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponseDto
-import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequestDto
-import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequestDto
+import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
+import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
+import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
 import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
-import com.nexters.bottles.api.user.facade.dto.UserProfileResponseDto
+import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -27,13 +27,13 @@ class UserProfileController(
     @ApiOperation("온보딩 프로필 등록하기")
     @PostMapping("/choice")
     @AuthRequired
-    fun upsertProfile(@AuthUserId userId: Long, @RequestBody registerProfileRequestDto: RegisterProfileRequestDto) {
-        profileFacade.upsertProfile(userId, registerProfileRequestDto)
+    fun upsertProfile(@AuthUserId userId: Long, @RequestBody registerProfileRequest: RegisterProfileRequest) {
+        profileFacade.upsertProfile(userId, registerProfileRequest)
     }
 
     @ApiOperation("온보딩 선택지 조회하기 - 지역")
     @GetMapping("/choice")
-    fun getProfileChoiceList(): ProfileChoiceResponseDto {
+    fun getProfileChoiceList(): ProfileChoiceResponse {
         return profileFacade.getProfileChoice()
     }
 
@@ -42,15 +42,15 @@ class UserProfileController(
     @AuthRequired
     fun upsertIntroduction(
         @AuthUserId userId: Long,
-        @RequestBody registerIntroductionRequestDto: RegisterIntroductionRequestDto
+        @RequestBody registerIntroductionRequest: RegisterIntroductionRequest
     ) {
-        profileFacade.upsertIntroduction(userId, registerIntroductionRequestDto)
+        profileFacade.upsertIntroduction(userId, registerIntroductionRequest)
     }
 
     @ApiOperation("마이페이지 내 프로필 조회하기")
     @GetMapping
     @AuthRequired
-    fun getProfile(@AuthUserId userId: Long): UserProfileResponseDto {
+    fun getProfile(@AuthUserId userId: Long): UserProfileResponse {
         return profileFacade.getProfile(userId)
     }
 

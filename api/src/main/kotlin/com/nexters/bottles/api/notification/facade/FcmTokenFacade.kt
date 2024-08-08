@@ -1,8 +1,8 @@
 package com.nexters.bottles.api.notification.facade
 
 import com.nexters.bottles.api.notification.facade.dto.FcmTokenRegisterRequest
-import com.nexters.bottles.api.notification.service.FcmTokenService
-import com.nexters.bottles.api.user.service.UserService
+import com.nexters.bottles.app.notification.service.FcmTokenService
+import com.nexters.bottles.app.user.service.UserService
 import org.springframework.stereotype.Component
 
 @Component

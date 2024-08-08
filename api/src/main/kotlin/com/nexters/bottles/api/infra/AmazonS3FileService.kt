@@ -3,7 +3,7 @@ package com.nexters.bottles.api.infra
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
-import com.nexters.bottles.api.user.service.FileService
+import com.nexters.bottles.app.common.component.FileService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
