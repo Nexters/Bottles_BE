@@ -15,4 +15,9 @@ class BlackListService(
         val blackList = BlackList(expiredAccessToken = accessToken)
         blackListRepository.save(blackList)
     }
+
+    @Transactional(readOnly = true)
+    fun findByExpiredToken(token: String): BlackList? {
+        return blackListRepository.findByExpiredAccessToken(token)
+    }
 }

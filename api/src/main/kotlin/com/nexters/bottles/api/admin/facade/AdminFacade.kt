@@ -1,14 +1,14 @@
 package com.nexters.bottles.api.admin.facade
 
+import com.nexters.bottles.api.admin.component.TestJwtTokenProvider
 import com.nexters.bottles.api.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.api.admin.facade.dto.CustomTokenResponse
 import com.nexters.bottles.api.admin.facade.dto.ExpireTokenRequest
 import com.nexters.bottles.api.admin.facade.dto.ForceAfterProfileResponse
+import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.user.facade.dto.InterestDto
 import com.nexters.bottles.api.user.facade.dto.RegionDto
-import com.nexters.bottles.app.admin.component.TestJwtTokenProvider
 import com.nexters.bottles.app.admin.service.AdminService
-import com.nexters.bottles.app.auth.service.JwtTokenProvider
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile

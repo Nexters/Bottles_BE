@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.auth.facade
 
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
+import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
@@ -13,7 +14,6 @@ import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
-import com.nexters.bottles.app.auth.service.JwtTokenProvider
 import com.nexters.bottles.app.auth.service.RefreshTokenService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
