@@ -1,8 +1,30 @@
 # Module
 
-- **api**: 통신을 위한 모듈 (controller 레이어)
-- **app**: 도메인 및 도메인 로직을 위한 모듈 (domain, repository, service 레이어)
-- **batch**: 배치 작업을 위한 모듈
+### api
+
+통신을 위한 모듈 (controller 레이어)
+
+- 로컬 실행 방법
+
+```shell
+cd api/build/libs
+java -jar api-0.0.1-SNAPSHOT.jar --spring.profiles.active=local --server.port=8080 
+```
+
+### app
+
+도메인 및 도메인 로직을 위한 모듈 (domain, repository, service 레이어)
+
+### batch
+
+배치 작업을 위한 모듈
+
+- 로컬 실행 방법
+
+```shell
+cd batch/build/libs
+java -jar batch-0.0.1-SNAPSHOT.jar --spring.profiles.active=local --server.port=8081
+```
 
 # CI/CD Flow
 
