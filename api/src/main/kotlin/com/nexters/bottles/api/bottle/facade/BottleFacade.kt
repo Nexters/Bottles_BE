@@ -79,6 +79,7 @@ class BottleFacade(
             introduction = bottle.sourceUser.userProfile?.introduction,
             profileSelect = bottle.sourceUser.userProfile?.profileSelect,
             likeMessage = bottle.likeMessage,
+            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl
         )
     }
 

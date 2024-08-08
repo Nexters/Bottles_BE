@@ -7,7 +7,8 @@ import org.springframework.boot.runApplication
 @ConfigurationPropertiesScan
 @SpringBootApplication(
     scanBasePackages = [
-        "com.nexters.bottles.app"
+        "com.nexters.bottles.batch",
+        "com.nexters.bottles.app",
     ]
 )
 class BottlesBatchApplication
