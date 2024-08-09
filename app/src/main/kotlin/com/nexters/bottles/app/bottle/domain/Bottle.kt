@@ -26,13 +26,9 @@ class Bottle(
     @JoinColumn(name = "target_user_id")
     var targetUser: User,
 
-    var targetUserSelect: Boolean = false,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_user_id")
     var sourceUser: User,
-
-    var sourceUserSelect: Boolean = false,
 
     var likeMessage: String? = null,
 
@@ -42,6 +38,10 @@ class Bottle(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stopped_user_id")
     var stoppedUser: User? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "first_select_user_id")
+    var firstSelectUser: User? = null,
 
     @Column
     @Enumerated(value = EnumType.STRING)
@@ -81,14 +81,15 @@ class Bottle(
         this.pingPongStatus = PingPongStatus.STOPPED
     }
 
-    fun selectMatch(userId: Long, willMatch: Boolean) {
-        when (userId) {
-            targetUser.id -> targetUserSelect = willMatch
-            sourceUser.id -> sourceUserSelect = willMatch
-            else -> throw IllegalArgumentException("고객센터에 문의해주세요")
-        }
-        if (targetUserSelect && sourceUserSelect) {
-            pingPongStatus = PingPongStatus.MATCHED
-        }
+    fun hasFirstSelectUser(): Boolean {
+        return firstSelectUser == null
+    }
+
+    fun markFirstSelectUser(user: User) {
+        firstSelectUser = user
+    }
+
+    fun match() {
+        pingPongStatus = PingPongStatus.MATCHED
     }
 }

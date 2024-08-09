@@ -35,6 +35,9 @@ class Letter(
     var isShowImage: Boolean? = null,
 
     @Column
+    var isShowContact: Boolean? = null,
+
+    @Column
     var isReadByOtherUser: Boolean = false,
 ) : BaseEntity() {
 
@@ -55,6 +58,22 @@ class Letter(
 
     fun shareImage(willShare: Boolean) {
         isShowImage = willShare
+    }
+
+    fun shareContact(willShare: Boolean) {
+        isShowContact = willShare
+    }
+
+    fun stopPingPong(stoppedBy: User) {
+        bottle.stop(stoppedBy)
+    }
+
+    fun finishIfAllShare() {
+        if (bottle.hasFirstSelectUser()) {
+            bottle.match()
+        } else {
+            bottle.markFirstSelectUser(user)
+        }
     }
 }
 

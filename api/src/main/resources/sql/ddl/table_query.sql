@@ -27,18 +27,17 @@ CREATE TABLE user_profile
 
 CREATE TABLE bottle
 (
-    id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
-    target_user_id     BIGINT                                NOT NULL,
-    target_user_select BOOLEAN     DEFAULT FALSE             NOT NULL,
-    source_user_id     BIGINT                                NOT NULL,
-    source_user_select BOOLEAN     DEFAULT FALSE             NOT NULL,
-    like_message       VARCHAR(255),
-    expired_at         DATETIME                              NOT NULL,
-    stopped_user_id    BIGINT,
-    bottle_status      VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL,
-    ping_pong_status   VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
-    created_at         DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at         DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    target_user_id       BIGINT                                NOT NULL,
+    source_user_id       BIGINT                                NOT NULL,
+    like_message         VARCHAR(255),
+    expired_at           DATETIME                              NOT NULL,
+    stopped_user_id      BIGINT,
+    first_select_user_id BIGINT,
+    bottle_status        VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL,
+    ping_pong_status     VARCHAR(20) DEFAULT 'NONE'            NOT NULL,
+    created_at           DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at           DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE letter
@@ -48,6 +47,7 @@ CREATE TABLE letter
     user_id               BIGINT                             NOT NULL,
     letters               JSON                               NOT NULL,
     is_show_image         BOOLEAN  DEFAULT FALSE,
+    is_show_contact       BOOLEAN  DEFAULT FALSE,
     is_read_by_other_user BOOLEAN  DEFAULT FALSE             NOT NULL,
     created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL

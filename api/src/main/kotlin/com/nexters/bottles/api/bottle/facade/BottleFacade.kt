@@ -143,10 +143,7 @@ class BottleFacade(
     }
 
     fun stopBottle(userId: Long, bottleId: Long) {
-        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
-        val me = userService.findByIdAndNotDeleted(userId)
-
-        pingPongBottle.stop(me)
+        bottleService.stop(userId, bottleId)
     }
 
     fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponse {
@@ -175,7 +172,9 @@ class BottleFacade(
             ),
             matchResult = MatchResult(
                 isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
-                contact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요")
+                otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
+                shouldAnswer = myLetter.isShowContact == null,
+                isFirstSelect = bottle.firstSelectUser == me
             )
         )
     }
@@ -212,7 +211,9 @@ class BottleFacade(
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
             shouldAnswer = myLetter.isShowImage == null,
-            changeFinished = (myLetter.isShowImage != null) && (otherLetter.isShowImage != null)
+            myAnswer = myLetter.isShowImage,
+            otherAnswer = otherLetter.isShowImage,
+            isDone = (myLetter.isShowImage != null) && (otherLetter.isShowImage != null)
         )
     }
 
@@ -220,24 +221,15 @@ class BottleFacade(
         val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
 
-        val letter = letterService.findLetter(pingPongBottle, user)
-        letter.shareImage(willShare)
-        letter.markUnread()
-
-        if (!willShare) {
-            pingPongBottle.stop(user)
-        }
+        letterService.shareImage(pingPongBottle, user, willShare)
     }
 
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
         val user = userService.findByIdAndNotDeleted(userId)
+        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
 
-        val previousStatus = bottleService.getPingPongBottle(bottleId).pingPongStatus
-        val pingPongBottle = bottleService.selectMatch(
-            userId = user.id,
-            bottleId = bottleId,
-            willMatch = willMatch,
-        )
+        val previousStatus = pingPongBottle.pingPongStatus
+        letterService.shareContact(pingPongBottle, user, willMatch)
         val afterStatus = pingPongBottle.pingPongStatus
 
         // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
