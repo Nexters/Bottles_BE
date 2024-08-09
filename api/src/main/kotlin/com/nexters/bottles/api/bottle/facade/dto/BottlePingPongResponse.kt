@@ -34,10 +34,14 @@ data class Photo(
     val myImageUrl: String? = null,
     val otherImageUrl: String? = null,
     val shouldAnswer: Boolean,
-    val changeFinished: Boolean,
+    val myAnswer: Boolean? = null,
+    val otherAnswer: Boolean? = null,
+    val isDone: Boolean,
 )
 
 data class MatchResult(
     val isMatched: Boolean,
-    val contact: String,
+    val otherContact: String,
+    val shouldAnswer: Boolean,
+    val isFirstSelect: Boolean,
 )

@@ -14,7 +14,6 @@ import com.nexters.bottles.app.bottle.repository.QuestionRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -54,11 +53,11 @@ class BottleService(
                 bottleId,
                 setOf(PingPongStatus.NONE),
                 LocalDateTime.now()
-            )
-                ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
+            ) ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        val targetUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        val sourceUser = userRepository.findByIdOrNull(bottle.sourceUser.id)
+        val targetUser =
+            userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val sourceUser = userRepository.findByIdAndDeletedFalse(bottle.sourceUser.id)
             ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
         when (bottle.bottleStatus) {
@@ -104,18 +103,35 @@ class BottleService(
                 bottleId,
                 setOf(PingPongStatus.NONE),
                 LocalDateTime.now()
-            )
-                ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
+            ) ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        val targetUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        userRepository.findByIdOrNull(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
+        val targetUser =
+            userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        userRepository.findByIdAndDeletedFalse(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
         bottle.refuse(targetUser)
     }
 
+
+    @Transactional
+    fun stop(userId: Long, bottleId: Long) {
+        val bottle = bottleRepository.findByIdAndStatus(
+            bottleId,
+            setOf(
+                PingPongStatus.ACTIVE,
+                PingPongStatus.MATCHED,
+                PingPongStatus.STOPPED
+            )
+        ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        val stoppedUser =
+            userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+
+        bottle.stop(stoppedUser)
+    }
+
     @Transactional(readOnly = true)
     fun getPingPongBottles(userId: Long): List<Bottle> {
-        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         return bottleRepository.findAllByUserAndStatus(
             user,
@@ -137,25 +153,6 @@ class BottleService(
                 PingPongStatus.STOPPED
             )
         ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
-    }
-
-    @Transactional(readOnly = true)
-    fun getActivePingPongBottle(bottleId: Long): Bottle {
-        return bottleRepository.findByIdAndStatus(
-            bottleId,
-            setOf(PingPongStatus.ACTIVE)
-        ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
-    }
-
-    @Transactional
-    fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean): Bottle {
-        val pingPongBottle = bottleRepository.findByIdAndStatus(
-            bottleId,
-            setOf(PingPongStatus.ACTIVE)
-        ) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
-
-        pingPongBottle.selectMatch(userId, willMatch)
-        return pingPongBottle
     }
 
     @Transactional

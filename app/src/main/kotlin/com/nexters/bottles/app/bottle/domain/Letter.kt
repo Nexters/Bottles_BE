@@ -32,7 +32,10 @@ class Letter(
     var letters: List<LetterQuestionAndAnswer> = arrayListOf(),
 
     @Column
-    var isShowImage: Boolean? = null,
+    var isShareImage: Boolean? = null,
+
+    @Column
+    var isShareContact: Boolean? = null,
 
     @Column
     var isReadByOtherUser: Boolean = false,
@@ -54,7 +57,23 @@ class Letter(
     }
 
     fun shareImage(willShare: Boolean) {
-        isShowImage = willShare
+        isShareImage = willShare
+    }
+
+    fun shareContact(willShare: Boolean) {
+        isShareContact = willShare
+    }
+
+    fun stopPingPong(stoppedBy: User) {
+        bottle.stop(stoppedBy)
+    }
+
+    fun finishIfAllShare() {
+        if (bottle.hasFirstSelectUser()) {
+            bottle.match()
+        } else {
+            bottle.markFirstSelectUser(user)
+        }
     }
 }
 

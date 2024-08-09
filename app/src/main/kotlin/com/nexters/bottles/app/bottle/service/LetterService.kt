@@ -25,9 +25,36 @@ class LetterService(
         letter.markUnread()
     }
 
-    fun readOtherUserLetter(bottle: Bottle, otherUser: User) {
+    @Transactional
+    fun markReadOtherUserLetter(bottle: Bottle, otherUser: User) {
         val otherUserLetter = letterRepository.findByBottleAndUser(bottle, otherUser)
             ?: throw IllegalArgumentException("고객센터에 문의해주세요")
         otherUserLetter.markRead()
+    }
+
+    @Transactional
+    fun shareImage(bottle: Bottle, user: User, willShare: Boolean) {
+        val letter =
+            letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        letter.shareImage(willShare)
+        letter.markUnread()
+
+        if (!willShare) {
+            letter.stopPingPong(user)
+        }
+    }
+
+    @Transactional
+    fun shareContact(bottle: Bottle, user: User, willShare: Boolean) {
+        val letter =
+            letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        letter.shareContact(willShare)
+        letter.markUnread()
+
+        if (!willShare) {
+            letter.stopPingPong(user)
+        } else {
+            letter.finishIfAllShare()
+        }
     }
 }
