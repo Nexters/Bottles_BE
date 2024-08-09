@@ -82,7 +82,7 @@ class Bottle(
     }
 
     fun hasFirstSelectUser(): Boolean {
-        return firstSelectUser == null
+        return firstSelectUser != null
     }
 
     fun markFirstSelectUser(user: User) {

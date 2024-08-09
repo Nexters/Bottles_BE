@@ -26,7 +26,7 @@ class LetterService(
     }
 
     @Transactional
-    fun readOtherUserLetter(bottle: Bottle, otherUser: User) {
+    fun markReadOtherUserLetter(bottle: Bottle, otherUser: User) {
         val otherUserLetter = letterRepository.findByBottleAndUser(bottle, otherUser)
             ?: throw IllegalArgumentException("고객센터에 문의해주세요")
         otherUserLetter.markRead()

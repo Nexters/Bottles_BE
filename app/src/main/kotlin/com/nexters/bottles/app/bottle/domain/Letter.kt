@@ -32,10 +32,10 @@ class Letter(
     var letters: List<LetterQuestionAndAnswer> = arrayListOf(),
 
     @Column
-    var isShowImage: Boolean? = null,
+    var isShareImage: Boolean? = null,
 
     @Column
-    var isShowContact: Boolean? = null,
+    var isShareContact: Boolean? = null,
 
     @Column
     var isReadByOtherUser: Boolean = false,
@@ -57,11 +57,11 @@ class Letter(
     }
 
     fun shareImage(willShare: Boolean) {
-        isShowImage = willShare
+        isShareImage = willShare
     }
 
     fun shareContact(willShare: Boolean) {
-        isShowContact = willShare
+        isShareContact = willShare
     }
 
     fun stopPingPong(stoppedBy: User) {

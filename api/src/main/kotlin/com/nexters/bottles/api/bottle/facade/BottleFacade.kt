@@ -139,7 +139,7 @@ class BottleFacade(
         val pingPongBottle = bottleService.getPingPongBottle(bottleId)
         val me = userService.findByIdAndNotDeleted(userId)
         val otherUser = pingPongBottle.findOtherUser(me)
-        letterService.readOtherUserLetter(pingPongBottle, otherUser)
+        letterService.markReadOtherUserLetter(pingPongBottle, otherUser)
     }
 
     fun stopBottle(userId: Long, bottleId: Long) {
@@ -173,7 +173,7 @@ class BottleFacade(
             matchResult = MatchResult(
                 isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
-                shouldAnswer = myLetter.isShowContact == null,
+                shouldAnswer = myLetter.isShareContact == null,
                 isFirstSelect = bottle.firstSelectUser == me
             )
         )
@@ -210,10 +210,10 @@ class BottleFacade(
         return Photo(
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
-            shouldAnswer = myLetter.isShowImage == null,
-            myAnswer = myLetter.isShowImage,
-            otherAnswer = otherLetter.isShowImage,
-            isDone = (myLetter.isShowImage != null) && (otherLetter.isShowImage != null)
+            shouldAnswer = myLetter.isShareImage == null,
+            myAnswer = myLetter.isShareImage,
+            otherAnswer = otherLetter.isShareImage,
+            isDone = (myLetter.isShareImage != null) && (otherLetter.isShareImage != null)
         )
     }
 
