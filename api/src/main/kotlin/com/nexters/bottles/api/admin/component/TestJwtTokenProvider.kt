@@ -7,7 +7,9 @@ import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Component
 class TestJwtTokenProvider(
@@ -27,7 +29,11 @@ class TestJwtTokenProvider(
         userId: Long,
         accessTokenValidityInMilliseconds: Long
     ): String {
-        val now = LocalDateTime.now()
+        val nowLocalDateTime = LocalDateTime.now()
+        val now = LocalDateTime.of(
+            LocalDate.now(),
+            LocalTime.of(nowLocalDateTime.hour, nowLocalDateTime.minute)
+        )
         val expiryDate = now.plus(Duration.ofMillis(accessTokenValidityInMilliseconds))
 
         return Jwts.builder()
@@ -39,7 +45,11 @@ class TestJwtTokenProvider(
     }
 
     fun upsertRefreshToken(userId: Long, refreshTokenValidityInMilliseconds: Long): String {
-        val now = LocalDateTime.now()
+        val nowLocalDateTime = LocalDateTime.now()
+        val now = LocalDateTime.of(
+            LocalDate.now(),
+            LocalTime.of(nowLocalDateTime.hour, nowLocalDateTime.minute)
+        )
         val expiryDate = now.plus(Duration.ofMillis(refreshTokenValidityInMilliseconds))
 
         val token = Jwts.builder()
