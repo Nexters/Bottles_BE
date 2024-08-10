@@ -100,7 +100,7 @@ class AuthFacade(
     }
 
     fun authSms(authSmsRequest: AuthSmsRequest) {
-        if (isNotSuperAccount(authSmsRequest.phoneNumber)) {
+        if (isNotSuperUser(authSmsRequest.phoneNumber)) {
             val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
             lastAuthSms.validate(lastAuthSms.authCode)
         }
@@ -116,7 +116,7 @@ class AuthFacade(
     }
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
-        if (isNotSuperAccount(smsSignInRequest.phoneNumber)) {
+        if (isNotSuperUser(smsSignInRequest.phoneNumber)) {
             val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
             lastAuthSms.validate(smsSignInRequest.authCode)
         }
@@ -137,7 +137,7 @@ class AuthFacade(
         )
     }
 
-    private fun isNotSuperAccount(phoneNumber: String) = phoneNumber != "12345678910"
+    private fun isNotSuperUser(phoneNumber: String) = phoneNumber != "12345678910"
 }
 
 fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {
