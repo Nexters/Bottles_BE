@@ -56,14 +56,14 @@ class AdminService(
     @Transactional
     fun cleanUpMockUpData(user: User) {
         userRepository.findByIdOrNull(user.id)?.let { user ->
+            letterRepository.findAllByUserId(user.id).forEach {
+                letterRepository.deleteById(it.id)
+            }
             bottleRepository.findAllByTargetUser(user).forEach {
                 bottleRepository.deleteById(it.id)
             }
             bottleRepository.findAllBySourceUser(user).forEach {
                 bottleRepository.deleteById(it.id)
-            }
-            letterRepository.findAllByUserId(user.id).forEach {
-                letterRepository.deleteById(it.id)
             }
             refreshTokenRepository.findAllByUserId(user.id).forEach {
                 refreshTokenRepository.deleteById(it.id)
