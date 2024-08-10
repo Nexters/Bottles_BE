@@ -12,6 +12,7 @@ import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
+import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
@@ -22,6 +23,7 @@ import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -31,6 +33,7 @@ class BottleFacade(
     private val bottleService: BottleService,
     private val letterService: LetterService,
     private val userService: UserService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${matching.isActive}")
     private val isActiveMatching: Boolean,
@@ -51,7 +54,14 @@ class BottleFacade(
         return BottleListResponse(
             randomBottles = randomBottles,
             sentBottles = sentBottles
-        )
+        ).also {
+            applicationEventPublisher.publishEvent(
+                UserApplicationEventDto(
+                    userId = user.id,
+                    basedAt = LocalDateTime.now(),
+                )
+            )
+        }
     }
 
     private fun toBottleDto(bottle: Bottle): BottleDto {

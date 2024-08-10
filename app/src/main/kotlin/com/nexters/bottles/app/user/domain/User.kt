@@ -42,7 +42,8 @@ class User(
 
     var deletedAt: LocalDateTime? = null,
 
-    ) : BaseEntity() {
+    var lastActivatedAt: LocalDateTime = LocalDateTime.now(),
+) : BaseEntity() {
 
     fun getKoreanAge(): Int {
         return LocalDate.now().year - birthdate.year + 1
@@ -51,5 +52,9 @@ class User(
     fun softDelete() {
         this.deleted = true
         this.deletedAt = LocalDateTime.now()
+    }
+
+    fun updateLastActivatedAt(basedAt: LocalDateTime) {
+        this.lastActivatedAt = basedAt
     }
 }
