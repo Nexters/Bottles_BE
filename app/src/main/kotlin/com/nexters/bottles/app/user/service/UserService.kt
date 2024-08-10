@@ -12,6 +12,7 @@ import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class UserService(
@@ -91,5 +92,12 @@ class UserService(
     @Transactional(readOnly = true)
     fun findAllByNotDeleted(): List<User> {
         return userRepository.findAllByDeletedFalse()
+    }
+
+    @Transactional
+    fun updateLastActivatedAt(userId: Long, basedAt: LocalDateTime) {
+        userRepository.findByIdOrNull(userId)?.let {user ->
+            user.updateLastActivatedAt(basedAt)
+        }
     }
 }
