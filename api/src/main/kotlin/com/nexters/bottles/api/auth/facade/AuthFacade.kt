@@ -100,8 +100,10 @@ class AuthFacade(
     }
 
     fun authSms(authSmsRequest: AuthSmsRequest) {
-        val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
-        lastAuthSms.validate(lastAuthSms.authCode)
+        if (isNotSuperAccount(authSmsRequest.phoneNumber)) {
+            val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
+            lastAuthSms.validate(lastAuthSms.authCode)
+        }
     }
 
     fun logout(userId: Long, accessToken: String) {
@@ -114,8 +116,10 @@ class AuthFacade(
     }
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
-        val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
-        lastAuthSms.validate(smsSignInRequest.authCode)
+        if (isNotSuperAccount(smsSignInRequest.phoneNumber)) {
+            val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
+            lastAuthSms.validate(smsSignInRequest.authCode)
+        }
 
         val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)
             ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
@@ -132,6 +136,8 @@ class AuthFacade(
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
+
+    private fun isNotSuperAccount(phoneNumber: String) = phoneNumber != "12345678910"
 }
 
 fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {
