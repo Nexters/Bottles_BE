@@ -66,7 +66,8 @@ class BottleService(
                 bottle.sendLikeMessage(
                     from = targetUser,
                     to = sourceUser,
-                    likeMessage = likeMessage
+                    likeMessage = likeMessage,
+                    LocalDateTime.now()
                 )
             }
 
