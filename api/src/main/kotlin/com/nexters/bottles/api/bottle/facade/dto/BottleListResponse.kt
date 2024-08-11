@@ -10,6 +10,7 @@ data class BottleListResponse(
 
 data class BottleDto(
     val id: Long,
+    val userId: Long,
     val userName: String,
     val age: Int,
     val mbti: String?,

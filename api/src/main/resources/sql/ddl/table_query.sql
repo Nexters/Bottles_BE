@@ -110,3 +110,13 @@ CREATE TABLE fcm_token
 );
 
 CREATE INDEX idx_phone_number ON auth_sms (phone_number);
+
+CREATE TABLE user_report (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reporterUserId BIGINT NOT NULL comment '신고자 userId',
+    respondentUserId BIGINT NOT NULL comment '신고 당한 userId',
+    reportReasonShortAnswer VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_reporterUserId (reporterUserId)
+);
