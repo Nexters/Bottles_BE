@@ -1,7 +1,5 @@
 package com.nexters.bottles.app.bottle.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.nexters.bottles.app.bottle.repository.dto.UserProfileSelectDto
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
@@ -9,7 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 class BottleMatchingRepository(
     private val jdbcTemplate: JdbcTemplate,
-    private val objectMapper: ObjectMapper
 ) {
 
     /*
@@ -37,12 +34,9 @@ class BottleMatchingRepository(
     각 user의 bottle_history에 matched_user_id가 아닌 user 조회
      */
     fun findAllUserCanBeMatched(userId: Long): List<UsersCanBeMatchedDto> {
-        // TODO user_profile의 지역 정보를 user로 옮긴 후 쿼리 수정
         val sql = """
-           SELECT u.id AS willMatchUserId, u.gender AS willMatchUserGender, 
-           up.profile_select AS willMatchUserProfileSelect 
+           SELECT u.id AS willMatchUserId, u.gender AS willMatchUserGender, u.city AS city
            FROM user u 
-           INNER JOIN user_profile up ON u.id = up.user_id 
            LEFT JOIN bottle_history bh ON u.id = bh.matched_user_id 
            WHERE bh.matched_user_id IS NULL AND u.id != ? AND u.deleted = false;
        """.trimIndent()
@@ -51,10 +45,7 @@ class BottleMatchingRepository(
             UsersCanBeMatchedDto(
                 willMatchUserId = rs.getLong("willMatchUserId"),
                 willMatchUserGender = rs.getString("willMatchUserGender"),
-                willMatchUserProfileSelect = objectMapper.readValue(
-                    rs.getString("willMatchUserProfileSelect"),
-                    UserProfileSelectDto::class.java
-                )
+                city = rs.getString("city"),
             )
         }, userId)
     }

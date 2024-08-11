@@ -44,7 +44,12 @@ class UserProfileFacade(
                 region = convertedProfileDto.region.toDomain(),
             )
         )
-        userService.addKakaoId(userId = userId, kakaoId = profileDto.kakaoId)
+        userService.addKakaoIdAndRegion(
+            userId = userId,
+            kakaoId = profileDto.kakaoId,
+            city = convertedProfileDto.region.city,
+            state = convertedProfileDto.region.state,
+        )
     }
 
     fun getProfileChoice(): ProfileChoiceResponse {
