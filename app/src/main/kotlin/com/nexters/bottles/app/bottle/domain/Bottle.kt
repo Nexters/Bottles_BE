@@ -33,7 +33,7 @@ class Bottle(
     var likeMessage: String? = null,
 
     @Column
-    val expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
+    var expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stopped_user_id")
@@ -52,11 +52,12 @@ class Bottle(
     var pingPongStatus: PingPongStatus = PingPongStatus.NONE,
 ) : BaseEntity() {
 
-    fun sendLikeMessage(from: User, to: User, likeMessage: String) {
+    fun sendLikeMessage(from: User, to: User, likeMessage: String, now: LocalDateTime) {
         this.targetUser = to
         this.sourceUser = from
         this.likeMessage = likeMessage
         this.bottleStatus = BottleStatus.SENT
+        this.expiredAt = now.plusDays(1)
     }
 
     fun startPingPong() {
