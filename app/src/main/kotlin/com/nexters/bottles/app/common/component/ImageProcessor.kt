@@ -18,10 +18,10 @@ class ImageProcessor {
     }
 
     private fun applyGaussianBlur(image: BufferedImage): BufferedImage {
-        val matrix = FloatArray(225) { 1 / 225f }
+        val matrix = FloatArray(1225) { 1 / 1225f }
         val size = sqrt(matrix.size.toDouble()).toInt()
         val kernel = Kernel(size, size, matrix)
-        val convolveOp = ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null)
+        val convolveOp = ConvolveOp(kernel, ConvolveOp.EDGE_ZERO_FILL, null)
 
         val blurredImage = BufferedImage(image.width, image.height, image.type)
         convolveOp.filter(image, blurredImage)
