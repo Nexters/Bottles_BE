@@ -21,6 +21,7 @@ import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.LetterService
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
+import com.nexters.bottles.app.user.service.UserReportService
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -33,6 +34,7 @@ class BottleFacade(
     private val bottleService: BottleService,
     private val letterService: LetterService,
     private val userService: UserService,
+    private val userReportService: UserReportService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${matching.isActive}")
@@ -47,9 +49,15 @@ class BottleFacade(
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
+        val blockedUserIds = userReportService.getReportRespondentList(userId)
+            .map { it.respondentUserId }
+            .toSet()
 
-        val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it) } ?: emptyList()
-        val sentBottles = groupByStatus[BottleStatus.SENT]?.map { toBottleDto(it) } ?: emptyList()
+        val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it, userId) } ?: emptyList()
+        val sentBottles = groupByStatus[BottleStatus.SENT]
+            ?.map { toBottleDto(it, userId) }
+            ?.filter { it.userId !in blockedUserIds }
+            ?: emptyList()
 
         return BottleListResponse(
             randomBottles = randomBottles,
@@ -64,9 +72,10 @@ class BottleFacade(
         }
     }
 
-    private fun toBottleDto(bottle: Bottle): BottleDto {
+    private fun toBottleDto(bottle: Bottle, userId: Long): BottleDto {
         return BottleDto(
             id = bottle.id,
+            userId = bottle.findOtherUserId(userId = userId),
             userName = bottle.sourceUser.name,
             age = bottle.sourceUser.getKoreanAge(),
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
@@ -76,7 +85,7 @@ class BottleFacade(
         )
     }
 
-    fun getBottle(bottleId: Long): BottleDetailResponse {
+    fun getBottle(userId: Long, bottleId: Long): BottleDetailResponse {
         val bottle = bottleService.getNotExpiredBottle(
             bottleId,
             setOf(PingPongStatus.NONE)
@@ -84,6 +93,7 @@ class BottleFacade(
 
         return BottleDetailResponse(
             id = bottle.id,
+            userId = bottle.findOtherUserId(userId),
             userName = bottle.sourceUser.name,
             age = bottle.sourceUser.getKoreanAge(),
             introduction = bottle.sourceUser.userProfile?.introduction,

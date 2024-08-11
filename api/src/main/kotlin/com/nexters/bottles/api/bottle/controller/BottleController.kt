@@ -35,8 +35,8 @@ class BottleController(
     @ApiOperation("홈 - 보틀 상세 정보 조회하기")
     @GetMapping("/{bottleId}")
     @AuthRequired
-    fun getBottleDetail(@PathVariable bottleId: Long): BottleDetailResponse {
-        return bottleFacade.getBottle(bottleId)
+    fun getBottleDetail(@AuthUserId userId: Long, @PathVariable bottleId: Long): BottleDetailResponse {
+        return bottleFacade.getBottle(userId = userId, bottleId = bottleId)
     }
 
     @ApiOperation("홈 - 보틀에 내 소개 보내기(수락하기)")

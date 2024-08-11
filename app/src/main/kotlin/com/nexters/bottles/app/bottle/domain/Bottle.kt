@@ -76,6 +76,14 @@ class Bottle(
         }
     }
 
+    fun findOtherUserId(userId: Long): Long {
+        return when (userId) {
+            targetUser.id -> sourceUser.id
+            sourceUser.id -> targetUser.id
+            else -> throw IllegalArgumentException("고객센터에 문의해주세요")
+        }
+    }
+
     fun stop(stoppedBy: User) {
         this.stoppedUser = stoppedBy
         this.pingPongStatus = PingPongStatus.STOPPED

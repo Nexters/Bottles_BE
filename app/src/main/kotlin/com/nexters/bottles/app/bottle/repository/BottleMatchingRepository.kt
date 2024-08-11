@@ -44,7 +44,7 @@ class BottleMatchingRepository(
            FROM user u 
            INNER JOIN user_profile up ON u.id = up.user_id 
            LEFT JOIN bottle_history bh ON u.id = bh.matched_user_id 
-           WHERE bh.matched_user_id IS NULL AND u.id != ?;
+           WHERE bh.matched_user_id IS NULL AND u.id != ? AND u.deleted = false;
        """.trimIndent()
 
         return jdbcTemplate.query(sql, { rs, _ ->
