@@ -5,16 +5,7 @@ import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.common.BaseEntity
 import com.nexters.bottles.app.user.domain.User
 import java.time.LocalDateTime
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 @Entity
 class Bottle(
@@ -32,24 +23,27 @@ class Bottle(
 
     var likeMessage: String? = null,
 
-    @Column
     var expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stopped_user_id")
     var stoppedUser: User? = null,
 
+    var stoppedAt: LocalDateTime? = null,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "first_select_user_id")
     var firstSelectUser: User? = null,
 
-    @Column
     @Enumerated(value = EnumType.STRING)
     var bottleStatus: BottleStatus = BottleStatus.RANDOM,
 
-    @Column
     @Enumerated(value = EnumType.STRING)
     var pingPongStatus: PingPongStatus = PingPongStatus.NONE,
+
+    var deleted: Boolean = false,
+
+    var deletedAt: LocalDateTime? = null,
 ) : BaseEntity() {
 
     fun sendLikeMessage(from: User, to: User, likeMessage: String, now: LocalDateTime) {
@@ -85,9 +79,10 @@ class Bottle(
         }
     }
 
-    fun stop(stoppedBy: User) {
+    fun stop(stoppedBy: User, stoppedAt: LocalDateTime) {
         this.stoppedUser = stoppedBy
         this.pingPongStatus = PingPongStatus.STOPPED
+        this.stoppedAt = stoppedAt
     }
 
     fun hasFirstSelectUser(): Boolean {

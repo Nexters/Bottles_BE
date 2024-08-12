@@ -5,6 +5,7 @@ import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.user.domain.User
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDateTime
@@ -14,7 +15,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     @Query(
         value = "SELECT b FROM Bottle b " +
                 "JOIN FETCH b.sourceUser " +
-                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus"
+                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus " +
+                "AND b.deleted = false "
     )
     fun findAllByTargetUserAndStatusAndNotExpired(
         @Param("targetUser") targetUser: User,
@@ -25,7 +27,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     @Query(
         value = "SELECT b FROM Bottle b " +
                 "JOIN FETCH b.sourceUser " +
-                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus IN :pingPongStatus"
+                "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus IN :pingPongStatus " +
+                "AND b.deleted = false "
     )
     fun findByIdAndStatusAndNotExpired(
         @Param("bottleId") bottleId: Long,
@@ -36,7 +39,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     @Query(
         value = "SELECT b FROM Bottle b " +
                 "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
-                "AND b.pingPongStatus IN :pingPongStatus"
+                "AND b.pingPongStatus IN :pingPongStatus " +
+                "AND b.deleted = false "
     )
     fun findAllByUserAndStatus(
         @Param("user") user: User,
@@ -45,7 +49,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus"
+                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus AND b.deleted = false "
     )
     fun findByIdAndStatus(
         @Param("bottleId") bottleId: Long,
@@ -61,4 +65,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         bottleStatus: BottleStatus,
         matchingTime: LocalDateTime
     ): List<Bottle>
+
+    @Modifying
+    @Query("UPDATE Bottle b SET b.deleted = true WHERE b.stoppedAt < :stoppedAt")
+    fun updateAllDeletedTrueByStoppedAtBefore(@Param("stoppedAt") stoppedAt: LocalDateTime): List<Bottle>
 }

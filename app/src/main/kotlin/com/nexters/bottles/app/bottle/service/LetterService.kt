@@ -6,6 +6,7 @@ import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.user.domain.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class LetterService(
@@ -40,7 +41,7 @@ class LetterService(
         letter.markUnread()
 
         if (!willShare) {
-            letter.stopPingPong(user)
+            letter.stopPingPong(user, LocalDateTime.now())
         }
     }
 
@@ -52,7 +53,7 @@ class LetterService(
         letter.markUnread()
 
         if (!willShare) {
-            letter.stopPingPong(user)
+            letter.stopPingPong(user, LocalDateTime.now())
         } else {
             letter.finishIfAllShare()
         }
