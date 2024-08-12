@@ -127,7 +127,7 @@ class UserProfileFacade(
 
     fun existIntroduction(userId: Long): ExistIntroductionResponse {
         val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
-        return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
+        return ExistIntroductionResponse(isExist = userProfile.introduction.isNotEmpty())
     }
 
     fun findUserInfo(userId: Long): UserInfoResponse {
