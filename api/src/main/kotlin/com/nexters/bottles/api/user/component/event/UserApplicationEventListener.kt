@@ -12,7 +12,7 @@ class UserApplicationEventListener(
     private val userService: UserService,
 ) {
 
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
 
     @Async
     @EventListener

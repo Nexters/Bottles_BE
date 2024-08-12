@@ -33,7 +33,7 @@ class UserProfile(
     var blurredImageUrl: String? = null,
 ) : BaseEntity() {
 
-    fun hasCompleteIntroduction() :Boolean {
+    fun hasCompleteIntroduction(): Boolean {
         return introduction.isNotEmpty()
     }
 }

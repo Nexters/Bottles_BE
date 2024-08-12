@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.bottle.facade
 
+import com.nexters.bottles.api.bottle.event.dto.BottleApplicationEventDto
 import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottleDto
@@ -46,6 +47,15 @@ class BottleFacade(
         if (isActiveMatching) {
             val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
             bottleService.matchRandomBottle(user, matchingTime)
+                ?.also {
+                    applicationEventPublisher.publishEvent(
+                        BottleApplicationEventDto(
+                            sourceUserId = it.sourceUser.id,
+                            targetUserId = it.targetUser.id,
+                            isRefused = false,
+                        )
+                    )
+                }
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
@@ -109,6 +119,15 @@ class BottleFacade(
 
     fun refuseBottle(userId: Long, bottleId: Long) {
         bottleService.refuseBottle(userId, bottleId)
+            .also {
+                applicationEventPublisher.publishEvent(
+                    BottleApplicationEventDto(
+                        sourceUserId = userId,
+                        targetUserId = it.findOtherUserId(userId),
+                        isRefused = true
+                    )
+                )
+            }
     }
 
     fun getPingPongBottles(userId: Long): PingPongListResponse {
