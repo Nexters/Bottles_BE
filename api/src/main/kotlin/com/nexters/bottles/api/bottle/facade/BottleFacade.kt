@@ -116,15 +116,13 @@ class BottleFacade(
         val user = userService.findByIdAndNotDeleted(userId)
 
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
-        val activeBottles =
-            (groupByStatus[PingPongStatus.ACTIVE].orEmpty() + groupByStatus[PingPongStatus.STOPPED].orEmpty())
-                .map { toPingPongBottleDto(it, user) }
-        val doneBottles = groupByStatus[PingPongStatus.MATCHED]?.map {
-            toPingPongBottleDto(
-                it,
-                user
-            )
+        val activeBottles = groupByStatus[PingPongStatus.ACTIVE]?.map {
+            toPingPongBottleDto(it, user)
         } ?: emptyList()
+        val doneBottles =
+            (groupByStatus[PingPongStatus.STOPPED].orEmpty() + groupByStatus[PingPongStatus.MATCHED].orEmpty())
+                .map { toPingPongBottleDto(it, user) }
+
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 

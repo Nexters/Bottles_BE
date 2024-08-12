@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 @Component
-class FcmNotificationService(
+class FcmNotificationScheduler(
     private val fcmClient: FcmClient,
     private val fcmTokenService: FcmTokenService,
     private val userService: UserService
