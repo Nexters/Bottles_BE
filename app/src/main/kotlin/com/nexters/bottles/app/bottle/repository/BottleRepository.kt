@@ -18,7 +18,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus " +
                 "AND b.deleted = false "
     )
-    fun findAllByTargetUserAndStatusAndNotExpired(
+    fun findAllByTargetUserAndStatusAndNotExpiredAndDeletedFalse(
         @Param("targetUser") targetUser: User,
         @Param("pingPongStatus") pingPongStatus: PingPongStatus,
         @Param("currentDateTime") currentDateTime: LocalDateTime
@@ -30,7 +30,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus IN :pingPongStatus " +
                 "AND b.deleted = false "
     )
-    fun findByIdAndStatusAndNotExpired(
+    fun findByIdAndStatusAndNotExpiredAndDeletedFalse(
         @Param("bottleId") bottleId: Long,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>,
         @Param("currentDateTime") currentDateTime: LocalDateTime
@@ -42,7 +42,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "AND b.pingPongStatus IN :pingPongStatus " +
                 "AND b.deleted = false "
     )
-    fun findAllByUserAndStatus(
+    fun findAllByUserAndStatusAndDeletedFalse(
         @Param("user") user: User,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): List<Bottle>
@@ -51,7 +51,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         value = "SELECT b FROM Bottle b " +
                 "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus AND b.deleted = false "
     )
-    fun findByIdAndStatus(
+    fun findByIdAndStatusAndDeletedFalse(
         @Param("bottleId") bottleId: Long,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): Bottle?
@@ -67,6 +67,9 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     ): List<Bottle>
 
     @Modifying
-    @Query("UPDATE Bottle b SET b.deleted = true WHERE b.stoppedAt < :stoppedAt")
-    fun updateAllDeletedTrueByStoppedAtBefore(@Param("stoppedAt") stoppedAt: LocalDateTime): List<Bottle>
+    @Query(value = "UPDATE Bottle b SET b.deleted = true, b.deleted = :deletedAt WHERE b.stoppedAt < :stoppedAt")
+    fun updateAllDeletedTrueAndDeletedAtByStoppedAtBefore(
+        @Param("stoppedAt") stoppedAt: LocalDateTime,
+        @Param("deletedAt") deletedAt: LocalDateTime
+    ): List<Bottle>
 }

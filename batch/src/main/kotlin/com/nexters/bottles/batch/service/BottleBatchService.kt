@@ -12,6 +12,7 @@ class BottleBatchService(
 
     @Transactional
     fun deleteBottles() {
-        bottleRepository.updateAllDeletedTrueByStoppedAtBefore(LocalDateTime.now().minusDays(2))
+        val now = LocalDateTime.now()
+        bottleRepository.updateAllDeletedTrueAndDeletedAtByStoppedAtBefore(now.minusDays(2), now)
     }
 }
