@@ -1,10 +1,12 @@
 package com.nexters.bottles.api.auth.component
 
+import com.nexters.bottles.app.auth.domain.BlackList
 import com.nexters.bottles.app.auth.service.BlackListService
 import com.nexters.bottles.app.auth.service.RefreshTokenService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -14,6 +16,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 import javax.servlet.http.HttpServletRequest
+import kotlin.math.exp
 
 @Component
 class JwtTokenProvider(
@@ -35,6 +38,7 @@ class JwtTokenProvider(
 
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
     private val refreshKey = Keys.hmacShaKeyFor(refreshTokenSecretKey.toByteArray())
+    private val log = KotlinLogging.logger {}
 
     fun createAccessToken(userId: Long): String {
         val now = LocalDateTime.now()
@@ -77,9 +81,13 @@ class JwtTokenProvider(
     }
 
     fun validateToken(token: String, isAccessToken: Boolean): Boolean {
-        val expiredAccessToken = blackListService.findByExpiredToken(token)
+        var expiredAccessToken: BlackList? = null
+        if (isAccessToken) {
+            expiredAccessToken = blackListService.findByExpiredToken(token)
+        }
         val claims = getClaimsFromToken(token, isAccessToken)
         val now = Date()
+        log.info { "expiredAccessToken: $expiredAccessToken claims: $claims expiration: ${claims?.expiration} now: $now" }
         return expiredAccessToken == null && claims != null && !claims.expiration.before(now)
     }
 
