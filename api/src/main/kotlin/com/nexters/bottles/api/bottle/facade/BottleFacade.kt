@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.bottle.facade
 
+import com.nexters.bottles.api.bottle.event.dto.BottleApplicationEventDto
 import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottleDto
@@ -46,6 +47,15 @@ class BottleFacade(
         if (isActiveMatching) {
             val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
             bottleService.matchRandomBottle(user, matchingTime)
+                ?.also {
+                    applicationEventPublisher.publishEvent(
+                        BottleApplicationEventDto(
+                            sourceUserId = it.sourceUser.id,
+                            targetUserId = it.targetUser.id,
+                            isRefused = false,
+                        )
+                    )
+                }
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
@@ -109,20 +119,33 @@ class BottleFacade(
 
     fun refuseBottle(userId: Long, bottleId: Long) {
         bottleService.refuseBottle(userId, bottleId)
+            .also {
+                applicationEventPublisher.publishEvent(
+                    BottleApplicationEventDto(
+                        sourceUserId = userId,
+                        targetUserId = it.findOtherUserId(userId),
+                        isRefused = true
+                    )
+                )
+            }
     }
 
     fun getPingPongBottles(userId: Long): PingPongListResponse {
-        val pingPongBottles = bottleService.getPingPongBottles(userId)
         val user = userService.findByIdAndNotDeleted(userId)
-
+        val pingPongBottles = bottleService.getPingPongBottles(userId)
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
-        val activeBottles = groupByStatus[PingPongStatus.ACTIVE]?.map {
-            toPingPongBottleDto(it, user)
-        } ?: emptyList()
+        val blockedUserIds = userReportService.getReportRespondentList(userId)
+            .map { it.respondentUserId }
+            .toSet()
+
+        val activeBottles = groupByStatus[PingPongStatus.ACTIVE]
+            ?.map { toPingPongBottleDto(it, user) }
+            ?.filter { it.userId !in blockedUserIds }
+            ?: emptyList()
         val doneBottles =
             (groupByStatus[PingPongStatus.STOPPED].orEmpty() + groupByStatus[PingPongStatus.MATCHED].orEmpty())
                 .map { toPingPongBottleDto(it, user) }
-
+                .filter { it.userId !in blockedUserIds }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
@@ -134,6 +157,7 @@ class BottleFacade(
             id = bottle.id,
             isRead = otherUserLetter.isReadByOtherUser,
             userName = otherUser.name,
+            userId = otherUser.id,
             age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
@@ -176,6 +200,7 @@ class BottleFacade(
             stopUserName = bottle.stoppedUser?.name,
             deleteAfterDays = getDeleteAfterDays(bottle),
             userProfile = PingPongUserProfile(
+                userId = otherUser.id,
                 userName = otherUser.name,
                 age = otherUser.getKoreanAge(),
                 profileSelect = otherUser.userProfile?.profileSelect,

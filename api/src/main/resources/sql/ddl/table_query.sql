@@ -4,11 +4,13 @@ CREATE TABLE user
     name              VARCHAR(255) DEFAULT NULL,
     birthdate         DATE         DEFAULT NULL,
     kakao_id          VARCHAR(255) DEFAULT NULL,
+    city              VARCHAR(255) DEFAULT NULL comment '시',
+    state             VARCHAR(255) DEFAULT NULL comment '구',
     phone_number      VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
     gender            VARCHAR(10)  DEFAULT 'MALE',
     sign_up_type      VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
     deleted           BOOLEAN      DEFAULT FALSE             NOT NULL,
-    deleted_at        DATETIME,
+    deleted_at        DATETIME     DEFAULT CURRENT_TIMESTAMP,
     last_activated_at DATETIME     DEFAULT CURRENT_TIMESTAMP comment '유저의 최근 활성 시간으로, 보틀 목록 조회하기 api 요청시 갱신',
     created_at        DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at        DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
@@ -115,11 +117,11 @@ CREATE INDEX idx_phone_number ON auth_sms (phone_number);
 
 CREATE TABLE user_report
 (
-    id                      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    reporterUserId          BIGINT NOT NULL comment '신고자 userId',
-    respondentUserId        BIGINT NOT NULL comment '신고 당한 userId',
-    reportReasonShortAnswer VARCHAR(255),
-    created_at              DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at              DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX                   idx_reporterUserId (reporterUserId)
+    id                         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reporter_user_id           BIGINT NOT NULL comment '신고자 userId',
+    respondent_user_id         BIGINT NOT NULL comment '신고 당한 userId',
+    report_reason_short_answer VARCHAR(255),
+    created_at                 DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at                 DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX                      idx_reporter_user_id (reporter_user_id)
 );
