@@ -47,16 +47,14 @@ class BottleFacade(
         if (isActiveMatching) {
             val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
             bottleService.matchRandomBottle(user, matchingTime)
-                .also {
-                    if (it != null) {
-                        applicationEventPublisher.publishEvent(
-                            BottleApplicationEventDto(
-                                sourceUserId = it.sourceUser.id,
-                                targetUserId = it.targetUser.id,
-                                isRefused = false,
-                            )
+                ?.also {
+                    applicationEventPublisher.publishEvent(
+                        BottleApplicationEventDto(
+                            sourceUserId = it.sourceUser.id,
+                            targetUserId = it.targetUser.id,
+                            isRefused = false,
                         )
-                    }
+                    )
                 }
         }
         val bottles = bottleService.getNewBottles(user)

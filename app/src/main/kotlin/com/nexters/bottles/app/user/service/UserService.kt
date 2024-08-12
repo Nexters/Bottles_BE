@@ -96,7 +96,7 @@ class UserService(
 
     @Transactional
     fun updateLastActivatedAt(userId: Long, basedAt: LocalDateTime) {
-        userRepository.findByIdOrNull(userId)?.let {user ->
+        userRepository.findByIdOrNull(userId)?.let { user ->
             user.updateLastActivatedAt(basedAt)
         }
     }
