@@ -1,12 +1,10 @@
 package com.nexters.bottles.app.bottle.service
 
 import com.nexters.bottles.app.bottle.domain.Bottle
-import com.nexters.bottles.app.bottle.domain.BottleHistory
 import com.nexters.bottles.app.bottle.domain.Letter
 import com.nexters.bottles.app.bottle.domain.LetterQuestionAndAnswer
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
-import com.nexters.bottles.app.bottle.repository.BottleHistoryRepository
 import com.nexters.bottles.app.bottle.repository.BottleMatchingRepository
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
@@ -25,7 +23,6 @@ class BottleService(
     private val letterRepository: LetterRepository,
     private val questionRepository: QuestionRepository,
     private val bottleMatchingRepository: BottleMatchingRepository,
-    private val bottleHistoryRepository: BottleHistoryRepository,
 ) {
 
     @Transactional(readOnly = true)
@@ -98,7 +95,7 @@ class BottleService(
     }
 
     @Transactional
-    fun refuseBottle(userId: Long, bottleId: Long) {
+    fun refuseBottle(userId: Long, bottleId: Long): Bottle {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpired(
                 bottleId,
@@ -111,6 +108,7 @@ class BottleService(
         userRepository.findByIdAndDeletedFalse(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
         bottle.refuse(targetUser)
+        return bottle
     }
 
 
@@ -157,25 +155,23 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(user: User, matchingTime: LocalDateTime) {
+    fun matchRandomBottle(user: User, matchingTime: LocalDateTime): Bottle? {
         val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
             targetUser = user,
             bottleStatus = BottleStatus.RANDOM,
             matchingTime = matchingTime
         )
-        if (todayMatchingBottle.isNotEmpty()) return
+        if (todayMatchingBottle.isNotEmpty()) return null
 
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id)
-        if (usersCanBeMatched.isEmpty()) return
+        if (usersCanBeMatched.isEmpty()) return null
 
         val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
         val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
             ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
         val bottle = Bottle(targetUser = user, sourceUser = matchingUser)
-        bottleRepository.save(bottle)
-        val bottleHistory = BottleHistory(userId = user.id, matchedUserId = matchingUser.id)
-        bottleHistoryRepository.save(bottleHistory)
+        return bottleRepository.save(bottle)
     }
 
     private fun findUserSameRegionOrRandom(
