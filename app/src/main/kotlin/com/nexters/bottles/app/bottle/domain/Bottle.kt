@@ -6,7 +6,15 @@ import com.nexters.bottles.app.common.BaseEntity
 import com.nexters.bottles.app.user.domain.User
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 
 @Entity
 class Bottle(

@@ -3,7 +3,6 @@ package com.nexters.bottles.api.user.controller
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserFacade
-import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping

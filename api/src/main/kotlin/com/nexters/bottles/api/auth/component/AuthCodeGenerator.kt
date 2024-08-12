@@ -6,7 +6,7 @@ import kotlin.random.Random
 @Component
 class AuthCodeGenerator {
 
-    fun createRandomNumbers() : String {
+    fun createRandomNumbers(): String {
         return Random.nextInt(100000, 1000000).toString()
     }
 }

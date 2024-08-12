@@ -6,7 +6,11 @@ import com.nexters.bottles.app.bottle.domain.Letter
 import com.nexters.bottles.app.bottle.domain.LetterQuestionAndAnswer
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
-import com.nexters.bottles.app.bottle.repository.*
+import com.nexters.bottles.app.bottle.repository.BottleHistoryRepository
+import com.nexters.bottles.app.bottle.repository.BottleMatchingRepository
+import com.nexters.bottles.app.bottle.repository.BottleRepository
+import com.nexters.bottles.app.bottle.repository.LetterRepository
+import com.nexters.bottles.app.bottle.repository.QuestionRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
