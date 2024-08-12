@@ -112,19 +112,25 @@ class BottleFacade(
     }
 
     fun getPingPongBottles(userId: Long): PingPongListResponse {
-        val pingPongBottles = bottleService.getPingPongBottles(userId)
         val user = userService.findByIdAndNotDeleted(userId)
-
+        val pingPongBottles = bottleService.getPingPongBottles(userId)
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
+        val blockedUserIds = userReportService.getReportRespondentList(userId)
+            .map { it.respondentUserId }
+            .toSet()
+
         val activeBottles =
             (groupByStatus[PingPongStatus.ACTIVE].orEmpty() + groupByStatus[PingPongStatus.STOPPED].orEmpty())
                 .map { toPingPongBottleDto(it, user) }
+                .filter { it.userId !in blockedUserIds }
         val doneBottles = groupByStatus[PingPongStatus.MATCHED]?.map {
             toPingPongBottleDto(
                 it,
                 user
             )
-        } ?: emptyList()
+        }
+            ?.filter { it.userId !in blockedUserIds }
+            ?: emptyList()
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
@@ -136,6 +142,7 @@ class BottleFacade(
             id = bottle.id,
             isRead = otherUserLetter.isReadByOtherUser,
             userName = otherUser.name,
+            userId = otherUser.id,
             age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
@@ -177,6 +184,7 @@ class BottleFacade(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
             userProfile = PingPongUserProfile(
+                userId = otherUser.id,
                 userName = otherUser.name,
                 age = otherUser.getKoreanAge(),
                 profileSelect = otherUser.userProfile?.profileSelect,
