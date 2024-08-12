@@ -185,7 +185,7 @@ class BottleService(
         return usersCanBeMatchedDtos.shuffled()
             .firstOrNull {
                 targetUser.gender.name != it.willMatchUserGender
-                targetUser.city == it.city
+                targetUser.city == it.willMatchCity
             } ?: usersCanBeMatchedDtos[0]
     }
 }

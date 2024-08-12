@@ -4,6 +4,8 @@ CREATE TABLE user
     name              VARCHAR(255) DEFAULT NULL,
     birthdate         DATE         DEFAULT NULL,
     kakao_id          VARCHAR(255) DEFAULT NULL,
+    city              VARCHAR(255) DEFAULT NULL comment '시',
+    state             VARCHAR(255) DEFAULT NULL comment '구',
     phone_number      VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
     gender            VARCHAR(10)  DEFAULT 'MALE',
     sign_up_type      VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
