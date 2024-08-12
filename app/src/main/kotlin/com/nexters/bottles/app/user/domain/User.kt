@@ -25,6 +25,9 @@ class User(
 
     var name: String,
 
+    var city: String? = null,  // 시
+    var state: String? = null, // 구
+
     var kakaoId: String? = null,
 
     var phoneNumber: String? = null,
