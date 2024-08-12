@@ -29,11 +29,7 @@ class TestJwtTokenProvider(
         userId: Long,
         accessTokenValidityInMilliseconds: Long
     ): String {
-        val nowLocalDateTime = LocalDateTime.now()
-        val now = LocalDateTime.of(
-            LocalDate.now(),
-            LocalTime.of(nowLocalDateTime.hour, nowLocalDateTime.minute)
-        )
+        val now = LocalDateTime.now()
         val expiryDate = now.plus(Duration.ofMillis(accessTokenValidityInMilliseconds))
 
         return Jwts.builder()
@@ -45,11 +41,7 @@ class TestJwtTokenProvider(
     }
 
     fun upsertRefreshToken(userId: Long, refreshTokenValidityInMilliseconds: Long): String {
-        val nowLocalDateTime = LocalDateTime.now()
-        val now = LocalDateTime.of(
-            LocalDate.now(),
-            LocalTime.of(nowLocalDateTime.hour, nowLocalDateTime.minute)
-        )
+        val now = LocalDateTime.now()
         val expiryDate = now.plus(Duration.ofMillis(refreshTokenValidityInMilliseconds))
 
         val token = Jwts.builder()

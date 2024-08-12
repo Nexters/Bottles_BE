@@ -37,11 +37,7 @@ class JwtTokenProvider(
     private val refreshKey = Keys.hmacShaKeyFor(refreshTokenSecretKey.toByteArray())
 
     fun createAccessToken(userId: Long): String {
-        val nowLocalDateTime = LocalDateTime.now()
-        val now = LocalDateTime.of(
-            LocalDate.now(),
-            LocalTime.of(nowLocalDateTime.hour, nowLocalDateTime.minute)
-        )
+        val now = LocalDateTime.now()
         val expiryDate = now.plus(Duration.ofMillis(accessTokenValidityInMilliseconds))
 
         return Jwts.builder()
@@ -53,11 +49,7 @@ class JwtTokenProvider(
     }
 
     fun upsertRefreshToken(userId: Long): String {
-        val nowLocalDateTime = LocalDateTime.now()
-        val now = LocalDateTime.of(
-            LocalDate.now(),
-            LocalTime.of(nowLocalDateTime.hour, nowLocalDateTime.minute)
-        )
+        val now = LocalDateTime.now()
         val expiryDate = now.plus(Duration.ofMillis(refreshTokenValidityInMilliseconds))
 
         val token = Jwts.builder()
