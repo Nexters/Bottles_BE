@@ -3,6 +3,7 @@ package com.nexters.bottles.app.bottle.domain
 import com.nexters.bottles.app.bottle.repository.converter.LetterQuestionAndAnswerConverter
 import com.nexters.bottles.app.common.BaseEntity
 import com.nexters.bottles.app.user.domain.User
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
@@ -64,8 +65,8 @@ class Letter(
         isShareContact = willShare
     }
 
-    fun stopPingPong(stoppedBy: User) {
-        bottle.stop(stoppedBy)
+    fun stopPingPong(stoppedBy: User, stoppedAt: LocalDateTime) {
+        bottle.stop(stoppedBy, stoppedAt)
     }
 
     fun finishIfAllShare() {

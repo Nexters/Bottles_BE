@@ -36,9 +36,12 @@ CREATE TABLE bottle
     like_message         VARCHAR(255),
     expired_at           DATETIME                              NOT NULL,
     stopped_user_id      BIGINT,
+    stopped_at           DATETIME,
     first_select_user_id BIGINT comment '최종 선택을 먼저한 user id',
     bottle_status        VARCHAR(20) DEFAULT 'RANDOM'          NOT NULL comment 'RANDOM - 랜덤으로 받은 상태, SENT - 호감을 표시하여 받은 상태',
     ping_pong_status     VARCHAR(20) DEFAULT 'NONE'            NOT NULL comment 'NONE - 핑퐁 시작 전, ACTIVE - 양쪽 모두 수락하여 핑퐁을 진행중인 상태, REfUSED - 핑퐁 시작 전 한쪽이 거절한 상태, STOPPED - 핑퐁 진행 중 한쪽이 중단한 상태, MATCHED - 양쪽 모두 최종 선택을 수락하여 서로 매칭이 된 상태',
+    deleted              BOOLEAN     DEFAULT FALSE             NOT NULL,
+    deleted_at           DATETIME,
     created_at           DATETIME    DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at           DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );

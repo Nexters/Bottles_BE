@@ -1,4 +1,4 @@
-package com.nexters.bottles.batch.service
+package com.nexters.bottles.batch.scheduler
 
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 @Component
-class FcmNotificationService(
+class FcmNotificationScheduler(
     private val fcmClient: FcmClient,
     private val fcmTokenService: FcmTokenService,
     private val userService: UserService

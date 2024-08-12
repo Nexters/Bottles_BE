@@ -138,18 +138,14 @@ class BottleFacade(
             .map { it.respondentUserId }
             .toSet()
 
-        val activeBottles =
-            (groupByStatus[PingPongStatus.ACTIVE].orEmpty() + groupByStatus[PingPongStatus.STOPPED].orEmpty())
-                .map { toPingPongBottleDto(it, user) }
-                .filter { it.userId !in blockedUserIds }
-        val doneBottles = groupByStatus[PingPongStatus.MATCHED]?.map {
-            toPingPongBottleDto(
-                it,
-                user
-            )
-        }
+        val activeBottles = groupByStatus[PingPongStatus.ACTIVE]
+            ?.map { toPingPongBottleDto(it, user) }
             ?.filter { it.userId !in blockedUserIds }
             ?: emptyList()
+        val doneBottles =
+            (groupByStatus[PingPongStatus.STOPPED].orEmpty() + groupByStatus[PingPongStatus.MATCHED].orEmpty())
+                .map { toPingPongBottleDto(it, user) }
+                .filter { it.userId !in blockedUserIds }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
@@ -202,6 +198,7 @@ class BottleFacade(
         return BottlePingPongResponse(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
+            deleteAfterDays = getDeleteAfterDays(bottle),
             userProfile = PingPongUserProfile(
                 userId = otherUser.id,
                 userName = otherUser.name,
@@ -224,6 +221,12 @@ class BottleFacade(
                 isFirstSelect = bottle.firstSelectUser == me
             )
         )
+    }
+
+    private fun getDeleteAfterDays(bottle: Bottle): Long? {
+        if (!bottle.isStopped()) return null
+
+        return bottle.calculateDeletedAfterDays()
     }
 
     private fun getPingPongLetters(myLetter: Letter, otherLetter: Letter): List<PingPongLetter> {
