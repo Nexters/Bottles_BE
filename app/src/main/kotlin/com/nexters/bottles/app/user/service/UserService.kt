@@ -76,9 +76,11 @@ class UserService(
     }
 
     @Transactional
-    fun addKakaoId(userId: Long, kakaoId: String) {
+    fun addKakaoIdAndRegion(userId: Long, kakaoId: String, city: String, state: String) {
         userRepository.findByIdAndDeletedFalse(userId)?.let {
             it.kakaoId = kakaoId
+            it.city = city
+            it.state = state
         } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
 

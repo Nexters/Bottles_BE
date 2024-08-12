@@ -182,11 +182,10 @@ class BottleService(
         usersCanBeMatchedDtos: List<UsersCanBeMatchedDto>,
         targetUser: User
     ): UsersCanBeMatchedDto {
-        val userProfile = targetUser.userProfile ?: throw IllegalArgumentException("프로필 작성을 해주세요")
         return usersCanBeMatchedDtos.shuffled()
             .firstOrNull {
                 targetUser.gender.name != it.willMatchUserGender
-                userProfile.profileSelect?.region?.city == it.willMatchUserProfileSelect.region.city
+                targetUser.city == it.willMatchCity
             } ?: usersCanBeMatchedDtos[0]
     }
 }
