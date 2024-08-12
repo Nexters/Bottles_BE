@@ -6,6 +6,7 @@ import com.nexters.bottles.app.user.domain.UserProfileSelect
 data class BottlePingPongResponse(
     val isStopped: Boolean = false,
     val stopUserName: String? = null,
+    val deleteAfterDays: Long? = null,
     val userProfile: PingPongUserProfile,
     val introduction: List<QuestionAndAnswer>? = emptyList(),
     val letters: List<PingPongLetter> = emptyList(),

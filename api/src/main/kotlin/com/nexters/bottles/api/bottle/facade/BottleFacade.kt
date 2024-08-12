@@ -1,17 +1,6 @@
 package com.nexters.bottles.api.bottle.facade
 
-import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
-import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
-import com.nexters.bottles.api.bottle.facade.dto.BottleDto
-import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
-import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
-import com.nexters.bottles.api.bottle.facade.dto.MatchResult
-import com.nexters.bottles.api.bottle.facade.dto.Photo
-import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
-import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
-import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
-import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
-import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
+import com.nexters.bottles.api.bottle.facade.dto.*
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -174,6 +163,7 @@ class BottleFacade(
         return BottlePingPongResponse(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
             stopUserName = bottle.stoppedUser?.name,
+            deleteAfterDays = getDeleteAfterDays(bottle),
             userProfile = PingPongUserProfile(
                 userName = otherUser.name,
                 age = otherUser.getKoreanAge(),
@@ -195,6 +185,12 @@ class BottleFacade(
                 isFirstSelect = bottle.firstSelectUser == me
             )
         )
+    }
+
+    private fun getDeleteAfterDays(bottle: Bottle): Long? {
+        if (!bottle.isStopped()) return null
+
+        return bottle.calculateDeletedAfterDays()
     }
 
     private fun getPingPongLetters(myLetter: Letter, otherLetter: Letter): List<PingPongLetter> {

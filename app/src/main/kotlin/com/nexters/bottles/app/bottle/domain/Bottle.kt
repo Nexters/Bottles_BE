@@ -5,6 +5,7 @@ import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.common.BaseEntity
 import com.nexters.bottles.app.user.domain.User
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import javax.persistence.*
 
 @Entity
@@ -95,5 +96,21 @@ class Bottle(
 
     fun match() {
         pingPongStatus = PingPongStatus.MATCHED
+    }
+
+    fun isStopped(): Boolean {
+        return pingPongStatus == PingPongStatus.STOPPED
+    }
+
+    fun calculateDeletedAfterDays(): Long? {
+        if (stoppedAt == null) return null
+
+        val now = LocalDateTime.now()
+        val daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), stoppedAt!!.toLocalDate());
+        return DELETE_AFTER_DAYS - daysBetween
+    }
+
+    companion object {
+        private const val DELETE_AFTER_DAYS = 3
     }
 }
