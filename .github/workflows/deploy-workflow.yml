@@ -116,6 +116,8 @@ jobs:
             echo "export NAVER_SMS_SENDER_PHONE=${{ secrets.NAVER_SMS_SENDER_PHONE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             
             echo "export FCM_ADMIN_KEY_PATH=${{ secrets.FCM_ADMIN_KEY_PATH }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
+            echo "export SUPER_USER_NUMBER=${{ secrets.SUPER_USER_NUMBER }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
 
