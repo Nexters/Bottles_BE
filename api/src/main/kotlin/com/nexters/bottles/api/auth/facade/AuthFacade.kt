@@ -20,6 +20,7 @@ import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,6 +36,9 @@ class AuthFacade(
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
     private val authCodeGenerator: AuthCodeGenerator,
+
+    @Value("\${super-user-number}")
+    private val superUserNumber: String,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -90,20 +94,21 @@ class AuthFacade(
         )
         log.info { "requestId: ${smsResponse?.requestId}, statusCode: ${smsResponse?.statusCode}" }
 
+        val expiredAt = LocalDateTime.now().plusMinutes(5)
+        if (isSuperUser(phoneNumber)) {
+            return SendSmsResponse(expiredAt = expiredAt)
+        }
         val authSms = authSmsService.saveAuthSms(
             phoneNumber = phoneNumber,
             authCode = authCode,
-            expiredAt = LocalDateTime.now().plusMinutes(5)
+            expiredAt = expiredAt
         )
-
         return SendSmsResponse(expiredAt = authSms.expiredAt)
     }
 
     fun authSms(authSmsRequest: AuthSmsRequest) {
-        if (isNotSuperUser(authSmsRequest.phoneNumber)) {
-            val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
-            lastAuthSms.validate(lastAuthSms.authCode)
-        }
+        val lastAuthSms = authSmsService.findLastAuthSms(authSmsRequest.phoneNumber)
+        lastAuthSms.validate(lastAuthSms.authCode)
     }
 
     fun logout(userId: Long, accessToken: String) {
@@ -116,10 +121,8 @@ class AuthFacade(
     }
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
-        if (isNotSuperUser(smsSignInRequest.phoneNumber)) {
-            val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
-            lastAuthSms.validate(smsSignInRequest.authCode)
-        }
+        val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
+        lastAuthSms.validate(smsSignInRequest.authCode)
 
         val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)
             ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
@@ -137,7 +140,7 @@ class AuthFacade(
         )
     }
 
-    private fun isNotSuperUser(phoneNumber: String) = phoneNumber != "12345678910"
+    private fun isSuperUser(phoneNumber: String) = phoneNumber == superUserNumber
 }
 
 fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {

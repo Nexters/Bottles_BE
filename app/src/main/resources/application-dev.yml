@@ -56,3 +56,5 @@ matching:
 
 firebase:
   service-account-key-path: ${FCM_ADMIN_KEY_PATH}
+
+super-user-number: ${SUPER_USER_NUMBER}
