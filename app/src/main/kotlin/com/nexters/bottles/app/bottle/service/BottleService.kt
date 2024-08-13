@@ -9,6 +9,9 @@ import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -95,7 +98,12 @@ class BottleService(
         return bottle
     }
 
-
+    @Caching(
+        evict = [
+            CacheEvict("pingPongBottleList", key = "#userId"),
+            CacheEvict("pingPongBottle", key = "#bottleId")
+        ]
+    )
     @Transactional
     fun stop(userId: Long, bottleId: Long) {
         val bottle = bottleRepository.findByIdAndStatusAndDeletedFalse(
@@ -112,10 +120,10 @@ class BottleService(
         bottle.stop(stoppedUser, LocalDateTime.now())
     }
 
+    @Cacheable("pingPongBottleList", key = "#userId")
     @Transactional(readOnly = true)
     fun getPingPongBottles(userId: Long): List<Bottle> {
         val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-
         return bottleRepository.findAllByUserAndStatusAndDeletedFalse(
             user,
             setOf(
@@ -126,6 +134,7 @@ class BottleService(
         )
     }
 
+    @Cacheable("pingPongBottle", key = "#bottleId")
     @Transactional(readOnly = true)
     fun getPingPongBottle(bottleId: Long): Bottle {
         return bottleRepository.findByIdAndStatusAndDeletedFalse(

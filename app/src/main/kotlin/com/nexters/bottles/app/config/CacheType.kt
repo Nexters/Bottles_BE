@@ -9,5 +9,7 @@ enum class CacheType(
     val maximumSize: Long
 ) {
     LETTER_QUESTION("questions", 60, TimeUnit.MINUTES, 1),
+    PING_PONG_BOTTLE_LIST("pingPongBottleList", 60, TimeUnit.MINUTES, 100),
+    PING_PONG_BOTTLE("pingPongBottle", 60, TimeUnit.MINUTES, 100),
     ;
 }

@@ -3,6 +3,7 @@ package com.nexters.bottles.app.bottle.component.event
 import com.nexters.bottles.app.bottle.component.event.dto.AcceptBottleEventDto
 import com.nexters.bottles.app.bottle.service.LetterService
 import com.nexters.bottles.app.bottle.service.QuestionService
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionalEventListener
 
@@ -12,6 +13,7 @@ class BottleApplicationEventListener(
     private val letterService: LetterService,
 ) {
 
+    @Async
     @TransactionalEventListener
     fun handleCustomEvent(event: AcceptBottleEventDto) {
         val allQuestions = questionService.findAllQuestions()

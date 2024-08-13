@@ -7,6 +7,8 @@ import com.nexters.bottles.app.bottle.domain.Question
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.user.domain.User
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Caching
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -49,6 +51,12 @@ class LetterService(
         otherUserLetter.markRead()
     }
 
+    @Caching(
+        evict = [
+            CacheEvict("pingPongBottleList", key = "#user.id"),
+            CacheEvict("pingPongBottle", key = "#bottle.id")
+        ]
+    )
     @Transactional
     fun shareImage(bottle: Bottle, user: User, willShare: Boolean) {
         val letter =
@@ -61,6 +69,12 @@ class LetterService(
         }
     }
 
+    @Caching(
+        evict = [
+            CacheEvict("pingPongBottleList", key = "#user.id"),
+            CacheEvict("pingPongBottle", key = "#bottle.id")
+        ]
+    )
     @Transactional
     fun shareContact(bottle: Bottle, user: User, willShare: Boolean) {
         val letter =
