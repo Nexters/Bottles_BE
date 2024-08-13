@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 
 data class BottleListResponse(
     val randomBottles: List<BottleDto>,
-    val sentBottles: List<BottleDto>
+    val sentBottles: List<BottleDto>,
+    val nextBottleLeftHours: Int,
 )
 
 data class BottleDto(

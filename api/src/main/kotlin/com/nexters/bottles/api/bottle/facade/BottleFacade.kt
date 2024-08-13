@@ -71,7 +71,9 @@ class BottleFacade(
 
         return BottleListResponse(
             randomBottles = randomBottles,
-            sentBottles = sentBottles
+            sentBottles = sentBottles,
+            nextBottleLeftHours = getNextBottleLeftHours(LocalDateTime.now())
+
         ).also {
             applicationEventPublisher.publishEvent(
                 UserApplicationEventDto(
@@ -79,6 +81,15 @@ class BottleFacade(
                     basedAt = LocalDateTime.now(),
                 )
             )
+        }
+    }
+
+    // TODO: 기획 및 테스트 코드 작성
+    private fun getNextBottleLeftHours(now: LocalDateTime): Int {
+        return if (now.toLocalTime() > LocalTime.of(18, 0)) {
+            18 + (LocalTime.MAX.hour - now.hour)
+        } else {
+            LocalTime.of(18, 0).hour - now.hour
         }
     }
 
