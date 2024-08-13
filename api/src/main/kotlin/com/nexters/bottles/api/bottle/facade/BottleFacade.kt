@@ -216,7 +216,7 @@ class BottleFacade(
                 otherProfile = otherUser.userProfile!!
             ),
             matchResult = MatchResult(
-                isMatched = getMatchedStatus(bottle),
+                matchStatus = getMatchedStatus(bottle),
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
                 shouldAnswer = myLetter.isShareContact == null,
                 isFirstSelect = bottle.firstSelectUser == me

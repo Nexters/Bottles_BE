@@ -42,7 +42,7 @@ data class Photo(
 )
 
 data class MatchResult(
-    val isMatched: MatchStatusType,
+    val matchStatus: MatchStatusType,
     val otherContact: String,
     val shouldAnswer: Boolean,
     val isFirstSelect: Boolean,
