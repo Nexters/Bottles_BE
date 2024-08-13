@@ -42,8 +42,15 @@ data class Photo(
 )
 
 data class MatchResult(
-    val isMatched: Boolean,
+    val isMatched: MatchStatusType,
     val otherContact: String,
     val shouldAnswer: Boolean,
     val isFirstSelect: Boolean,
 )
+
+enum class MatchStatusType {
+    IN_CONVERSATION, // 대화중
+    MATCH_FAILED, // 매치 실패
+    MATCH_SUCCEEDED, // 매치 성공
+    ;
+}

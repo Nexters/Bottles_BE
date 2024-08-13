@@ -7,6 +7,7 @@ import com.nexters.bottles.api.bottle.facade.dto.BottleDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
 import com.nexters.bottles.api.bottle.facade.dto.MatchResult
+import com.nexters.bottles.api.bottle.facade.dto.MatchStatusType
 import com.nexters.bottles.api.bottle.facade.dto.Photo
 import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
 import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
@@ -215,7 +216,7 @@ class BottleFacade(
                 otherProfile = otherUser.userProfile!!
             ),
             matchResult = MatchResult(
-                isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
+                isMatched = getMatchedStatus(bottle),
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
                 shouldAnswer = myLetter.isShareContact == null,
                 isFirstSelect = bottle.firstSelectUser == me
@@ -265,6 +266,15 @@ class BottleFacade(
             otherAnswer = otherLetter.isShareImage,
             isDone = (myLetter.isShareImage != null) && (otherLetter.isShareImage != null)
         )
+    }
+
+    private fun getMatchedStatus(bottle: Bottle): MatchStatusType {
+        return when (bottle.pingPongStatus) {
+            PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
+            PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
+            PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
+            else -> MatchStatusType.IN_CONVERSATION
+        }
     }
 
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
