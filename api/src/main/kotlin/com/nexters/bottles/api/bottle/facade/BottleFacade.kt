@@ -1,19 +1,7 @@
 package com.nexters.bottles.api.bottle.facade
 
 import com.nexters.bottles.api.bottle.event.dto.BottleApplicationEventDto
-import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
-import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
-import com.nexters.bottles.api.bottle.facade.dto.BottleDto
-import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
-import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
-import com.nexters.bottles.api.bottle.facade.dto.MatchResult
-import com.nexters.bottles.api.bottle.facade.dto.MatchStatusType
-import com.nexters.bottles.api.bottle.facade.dto.Photo
-import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
-import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
-import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
-import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
-import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
+import com.nexters.bottles.api.bottle.facade.dto.*
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -270,6 +258,7 @@ class BottleFacade(
     ): Photo {
 
         return Photo(
+            photoStatus = getPhotoStatus(myProfile = myProfile, otherProfile = otherProfile, myLetter = myLetter, otherLetter = otherLetter),
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
             shouldAnswer = myLetter.isShareImage == null,
@@ -277,6 +266,17 @@ class BottleFacade(
             otherAnswer = otherLetter.isShareImage,
             isDone = (myLetter.isShareImage != null) && (otherLetter.isShareImage != null)
         )
+    }
+
+    private fun getPhotoStatus(myProfile: UserProfile, otherProfile: UserProfile, myLetter: Letter, otherLetter: Letter): PhotoStatus {
+        return when {
+            myLetter.isShareImage == false -> PhotoStatus.MY_REJECT
+            otherLetter.isShareImage == false -> PhotoStatus.OTHER_REJECT
+            myLetter.isShareImage == null -> PhotoStatus.REQUIRE_SELECT
+            myLetter.isShareImage == true  && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
+            myLetter.isShareImage == true && otherLetter.isShareImage == true -> PhotoStatus.BOTH_AGREE
+            else -> PhotoStatus.NONE
+        }
     }
 
     private fun getMatchedStatus(bottle: Bottle): MatchStatusType {
