@@ -1,19 +1,20 @@
 CREATE TABLE user
 (
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name              VARCHAR(255) DEFAULT NULL,
-    birthdate         DATE         DEFAULT NULL,
-    kakao_id          VARCHAR(255) DEFAULT NULL,
-    city              VARCHAR(255) DEFAULT NULL comment '시',
-    state             VARCHAR(255) DEFAULT NULL comment '구',
-    phone_number      VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
-    gender            VARCHAR(10)  DEFAULT 'MALE',
-    sign_up_type      VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
-    deleted           BOOLEAN      DEFAULT FALSE             NOT NULL,
-    deleted_at        DATETIME     DEFAULT CURRENT_TIMESTAMP,
-    last_activated_at DATETIME     DEFAULT CURRENT_TIMESTAMP comment '유저의 최근 활성 시간으로, 보틀 목록 조회하기 api 요청시 갱신',
-    created_at        DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at        DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name               VARCHAR(255) DEFAULT NULL,
+    birthdate          DATE         DEFAULT NULL,
+    kakao_id           VARCHAR(255) DEFAULT NULL,
+    city               VARCHAR(255) DEFAULT NULL comment '시',
+    state              VARCHAR(255) DEFAULT NULL comment '구',
+    phone_number       VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
+    gender             VARCHAR(10)  DEFAULT 'MALE',
+    sign_up_type       VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
+    deleted            BOOLEAN      DEFAULT FALSE             NOT NULL,
+    deleted_at         DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    last_activated_at  DATETIME     DEFAULT CURRENT_TIMESTAMP comment '유저의 최근 활성 시간으로, 보틀 목록 조회하기 api 요청시 갱신',
+    is_match_activated BOOLEAN      DEFAULT TRUE              NOT NULL comment '매칭 활성화 여부',
+    created_at         DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at         DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 ) AUTO_INCREMENT = 10;
 
 CREATE TABLE user_profile
