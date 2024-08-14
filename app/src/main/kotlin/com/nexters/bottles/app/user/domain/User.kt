@@ -62,4 +62,8 @@ class User(
     fun updateLastActivatedAt(basedAt: LocalDateTime) {
         this.lastActivatedAt = basedAt
     }
+
+    fun isMatchInactive(): Boolean {
+        return !isMatchActivated
+    }
 }

@@ -38,7 +38,7 @@ class BottleMatchingRepository(
            SELECT u.id AS willMatchUserId, u.gender AS willMatchUserGender, u.city AS city
            FROM user u 
            LEFT JOIN bottle_history bh ON u.id = bh.matched_user_id 
-           WHERE bh.matched_user_id IS NULL AND u.id != ? AND u.deleted = false;
+           WHERE bh.matched_user_id IS NULL AND u.id != ? AND u.deleted = false AND u.is_match_activated = true;
        """.trimIndent()
 
         return jdbcTemplate.query(sql, { rs, _ ->
