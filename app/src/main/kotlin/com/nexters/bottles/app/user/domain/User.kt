@@ -46,6 +46,8 @@ class User(
     var deletedAt: LocalDateTime? = null,
 
     var lastActivatedAt: LocalDateTime = LocalDateTime.now(),
+
+    var isMatchActivated: Boolean = true,
 ) : BaseEntity() {
 
     fun getKoreanAge(): Int {
