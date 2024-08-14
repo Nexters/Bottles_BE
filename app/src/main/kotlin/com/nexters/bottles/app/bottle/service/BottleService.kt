@@ -167,7 +167,7 @@ class BottleService(
         )
         if (todayMatchingBottle.isNotEmpty()) return null
 
-        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id)
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender)
         if (usersCanBeMatched.isEmpty()) return null
 
         val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
