@@ -156,6 +156,8 @@ class BottleService(
 
     @Transactional
     fun matchRandomBottle(user: User, matchingTime: LocalDateTime): Bottle? {
+        val now = LocalDateTime.now()
+        if (now.hour < matchingTime.hour) return null
         if (user.isMatchInactive()) return null
 
         val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
