@@ -272,7 +272,8 @@ class BottleFacade(
         return when {
             myLetter.isShareImage == false -> PhotoStatus.MY_REJECT
             otherLetter.isShareImage == false -> PhotoStatus.OTHER_REJECT
-            myLetter.isShareImage == null -> PhotoStatus.REQUIRE_SELECT
+            myLetter.isShareImage == null && otherLetter.isShareImage != null -> PhotoStatus.REQUIRE_SELECT_OTHER_SELECT
+            myLetter.isShareImage == null && otherLetter.isShareImage == null -> PhotoStatus.REQUIRE_SELECT_OTHER_NOT_SELECT
             myLetter.isShareImage == true  && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
             myLetter.isShareImage == true && otherLetter.isShareImage == true -> PhotoStatus.BOTH_AGREE
             else -> PhotoStatus.NONE
