@@ -15,6 +15,7 @@ import com.nexters.bottles.app.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 class BottleService(
@@ -155,9 +156,8 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(user: User, matchingTime: LocalDateTime): Bottle? {
-        val now = LocalDateTime.now()
-        if (now.hour < matchingTime.hour) return null
+    fun matchRandomBottle(user: User, matchingHour: Int): Bottle? {
+        val matchingTime = getMatchingTime(matchingHour)
         if (user.isMatchInactive()) return null
 
         val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
@@ -174,8 +174,17 @@ class BottleService(
         val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
             ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
-        val bottle = Bottle(targetUser = user, sourceUser = matchingUser)
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = matchingTime.plusDays(1))
         return bottleRepository.save(bottle)
+    }
+
+    private fun getMatchingTime(matchingHour: Int): LocalDateTime {
+        val now = LocalDateTime.now()
+        var matchingTime = now.with(LocalTime.of(matchingHour, 0))
+        if (now.hour < matchingHour) {
+            matchingTime = matchingTime.minusDays(1)
+        }
+        return matchingTime
     }
 
     private fun findUserSameRegionOrRandom(
