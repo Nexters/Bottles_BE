@@ -60,7 +60,7 @@ class BottleMatchingRepository(
                     willMatchCity = rs.getString("city")
                 )
             },
-            arrayOf(userId, gender.name)
+            userId, gender.name
         )
     }
 }
