@@ -53,14 +53,14 @@ class BottleMatchingRepository(
 
         return jdbcTemplate.query(
             sql,
-            arrayOf(userId, gender),
             { rs, _ ->
                 UsersCanBeMatchedDto(
                     willMatchUserId = rs.getLong("willMatchUserId"),
                     willMatchUserGender = rs.getString("willMatchUserGender"),
                     willMatchCity = rs.getString("city")
                 )
-            }
+            },
+            arrayOf(userId, gender)
         )
     }
 }
