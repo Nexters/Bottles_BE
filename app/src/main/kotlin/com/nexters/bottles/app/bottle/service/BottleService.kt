@@ -12,6 +12,7 @@ import com.nexters.bottles.app.bottle.repository.QuestionRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -24,6 +25,8 @@ class BottleService(
     private val questionRepository: QuestionRepository,
     private val bottleMatchingRepository: BottleMatchingRepository,
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
     fun getNewBottles(user: User): List<Bottle> {
@@ -167,6 +170,7 @@ class BottleService(
         )
         if (todayMatchingBottle.isNotEmpty()) return null
 
+        log.info { "userId: ${user.id}, gender: ${user.gender}" }
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender)
         if (usersCanBeMatched.isEmpty()) return null
 
