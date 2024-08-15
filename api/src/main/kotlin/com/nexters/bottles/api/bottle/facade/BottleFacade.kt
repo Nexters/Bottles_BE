@@ -47,7 +47,6 @@ class BottleFacade(
         val user = userService.findByIdAndNotDeleted(userId)
         if (isActiveMatching) {
             val matchingHour = 18
-//            val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
             bottleService.matchRandomBottle(user, matchingHour)
                 ?.also {
                     applicationEventPublisher.publishEvent(
