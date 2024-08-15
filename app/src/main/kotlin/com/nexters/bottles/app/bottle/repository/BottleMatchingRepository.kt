@@ -46,7 +46,7 @@ class BottleMatchingRepository(
        LEFT JOIN bottle_history bh ON u.id = bh.matched_user_id 
        WHERE bh.matched_user_id IS NULL 
          AND u.id != ? 
-         AND u.gender != ${gender.name} 
+         AND u.gender != ? 
          AND u.deleted = false 
          AND u.is_match_activated = true;
     """.trimIndent()
@@ -60,7 +60,7 @@ class BottleMatchingRepository(
                     willMatchCity = rs.getString("city")
                 )
             },
-            arrayOf(userId, gender.name)
+            userId, gender.name
         )
     }
 }
