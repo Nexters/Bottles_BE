@@ -3,11 +3,13 @@ package com.nexters.bottles.app.bottle.repository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.enum.Gender
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 
 @Repository
 class BottleMatchingRepository(
     private val jdbcTemplate: JdbcTemplate,
+    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) {
 
     /*
@@ -37,30 +39,35 @@ class BottleMatchingRepository(
     // TODO 쿼리 개선. 로직이 너무 쿼리에 들어가는 것 같기도
     fun findAllUserCanBeMatched(userId: Long, gender: Gender): List<UsersCanBeMatchedDto> {
         val sql = """
-       SELECT u.id AS willMatchUserId, u.gender AS willMatchUserGender, u.city AS city 
-       FROM user u 
-       JOIN user_profile up ON up.user_id = u.id 
-           AND up.image_url IS NOT NULL 
-           AND up.introduction IS NOT NULL 
-           AND JSON_LENGTH(up.introduction) > 0 
-       LEFT JOIN bottle_history bh ON u.id = bh.matched_user_id 
-       WHERE bh.matched_user_id IS NULL 
-         AND u.id != ? 
-         AND u.gender != ${gender.name} 
-         AND u.deleted = false 
-         AND u.is_match_activated = true;
+        SELECT u.id AS willMatchUserId, u.gender AS willMatchUserGender, u.city AS city 
+        FROM user u 
+        JOIN user_profile up ON up.user_id = u.id 
+            AND up.image_url IS NOT NULL 
+            AND up.introduction IS NOT NULL 
+            AND JSON_LENGTH(up.introduction) > 0 
+        LEFT JOIN bottle_history bh ON u.id = bh.matched_user_id 
+        WHERE bh.matched_user_id IS NULL 
+          AND u.id != :userId 
+          AND u.gender != :gender 
+          AND u.deleted = false 
+          AND u.is_match_activated = true;
     """.trimIndent()
 
-        return jdbcTemplate.query(
+        val namedParameters = mapOf(
+            "userId" to userId,
+            "gender" to gender.name
+        )
+
+        return namedParameterJdbcTemplate.query(
             sql,
+            namedParameters,
             { rs, _ ->
                 UsersCanBeMatchedDto(
                     willMatchUserId = rs.getLong("willMatchUserId"),
                     willMatchUserGender = rs.getString("willMatchUserGender"),
                     willMatchCity = rs.getString("city")
                 )
-            },
-            userId, gender.name
+            }
         )
     }
 }
