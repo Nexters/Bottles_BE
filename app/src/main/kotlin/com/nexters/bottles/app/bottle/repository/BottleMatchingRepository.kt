@@ -45,8 +45,9 @@ class BottleMatchingRepository(
             AND up.image_url IS NOT NULL 
             AND up.introduction IS NOT NULL 
             AND JSON_LENGTH(up.introduction) > 0 
-        LEFT JOIN bottle_history bh ON bh.user_id = :userId AND bh.matched_user_id != u.id
-        WHERE u.id != :userId 
+        LEFT JOIN bottle_history bh ON bh.user_id = :userId AND bh.matched_user_id = u.id
+        WHERE bh.id IS NULL 
+          AND u.id != :userId 
           AND u.gender != :gender 
           AND u.deleted = false 
           AND u.is_match_activated = true;
