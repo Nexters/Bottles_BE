@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class QuestionService(
+class QuestionCachingService(
     private val questionRepository: QuestionRepository
 ) {
 

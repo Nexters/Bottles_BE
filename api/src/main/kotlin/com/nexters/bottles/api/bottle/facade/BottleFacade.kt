@@ -21,6 +21,7 @@ import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.service.BottleCachingService
 import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.LetterService
+import com.nexters.bottles.app.bottle.service.QuestionCachingService
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.user.domain.User
@@ -42,6 +43,7 @@ class BottleFacade(
     private val userService: UserService,
     private val userReportService: UserReportService,
     private val bottleCachingService: BottleCachingService,
+    private val questionCachingService: QuestionCachingService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${matching.isActive}")
@@ -120,7 +122,8 @@ class BottleFacade(
     }
 
     fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequest: AcceptBottleRequest) {
-        bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage)
+        val allQuestions = questionCachingService.findAllQuestions()
+        bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage, allQuestions)
     }
 
     fun refuseBottle(userId: Long, bottleId: Long) {

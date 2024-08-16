@@ -1,11 +1,14 @@
 package com.nexters.bottles.app.bottle.service
 
-import com.nexters.bottles.app.bottle.component.event.dto.AcceptBottleEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
+import com.nexters.bottles.app.bottle.domain.Letter
+import com.nexters.bottles.app.bottle.domain.LetterQuestionAndAnswer
+import com.nexters.bottles.app.bottle.domain.Question
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleMatchingRepository
 import com.nexters.bottles.app.bottle.repository.BottleRepository
+import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
@@ -18,6 +21,7 @@ import java.time.LocalDateTime
 class BottleService(
     private val bottleRepository: BottleRepository,
     private val userRepository: UserRepository,
+    private val letterRepository: LetterRepository,
     private val bottleMatchingRepository: BottleMatchingRepository,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
@@ -41,7 +45,7 @@ class BottleService(
     }
 
     @Transactional
-    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?) {
+    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?, questions: List<Question>) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpiredAndDeletedFalse(
                 bottleId,
@@ -69,13 +73,27 @@ class BottleService(
                 require(likeMessage == null) { "고객센터에 문의해주세요" }
                 bottle.startPingPong()
 
-                applicationEventPublisher.publishEvent(
-                    AcceptBottleEventDto(
-                        bottleId = bottle.id
-                    )
-                )
+                val letters = findRandomQuestions(questions)
+                saveLetter(bottle, targetUser, letters)
+                saveLetter(bottle, sourceUser, letters)
             }
         }
+    }
+
+    private fun findRandomQuestions(questions: List<Question>) = questions
+        .shuffled()
+        .take(3)
+        .map {
+            LetterQuestionAndAnswer(question = it.question)
+        }
+
+    private fun saveLetter(
+        bottle: Bottle,
+        user: User,
+        letters: List<LetterQuestionAndAnswer>
+    ) {
+        val letter = Letter(bottle = bottle, user = user, letters = letters)
+        letterRepository.save(letter)
     }
 
     @Transactional
@@ -94,7 +112,7 @@ class BottleService(
         bottle.refuse(targetUser)
         return bottle
     }
-    
+
     @Transactional
     fun stop(userId: Long, bottleId: Long) {
         val bottle = bottleRepository.findByIdAndStatusAndDeletedFalse(
