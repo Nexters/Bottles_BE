@@ -7,11 +7,13 @@ import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
+import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
 import org.jetbrains.annotations.TestOnly
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -54,6 +56,7 @@ class AdminService(
 
     @TestOnly
     @Transactional
+    @CacheEvict(PING_PONG_BOTTLE_LIST, key = "#user.id")
     fun cleanUpMockUpData(user: User) {
         userRepository.findByIdOrNull(user.id)?.let { user ->
             letterRepository.findAllByUserId(user.id).forEach {
