@@ -103,9 +103,9 @@ class UserProfileFacade(
             "자주 피워요" -> profileDto.smoking = "흡연해요"
         }
         when (profileDto.alcohol) {
-            "한 방울도 마시지 않아요" -> profileDto.smoking = "술은 안해요"
-            "때에 따라 적당히 즐겨요" -> profileDto.smoking = "술은 적당히"
-            "자주 찾는 편이에요" -> profileDto.smoking = "술을 즐겨요"
+            "한 방울도 마시지 않아요" -> profileDto.alcohol = "술은 안해요"
+            "때에 따라 적당히 즐겨요" -> profileDto.alcohol = "술은 적당히"
+            "자주 찾는 편이에요" -> profileDto.alcohol = "술을 즐겨요"
         }
         return profileDto
     }
@@ -127,7 +127,7 @@ class UserProfileFacade(
 
     fun existIntroduction(userId: Long): ExistIntroductionResponse {
         val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
-        return ExistIntroductionResponse(isExist = userProfile.introduction.isEmpty())
+        return ExistIntroductionResponse(isExist = userProfile.introduction.isNotEmpty())
     }
 
     fun findUserInfo(userId: Long): UserInfoResponse {

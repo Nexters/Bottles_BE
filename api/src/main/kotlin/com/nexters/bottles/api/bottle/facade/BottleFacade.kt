@@ -7,7 +7,9 @@ import com.nexters.bottles.api.bottle.facade.dto.BottleDto
 import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
 import com.nexters.bottles.api.bottle.facade.dto.MatchResult
+import com.nexters.bottles.api.bottle.facade.dto.MatchStatusType
 import com.nexters.bottles.api.bottle.facade.dto.Photo
+import com.nexters.bottles.api.bottle.facade.dto.PhotoStatus
 import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
 import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
@@ -53,8 +55,8 @@ class BottleFacade(
     fun getNewBottles(userId: Long): BottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
         if (isActiveMatching) {
-            val matchingTime = LocalDateTime.now().with(LocalTime.of(18, 0))
-            bottleService.matchRandomBottle(user, matchingTime)
+            val matchingHour = 18
+            bottleService.matchRandomBottle(user, matchingHour)
                 ?.also {
                     applicationEventPublisher.publishEvent(
                         BottleApplicationEventDto(
@@ -79,7 +81,9 @@ class BottleFacade(
 
         return BottleListResponse(
             randomBottles = randomBottles,
-            sentBottles = sentBottles
+            sentBottles = sentBottles,
+            nextBottleLeftHours = getNextBottleLeftHours(LocalDateTime.now())
+
         ).also {
             applicationEventPublisher.publishEvent(
                 UserApplicationEventDto(
@@ -87,6 +91,15 @@ class BottleFacade(
                     basedAt = LocalDateTime.now(),
                 )
             )
+        }
+    }
+
+    // TODO: 기획 및 테스트 코드 작성
+    private fun getNextBottleLeftHours(now: LocalDateTime): Int {
+        return if (now.toLocalTime() > LocalTime.of(18, 0)) {
+            18 + (LocalTime.MAX.hour - now.hour)
+        } else {
+            LocalTime.of(18, 0).hour - now.hour
         }
     }
 
@@ -209,6 +222,8 @@ class BottleFacade(
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
+        // TODO 출시 후 제거
+        val meetingPlace = getMeetingPlaces()
 
         return BottlePingPongResponse(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
@@ -230,10 +245,12 @@ class BottleFacade(
                 otherProfile = otherUser.userProfile!!
             ),
             matchResult = MatchResult(
-                isMatched = bottle.pingPongStatus == PingPongStatus.MATCHED,
+                matchStatus = getMatchedStatus(myLetter = myLetter, otherLetter = otherLetter, bottle = bottle),
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
                 shouldAnswer = myLetter.isShareContact == null,
-                isFirstSelect = bottle.firstSelectUser == me
+                isFirstSelect = bottle.firstSelectUser == me,
+                meetingPlace = meetingPlace.key,
+                meetingPlaceImageUrl = meetingPlace.value,
             )
         )
     }
@@ -273,6 +290,7 @@ class BottleFacade(
     ): Photo {
 
         return Photo(
+            photoStatus = getPhotoStatus(myLetter = myLetter, otherLetter = otherLetter),
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
             shouldAnswer = myLetter.isShareImage == null,
@@ -280,6 +298,39 @@ class BottleFacade(
             otherAnswer = otherLetter.isShareImage,
             isDone = (myLetter.isShareImage != null) && (otherLetter.isShareImage != null)
         )
+    }
+
+    private fun getPhotoStatus(myLetter: Letter, otherLetter: Letter): PhotoStatus {
+        return when {
+            myLetter.isShareImage == false -> PhotoStatus.MY_REJECT
+            otherLetter.isShareImage == false -> PhotoStatus.OTHER_REJECT
+            myLetter.isShareImage == null && otherLetter.isShareImage != null -> PhotoStatus.REQUIRE_SELECT_OTHER_SELECT
+            myLetter.isShareImage == null && otherLetter.isShareImage == null -> PhotoStatus.REQUIRE_SELECT_OTHER_NOT_SELECT
+            myLetter.isShareImage == true && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
+            myLetter.isShareImage == true && otherLetter.isShareImage == true -> PhotoStatus.BOTH_AGREE
+            else -> PhotoStatus.NONE
+        }
+    }
+
+    private fun getMatchedStatus(myLetter: Letter, otherLetter: Letter, bottle: Bottle): MatchStatusType {
+        return when {
+            myLetter.isShareImage == null && otherLetter.isShareImage == null -> MatchStatusType.NONE
+            myLetter.isShareImage == true && otherLetter.isShareImage == true -> MatchStatusType.REQUIRE_SELECT
+            myLetter.isShareContact == true && otherLetter.isShareContact == null -> MatchStatusType.WAITING_OTHER_ANSWER
+            bottle.pingPongStatus == PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
+            bottle.pingPongStatus == PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
+            bottle.pingPongStatus == PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
+            else -> MatchStatusType.NONE
+        }
+    }
+
+    private fun getMeetingPlaces(): Map.Entry<String, String> {
+        val places = mapOf(
+            "남산타워" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%82%E1%85%A1%E1%86%B7%E1%84%89%E1%85%A1%E1%86%AB%E1%84%90%E1%85%A1%E1%84%8B%E1%85%AF.png",
+            "청계천" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8E%E1%85%A5%E1%86%BC%E1%84%80%E1%85%A8%E1%84%8E%E1%85%A5%E1%86%AB.png",
+            "북촌한옥마을" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A1%E1%86%AB%E1%84%8B%E1%85%A9%E1%86%A8%E1%84%86%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%AF.png"
+        )
+        return places.entries.random()
     }
 
     @Caching(

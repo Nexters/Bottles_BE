@@ -12,10 +12,11 @@ import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
-import org.springframework.context.ApplicationEventPublisher
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 class BottleService(
@@ -23,8 +24,9 @@ class BottleService(
     private val userRepository: UserRepository,
     private val letterRepository: LetterRepository,
     private val bottleMatchingRepository: BottleMatchingRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
     fun getNewBottles(user: User): List<Bottle> {
@@ -155,7 +157,10 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(user: User, matchingTime: LocalDateTime): Bottle? {
+    fun matchRandomBottle(user: User, matchingHour: Int): Bottle? {
+        val matchingTime = getMatchingTime(matchingHour)
+        if (user.isMatchInactive()) return null
+
         val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
             targetUser = user,
             bottleStatus = BottleStatus.RANDOM,
@@ -163,15 +168,25 @@ class BottleService(
         )
         if (todayMatchingBottle.isNotEmpty()) return null
 
-        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id)
+        log.info { "userId: ${user.id}, gender: ${user.gender}" }
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender)
         if (usersCanBeMatched.isEmpty()) return null
 
         val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
         val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
             ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
-        val bottle = Bottle(targetUser = user, sourceUser = matchingUser)
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = matchingTime.plusDays(1))
         return bottleRepository.save(bottle)
+    }
+
+    private fun getMatchingTime(matchingHour: Int): LocalDateTime {
+        val now = LocalDateTime.now()
+        var matchingTime = now.with(LocalTime.of(matchingHour, 0))
+        if (now.hour < matchingHour) {
+            matchingTime = matchingTime.minusDays(1)
+        }
+        return matchingTime
     }
 
     private fun findUserSameRegionOrRandom(

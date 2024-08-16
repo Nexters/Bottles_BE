@@ -52,7 +52,9 @@ naver-cloud-sms:
   senderPhone: ${NAVER_SMS_SENDER_PHONE}
 
 matching:
-  isActive: false
+  isActive: ${IS_MATCHING_ACTIVE}
 
 firebase:
   service-account-key-path: ${FCM_ADMIN_KEY_PATH}
+
+super-user-number: ${SUPER_USER_NUMBER}
