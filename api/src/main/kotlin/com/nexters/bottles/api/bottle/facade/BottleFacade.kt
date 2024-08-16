@@ -207,6 +207,8 @@ class BottleFacade(
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
+        // TODO 출시 후 제거
+        val meetingPlace = getMeetingPlaces()
 
         return BottlePingPongResponse(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
@@ -231,7 +233,9 @@ class BottleFacade(
                 matchStatus = getMatchedStatus(myLetter = myLetter, otherLetter = otherLetter, bottle = bottle),
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
                 shouldAnswer = myLetter.isShareContact == null,
-                isFirstSelect = bottle.firstSelectUser == me
+                isFirstSelect = bottle.firstSelectUser == me,
+                meetingPlace = meetingPlace.key,
+                meetingPlaceImageUrl = meetingPlace.value,
             )
         )
     }
@@ -303,6 +307,15 @@ class BottleFacade(
             bottle.pingPongStatus == PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
             else -> MatchStatusType.NONE
         }
+    }
+
+    private fun getMeetingPlaces(): Map.Entry<String, String> {
+        val places = mapOf(
+            "남산타워" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%82%E1%85%A1%E1%86%B7%E1%84%89%E1%85%A1%E1%86%AB%E1%84%90%E1%85%A1%E1%84%8B%E1%85%AF.png",
+            "청계천" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8E%E1%85%A5%E1%86%BC%E1%84%80%E1%85%A8%E1%84%8E%E1%85%A5%E1%86%AB.png",
+            "북촌한옥마을" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A1%E1%86%AB%E1%84%8B%E1%85%A9%E1%86%A8%E1%84%86%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%AF.png"
+        )
+        return places.entries.random()
     }
 
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {

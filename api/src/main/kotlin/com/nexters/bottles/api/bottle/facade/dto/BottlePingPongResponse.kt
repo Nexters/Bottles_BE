@@ -62,6 +62,8 @@ data class MatchResult(
     val otherContact: String,
     val shouldAnswer: Boolean,
     val isFirstSelect: Boolean,
+    val meetingPlace: String? = null,
+    val meetingPlaceImageUrl: String? = null,
 )
 
 enum class MatchStatusType {
