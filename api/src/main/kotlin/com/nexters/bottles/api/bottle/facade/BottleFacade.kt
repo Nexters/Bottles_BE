@@ -303,6 +303,7 @@ class BottleFacade(
 
     private fun getPhotoStatus(myLetter: Letter, otherLetter: Letter): PhotoStatus {
         return when {
+            isPhotoStatusNone(myLetter = myLetter, otherLetter = otherLetter) -> PhotoStatus.NONE
             myLetter.isShareImage == false -> PhotoStatus.MY_REJECT
             otherLetter.isShareImage == false -> PhotoStatus.OTHER_REJECT
             myLetter.isShareImage == null && otherLetter.isShareImage != null -> PhotoStatus.REQUIRE_SELECT_OTHER_SELECT
@@ -313,14 +314,21 @@ class BottleFacade(
         }
     }
 
+    private fun isPhotoStatusNone(myLetter: Letter, otherLetter: Letter): Boolean {
+        return myLetter.letters.zip(otherLetter.letters)
+            .getOrNull(2)
+            ?.let { (mySingleLetter, otherSingleLetter) ->
+                mySingleLetter.answer != null && otherSingleLetter.answer != null
+            } ?: false
+    }
+
     private fun getMatchedStatus(myLetter: Letter, otherLetter: Letter, bottle: Bottle): MatchStatusType {
         return when {
-            myLetter.isShareImage == null && otherLetter.isShareImage == null -> MatchStatusType.NONE
-            myLetter.isShareImage == true && otherLetter.isShareImage == true -> MatchStatusType.REQUIRE_SELECT
-            myLetter.isShareContact == true && otherLetter.isShareContact == null -> MatchStatusType.WAITING_OTHER_ANSWER
-            bottle.pingPongStatus == PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
-            bottle.pingPongStatus == PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
             bottle.pingPongStatus == PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
+            bottle.pingPongStatus == PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
+            myLetter.isShareImage == null && otherLetter.isShareImage == null -> MatchStatusType.NONE
+            myLetter.isShareContact == true && otherLetter.isShareContact == null -> MatchStatusType.WAITING_OTHER_ANSWER
+            myLetter.isShareImage == true && otherLetter.isShareImage == true -> MatchStatusType.REQUIRE_SELECT
             else -> MatchStatusType.NONE
         }
     }
