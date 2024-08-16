@@ -3,12 +3,12 @@ package com.nexters.bottles.app.bottle.service
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
 import com.nexters.bottles.app.bottle.domain.LetterQuestionAndAnswer
+import com.nexters.bottles.app.bottle.domain.Question
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleMatchingRepository
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
-import com.nexters.bottles.app.bottle.repository.QuestionRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
@@ -23,7 +23,6 @@ class BottleService(
     private val bottleRepository: BottleRepository,
     private val userRepository: UserRepository,
     private val letterRepository: LetterRepository,
-    private val questionRepository: QuestionRepository,
     private val bottleMatchingRepository: BottleMatchingRepository,
 ) {
 
@@ -48,7 +47,7 @@ class BottleService(
     }
 
     @Transactional
-    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?) {
+    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?, questions: List<Question>) {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpiredAndDeletedFalse(
                 bottleId,
@@ -75,14 +74,15 @@ class BottleService(
             BottleStatus.SENT -> {
                 require(likeMessage == null) { "고객센터에 문의해주세요" }
                 bottle.startPingPong()
-                val letters = findRandomQuestions()
+
+                val letters = findRandomQuestions(questions)
                 saveLetter(bottle, targetUser, letters)
                 saveLetter(bottle, sourceUser, letters)
             }
         }
     }
 
-    private fun findRandomQuestions() = questionRepository.findAll()
+    private fun findRandomQuestions(questions: List<Question>) = questions
         .shuffled()
         .take(3)
         .map {
@@ -115,7 +115,6 @@ class BottleService(
         return bottle
     }
 
-
     @Transactional
     fun stop(userId: Long, bottleId: Long) {
         val bottle = bottleRepository.findByIdAndStatusAndDeletedFalse(
@@ -135,7 +134,6 @@ class BottleService(
     @Transactional(readOnly = true)
     fun getPingPongBottles(userId: Long): List<Bottle> {
         val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-
         return bottleRepository.findAllByUserAndStatusAndDeletedFalse(
             user,
             setOf(

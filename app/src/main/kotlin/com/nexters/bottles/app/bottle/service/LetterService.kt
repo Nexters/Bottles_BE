@@ -2,6 +2,7 @@ package com.nexters.bottles.app.bottle.service
 
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
+import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.user.domain.User
 import org.springframework.stereotype.Service
@@ -11,6 +12,7 @@ import java.time.LocalDateTime
 @Service
 class LetterService(
     private val letterRepository: LetterRepository,
+    private val bottleRepository: BottleRepository
 ) {
 
     @Transactional(readOnly = true)

@@ -20,13 +20,19 @@ import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.app.bottle.service.BottleCachingService
 import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.LetterService
+import com.nexters.bottles.app.bottle.service.QuestionCachingService
+import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE
+import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.service.UserReportService
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Caching
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -38,6 +44,8 @@ class BottleFacade(
     private val letterService: LetterService,
     private val userService: UserService,
     private val userReportService: UserReportService,
+    private val bottleCachingService: BottleCachingService,
+    private val questionCachingService: QuestionCachingService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${matching.isActive}")
@@ -127,7 +135,8 @@ class BottleFacade(
     }
 
     fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequest: AcceptBottleRequest) {
-        bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage)
+        val allQuestions = questionCachingService.findAllQuestions()
+        bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage, allQuestions)
     }
 
     fun refuseBottle(userId: Long, bottleId: Long) {
@@ -145,7 +154,7 @@ class BottleFacade(
 
     fun getPingPongBottles(userId: Long): PingPongListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
-        val pingPongBottles = bottleService.getPingPongBottles(userId)
+        val pingPongBottles = bottleCachingService.getPingPongBottles(userId)
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
         val blockedUserIds = userReportService.getReportRespondentList(userId)
             .map { it.respondentUserId }
@@ -179,7 +188,7 @@ class BottleFacade(
     }
 
     fun registerLetter(userId: Long, bottleId: Long, registerLetterRequest: RegisterLetterRequest) {
-        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
         val user = userService.findByIdAndNotDeleted(userId)
 
         letterService.registerLetter(
@@ -191,19 +200,25 @@ class BottleFacade(
     }
 
     fun readPingPongBottle(userId: Long, bottleId: Long) {
-        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
         val me = userService.findByIdAndNotDeleted(userId)
         val otherUser = pingPongBottle.findOtherUser(me)
         letterService.markReadOtherUserLetter(pingPongBottle, otherUser)
     }
 
+    @Caching(
+        evict = [
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
+            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
+        ]
+    )
     fun stopBottle(userId: Long, bottleId: Long) {
         bottleService.stop(userId, bottleId)
     }
 
     fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponse {
         val me = userService.findByIdAndNotDeleted(userId)
-        val bottle = bottleService.getPingPongBottle(bottleId)
+        val bottle = bottleCachingService.getPingPongBottle(bottleId)
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
@@ -318,16 +333,28 @@ class BottleFacade(
         return places.entries.random()
     }
 
+    @Caching(
+        evict = [
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
+            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
+        ]
+    )
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
         val user = userService.findByIdAndNotDeleted(userId)
-        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
 
         letterService.shareImage(pingPongBottle, user, willShare)
     }
 
+    @Caching(
+        evict = [
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
+            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
+        ]
+    )
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
         val user = userService.findByIdAndNotDeleted(userId)
-        val pingPongBottle = bottleService.getPingPongBottle(bottleId)
+        val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
 
         val previousStatus = pingPongBottle.pingPongStatus
         letterService.shareContact(pingPongBottle, user, willMatch)

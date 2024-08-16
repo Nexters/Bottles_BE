@@ -11,6 +11,9 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-data-jpa")
     api("org.springframework.boot:spring-boot-starter-data-jdbc")
 
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 
     implementation("com.google.firebase:firebase-admin:9.2.0")
