@@ -62,11 +62,16 @@ data class MatchResult(
     val otherContact: String,
     val shouldAnswer: Boolean,
     val isFirstSelect: Boolean,
+    val meetingPlace: String? = null,
+    val meetingPlaceImageUrl: String? = null,
 )
 
 enum class MatchStatusType {
-    IN_CONVERSATION, // 대화중
-    MATCH_FAILED, // 매치 실패
-    MATCH_SUCCEEDED, // 매치 성공
+    NONE, // 아직 최종 선택 단계가 아닐 때
+    REQUIRE_SELECT, // 최종 선택을 해야할 때
+    WAITING_OTHER_ANSWER, // 상대의 답변을 기다려야 할 때
+    IN_CONVERSATION, // 대화중일 때
+    MATCH_FAILED, // 매칭 실패 했을 때
+    MATCH_SUCCEEDED, // 매칭 성공 했을 때
     ;
 }

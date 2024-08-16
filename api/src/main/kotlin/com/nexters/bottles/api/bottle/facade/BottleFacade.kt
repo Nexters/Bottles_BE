@@ -1,7 +1,20 @@
 package com.nexters.bottles.api.bottle.facade
 
 import com.nexters.bottles.api.bottle.event.dto.BottleApplicationEventDto
-import com.nexters.bottles.api.bottle.facade.dto.*
+import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
+import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
+import com.nexters.bottles.api.bottle.facade.dto.BottleDto
+import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
+import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
+import com.nexters.bottles.api.bottle.facade.dto.MatchResult
+import com.nexters.bottles.api.bottle.facade.dto.MatchStatusType
+import com.nexters.bottles.api.bottle.facade.dto.Photo
+import com.nexters.bottles.api.bottle.facade.dto.PhotoStatus
+import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
+import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
+import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
+import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
+import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -194,6 +207,8 @@ class BottleFacade(
         val otherUser = bottle.findOtherUser(me)
         val myLetter = letterService.findLetter(bottle, me)
         val otherLetter = letterService.findLetter(bottle, otherUser)
+        // TODO 출시 후 제거
+        val meetingPlace = getMeetingPlaces()
 
         return BottlePingPongResponse(
             isStopped = bottle.pingPongStatus == PingPongStatus.STOPPED,
@@ -215,10 +230,12 @@ class BottleFacade(
                 otherProfile = otherUser.userProfile!!
             ),
             matchResult = MatchResult(
-                matchStatus = getMatchedStatus(bottle),
+                matchStatus = getMatchedStatus(myLetter = myLetter, otherLetter = otherLetter, bottle = bottle),
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
                 shouldAnswer = myLetter.isShareContact == null,
-                isFirstSelect = bottle.firstSelectUser == me
+                isFirstSelect = bottle.firstSelectUser == me,
+                meetingPlace = meetingPlace.key,
+                meetingPlaceImageUrl = meetingPlace.value,
             )
         )
     }
@@ -258,7 +275,7 @@ class BottleFacade(
     ): Photo {
 
         return Photo(
-            photoStatus = getPhotoStatus(myProfile = myProfile, otherProfile = otherProfile, myLetter = myLetter, otherLetter = otherLetter),
+            photoStatus = getPhotoStatus(myLetter = myLetter, otherLetter = otherLetter),
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
             shouldAnswer = myLetter.isShareImage == null,
@@ -268,25 +285,37 @@ class BottleFacade(
         )
     }
 
-    private fun getPhotoStatus(myProfile: UserProfile, otherProfile: UserProfile, myLetter: Letter, otherLetter: Letter): PhotoStatus {
+    private fun getPhotoStatus(myLetter: Letter, otherLetter: Letter): PhotoStatus {
         return when {
             myLetter.isShareImage == false -> PhotoStatus.MY_REJECT
             otherLetter.isShareImage == false -> PhotoStatus.OTHER_REJECT
             myLetter.isShareImage == null && otherLetter.isShareImage != null -> PhotoStatus.REQUIRE_SELECT_OTHER_SELECT
             myLetter.isShareImage == null && otherLetter.isShareImage == null -> PhotoStatus.REQUIRE_SELECT_OTHER_NOT_SELECT
-            myLetter.isShareImage == true  && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
+            myLetter.isShareImage == true && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
             myLetter.isShareImage == true && otherLetter.isShareImage == true -> PhotoStatus.BOTH_AGREE
             else -> PhotoStatus.NONE
         }
     }
 
-    private fun getMatchedStatus(bottle: Bottle): MatchStatusType {
-        return when (bottle.pingPongStatus) {
-            PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
-            PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
-            PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
-            else -> MatchStatusType.IN_CONVERSATION
+    private fun getMatchedStatus(myLetter: Letter, otherLetter: Letter, bottle: Bottle): MatchStatusType {
+        return when {
+            myLetter.isShareImage == null && otherLetter.isShareImage == null -> MatchStatusType.NONE
+            myLetter.isShareImage == true && otherLetter.isShareImage == true -> MatchStatusType.REQUIRE_SELECT
+            myLetter.isShareContact == true && otherLetter.isShareContact == null -> MatchStatusType.WAITING_OTHER_ANSWER
+            bottle.pingPongStatus == PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
+            bottle.pingPongStatus == PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
+            bottle.pingPongStatus == PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
+            else -> MatchStatusType.NONE
         }
+    }
+
+    private fun getMeetingPlaces(): Map.Entry<String, String> {
+        val places = mapOf(
+            "남산타워" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%82%E1%85%A1%E1%86%B7%E1%84%89%E1%85%A1%E1%86%AB%E1%84%90%E1%85%A1%E1%84%8B%E1%85%AF.png",
+            "청계천" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8E%E1%85%A5%E1%86%BC%E1%84%80%E1%85%A8%E1%84%8E%E1%85%A5%E1%86%AB.png",
+            "북촌한옥마을" to "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A1%E1%86%AB%E1%84%8B%E1%85%A9%E1%86%A8%E1%84%86%E1%85%A1%E1%84%8B%E1%85%B3%E1%86%AF.png"
+        )
+        return places.entries.random()
     }
 
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
