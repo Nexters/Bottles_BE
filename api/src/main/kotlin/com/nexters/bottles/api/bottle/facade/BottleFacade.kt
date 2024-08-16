@@ -1,7 +1,20 @@
 package com.nexters.bottles.api.bottle.facade
 
 import com.nexters.bottles.api.bottle.event.dto.BottleApplicationEventDto
-import com.nexters.bottles.api.bottle.facade.dto.*
+import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
+import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
+import com.nexters.bottles.api.bottle.facade.dto.BottleDto
+import com.nexters.bottles.api.bottle.facade.dto.BottleListResponse
+import com.nexters.bottles.api.bottle.facade.dto.BottlePingPongResponse
+import com.nexters.bottles.api.bottle.facade.dto.MatchResult
+import com.nexters.bottles.api.bottle.facade.dto.MatchStatusType
+import com.nexters.bottles.api.bottle.facade.dto.Photo
+import com.nexters.bottles.api.bottle.facade.dto.PhotoStatus
+import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDto
+import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
+import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
+import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
+import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -215,7 +228,7 @@ class BottleFacade(
                 otherProfile = otherUser.userProfile!!
             ),
             matchResult = MatchResult(
-                matchStatus = getMatchedStatus(bottle),
+                matchStatus = getMatchedStatus(myLetter = myLetter, otherLetter = otherLetter, bottle = bottle),
                 otherContact = otherUser.kakaoId ?: throw IllegalArgumentException("고객센터에 문의 주세요"),
                 shouldAnswer = myLetter.isShareContact == null,
                 isFirstSelect = bottle.firstSelectUser == me
@@ -258,7 +271,7 @@ class BottleFacade(
     ): Photo {
 
         return Photo(
-            photoStatus = getPhotoStatus(myProfile = myProfile, otherProfile = otherProfile, myLetter = myLetter, otherLetter = otherLetter),
+            photoStatus = getPhotoStatus(myLetter = myLetter, otherLetter = otherLetter),
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
             shouldAnswer = myLetter.isShareImage == null,
@@ -268,24 +281,27 @@ class BottleFacade(
         )
     }
 
-    private fun getPhotoStatus(myProfile: UserProfile, otherProfile: UserProfile, myLetter: Letter, otherLetter: Letter): PhotoStatus {
+    private fun getPhotoStatus(myLetter: Letter, otherLetter: Letter): PhotoStatus {
         return when {
             myLetter.isShareImage == false -> PhotoStatus.MY_REJECT
             otherLetter.isShareImage == false -> PhotoStatus.OTHER_REJECT
             myLetter.isShareImage == null && otherLetter.isShareImage != null -> PhotoStatus.REQUIRE_SELECT_OTHER_SELECT
             myLetter.isShareImage == null && otherLetter.isShareImage == null -> PhotoStatus.REQUIRE_SELECT_OTHER_NOT_SELECT
-            myLetter.isShareImage == true  && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
+            myLetter.isShareImage == true && otherLetter.isShareImage == null -> PhotoStatus.WAITING_OTHER_ANSWER
             myLetter.isShareImage == true && otherLetter.isShareImage == true -> PhotoStatus.BOTH_AGREE
             else -> PhotoStatus.NONE
         }
     }
 
-    private fun getMatchedStatus(bottle: Bottle): MatchStatusType {
-        return when (bottle.pingPongStatus) {
-            PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
-            PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
-            PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
-            else -> MatchStatusType.IN_CONVERSATION
+    private fun getMatchedStatus(myLetter: Letter, otherLetter: Letter, bottle: Bottle): MatchStatusType {
+        return when {
+            myLetter.isShareImage == null && otherLetter.isShareImage == null -> MatchStatusType.NONE
+            myLetter.isShareImage == true && otherLetter.isShareImage == true -> MatchStatusType.REQUIRE_SELECT
+            myLetter.isShareContact == true && otherLetter.isShareContact == null -> MatchStatusType.WAITING_OTHER_ANSWER
+            bottle.pingPongStatus == PingPongStatus.ACTIVE -> MatchStatusType.IN_CONVERSATION
+            bottle.pingPongStatus == PingPongStatus.STOPPED -> MatchStatusType.MATCH_FAILED
+            bottle.pingPongStatus == PingPongStatus.MATCHED -> MatchStatusType.MATCH_SUCCEEDED
+            else -> MatchStatusType.NONE
         }
     }
 
