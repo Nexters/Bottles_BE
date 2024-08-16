@@ -21,6 +21,8 @@ import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.service.BottleCachingService
 import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.LetterService
+import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE
+import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.service.UserReportService
@@ -190,8 +192,8 @@ class BottleFacade(
 
     @Caching(
         evict = [
-            CacheEvict("pingPongBottleList", key = "#userId"),
-            CacheEvict("pingPongBottle", key = "#bottleId")
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
+            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
         ]
     )
     fun stopBottle(userId: Long, bottleId: Long) {
@@ -279,8 +281,8 @@ class BottleFacade(
 
     @Caching(
         evict = [
-            CacheEvict("pingPongBottleList", key = "#userId"),
-            CacheEvict("pingPongBottle", key = "#bottleId")
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
+            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
         ]
     )
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
@@ -292,8 +294,8 @@ class BottleFacade(
 
     @Caching(
         evict = [
-            CacheEvict("pingPongBottleList", key = "#userId"),
-            CacheEvict("pingPongBottle", key = "#bottleId")
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
+            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
         ]
     )
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {

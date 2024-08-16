@@ -8,8 +8,14 @@ enum class CacheType(
     val timeUnit: TimeUnit,
     val maximumSize: Long
 ) {
-    LETTER_QUESTION("questions", 60, TimeUnit.MINUTES, 1),
-    PING_PONG_BOTTLE_LIST("pingPongBottleList", 60, TimeUnit.MINUTES, 100),
-    PING_PONG_BOTTLE("pingPongBottle", 60, TimeUnit.MINUTES, 100),
+    LETTER_QUESTION(Name.LETTER_QUESTION, 60, TimeUnit.MINUTES, 1),
+    PING_PONG_BOTTLE_LIST(Name.PING_PONG_BOTTLE_LIST, 60, TimeUnit.MINUTES, 100),
+    PING_PONG_BOTTLE(Name.PING_PONG_BOTTLE, 60, TimeUnit.MINUTES, 100),
     ;
+
+    object Name {
+        const val LETTER_QUESTION = "LETTER_QUESTION"
+        const val PING_PONG_BOTTLE_LIST = "PING_PONG_BOTTLE_LIST"
+        const val PING_PONG_BOTTLE = "PING_PONG_BOTTLE"
+    }
 }
