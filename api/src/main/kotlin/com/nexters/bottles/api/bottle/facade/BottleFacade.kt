@@ -134,6 +134,7 @@ class BottleFacade(
         )
     }
 
+    @CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId")
     fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequest: AcceptBottleRequest) {
         val allQuestions = questionCachingService.findAllQuestions()
         bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage, allQuestions)
