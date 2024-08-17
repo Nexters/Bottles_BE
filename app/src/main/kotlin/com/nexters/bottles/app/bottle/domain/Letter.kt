@@ -76,6 +76,10 @@ class Letter(
             bottle.markFirstSelectUser(user)
         }
     }
+
+    fun notFinishedLastAnswer(): Boolean {
+        return letters.last().answer == null
+    }
 }
 
 data class LetterQuestionAndAnswer(
