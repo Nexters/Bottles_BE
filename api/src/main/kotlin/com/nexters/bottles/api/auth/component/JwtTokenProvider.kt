@@ -10,13 +10,10 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 import javax.servlet.http.HttpServletRequest
-import kotlin.math.exp
 
 @Component
 class JwtTokenProvider(
@@ -87,7 +84,6 @@ class JwtTokenProvider(
         }
         val claims = getClaimsFromToken(token, isAccessToken)
         val now = Date()
-        log.info { "expiredAccessToken: $expiredAccessToken claims: $claims expiration: ${claims?.expiration} now: $now" }
         return expiredAccessToken == null && claims != null && !claims.expiration.before(now)
     }
 
