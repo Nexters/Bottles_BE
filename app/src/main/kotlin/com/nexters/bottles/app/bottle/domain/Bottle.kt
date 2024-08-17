@@ -22,11 +22,11 @@ class Bottle(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "target_user_id")
     var targetUser: User,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "source_user_id")
     var sourceUser: User,
 
@@ -34,13 +34,13 @@ class Bottle(
 
     var expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "stopped_user_id")
     var stoppedUser: User? = null,
 
     var stoppedAt: LocalDateTime? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_select_user_id")
     var firstSelectUser: User? = null,
 
