@@ -32,7 +32,6 @@ import com.nexters.bottles.app.user.service.UserReportService
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Caching
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -207,14 +206,10 @@ class BottleFacade(
         letterService.markReadOtherUserLetter(pingPongBottle, otherUser)
     }
 
-    @Caching(
-        evict = [
-            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
-            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
-        ]
-    )
+    @CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
     fun stopBottle(userId: Long, bottleId: Long) {
-        bottleService.stop(userId, bottleId)
+        val stoppedBottle = bottleService.stop(userId, bottleId)
+        bottleCachingService.evictPingPongList(stoppedBottle.sourceUser.id, stoppedBottle.targetUser.id)
     }
 
     fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponse {
@@ -342,28 +337,20 @@ class BottleFacade(
         return places.entries.random()
     }
 
-    @Caching(
-        evict = [
-            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
-            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
-        ]
-    )
+    @CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
     fun selectShareImage(userId: Long, bottleId: Long, willShare: Boolean) {
         val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
+        bottleCachingService.evictPingPongList(pingPongBottle.sourceUser.id, pingPongBottle.targetUser.id)
 
         letterService.shareImage(pingPongBottle, user, willShare)
     }
 
-    @Caching(
-        evict = [
-            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
-            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
-        ]
-    )
+    @CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
     fun selectMatch(userId: Long, bottleId: Long, willMatch: Boolean) {
         val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
+        bottleCachingService.evictPingPongList(pingPongBottle.sourceUser.id, pingPongBottle.targetUser.id)
 
         val previousStatus = pingPongBottle.pingPongStatus
         letterService.shareContact(pingPongBottle, user, willMatch)

@@ -116,7 +116,7 @@ class BottleService(
     }
 
     @Transactional
-    fun stop(userId: Long, bottleId: Long) {
+    fun stop(userId: Long, bottleId: Long): Bottle {
         val bottle = bottleRepository.findByIdAndStatusAndDeletedFalse(
             bottleId,
             setOf(
@@ -129,6 +129,7 @@ class BottleService(
             userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
         bottle.stop(stoppedUser, LocalDateTime.now())
+        return bottle
     }
 
     @Transactional(readOnly = true)

@@ -18,7 +18,8 @@ class AuthApplicationEventListener(
     fun handleCustomEvent(event: DeleteUserEventDto) {
         val pingPongBottles = bottleService.getPingPongBottles(event.userId)
         pingPongBottles.forEach {
-            bottleCachingService.stop(userId = event.userId, bottleId = it.id)
+            val stoppedBottle = bottleService.stop(userId = event.userId, bottleId = it.id)
+            bottleCachingService.evictPingPongList(stoppedBottle.sourceUser.id, stoppedBottle.targetUser.id)
         }
     }
 }

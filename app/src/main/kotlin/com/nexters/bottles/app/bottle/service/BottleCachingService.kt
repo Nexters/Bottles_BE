@@ -25,11 +25,10 @@ class BottleCachingService(
 
     @Caching(
         evict = [
-            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId"),
-            CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#sourceUserId"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#targetUserId")
         ]
     )
-    fun stop(userId: Long, bottleId: Long) {
-        bottleService.stop(userId, bottleId)
+    fun evictPingPongList(sourceUserId: Long, targetUserId: Long) {
     }
 }
