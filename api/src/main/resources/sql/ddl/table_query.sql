@@ -78,7 +78,7 @@ CREATE TABLE refresh_tokens
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT                             NOT NULL,
-    token       VARCHAR(2048)                      NOT NULL,
+    token       VARCHAR(512)                      NOT NULL,
     expiry_date DATETIME                           NOT NULL,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
@@ -111,7 +111,7 @@ CREATE INDEX idx_user_id ON bottle_history (user_id);
 CREATE TABLE black_list
 (
     id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    expired_access_token VARCHAR(2048)                      NOT NULL,
+    expired_access_token VARCHAR(512)                      NOT NULL,
     created_at           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
