@@ -34,13 +34,13 @@ class Bottle(
 
     var expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "stopped_user_id")
     var stoppedUser: User? = null,
 
     var stoppedAt: LocalDateTime? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_select_user_id")
     var firstSelectUser: User? = null,
 
