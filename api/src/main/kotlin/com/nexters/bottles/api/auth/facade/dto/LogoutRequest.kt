@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.auth.facade.dto
 
-class KakaoSignInUpRequest(
-    val code: String,
+data class LogoutRequest(
+    val test: String,
     val fcmDeviceToken: String? = null,
-)
+) {
+}

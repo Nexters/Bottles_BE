@@ -4,6 +4,7 @@ import com.nexters.bottles.api.auth.facade.AuthFacade
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
 import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
@@ -31,7 +32,7 @@ class AuthController(
     @ApiOperation("카카오 회원가입/로그인으로 엑세스 토큰 얻기")
     @PostMapping("/kakao")
     fun kakaoSignInUp(@RequestBody kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
-        return authFacade.kakaoSignInUp(kakaoSignInUpRequest.code)
+        return authFacade.kakaoSignInUp(kakaoSignInUpRequest)
     }
 
     @ApiOperation("토큰 재발행")
@@ -68,8 +69,8 @@ class AuthController(
     @ApiOperation("로그아웃하기")
     @PostMapping("/logout")
     @AuthRequired
-    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String) {
-        authFacade.logout(userId, accessToken)
+    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String, @RequestBody logoutRequest: LogoutRequest) {
+        authFacade.logout(userId, accessToken, logoutRequest)
     }
 
     @ApiOperation("회원 탈퇴하기")

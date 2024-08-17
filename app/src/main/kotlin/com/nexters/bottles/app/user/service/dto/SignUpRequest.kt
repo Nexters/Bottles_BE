@@ -10,7 +10,8 @@ data class SignUpRequest(
     val birthDay: Int,
     val gender: Gender,
     val phoneNumber: String,
-    val authCode: String
+    val authCode: String,
+    val fcmDeviceToken: String? = null,
 ) {
 
     fun convertBirthDateToLocalDate(): LocalDate {

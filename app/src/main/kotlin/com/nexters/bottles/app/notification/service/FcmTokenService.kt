@@ -12,9 +12,9 @@ class FcmTokenService(
 ) {
 
     @Transactional
-    fun registerFcmToken(user: User, token: String) {
-        val fcmToken = FcmToken(userId = user.id, token = token)
-        fcmTokenRepository.save(fcmToken)
+    fun registerFcmToken(userId: Long, token: String) {
+        val fcmToken = FcmToken(userId = userId, token = token)
+        fcmTokenRepository.findByToken(fcmToken) ?: fcmTokenRepository.save(fcmToken)
     }
 
     @Transactional(readOnly = true)
@@ -22,5 +22,16 @@ class FcmTokenService(
         return users.flatMap {
             fcmTokenRepository.findAllByUserId(it.id)
         }
+    }
+
+    @Transactional
+    fun deleteFcmToken(userId: Long, token: String) {
+        val fcmToken = FcmToken(userId = userId, token = token)
+        fcmTokenRepository.findByToken(fcmToken)?.let { fcmTokenRepository.delete(it) }
+    }
+
+    @Transactional
+    fun deleteAllFcmTokenByUserId(userId: Long) {
+        fcmTokenRepository.findAllByUserId(userId).forEach { fcmTokenRepository.delete(it) }
     }
 }
