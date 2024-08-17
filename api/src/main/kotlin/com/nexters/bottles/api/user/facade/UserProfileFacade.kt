@@ -126,8 +126,8 @@ class UserProfileFacade(
         .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
 
     fun existIntroduction(userId: Long): ExistIntroductionResponse {
-        val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
-        return ExistIntroductionResponse(isExist = userProfile.introduction.isNotEmpty())
+        val userProfile = profileService.findUserProfile(userId)
+        return ExistIntroductionResponse(isExist = userProfile?.introduction?.isNotEmpty() ?: false)
     }
 
     fun findUserInfo(userId: Long): UserInfoResponse {
