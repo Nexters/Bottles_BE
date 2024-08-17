@@ -25,9 +25,6 @@ class UserService(
     fun findKakaoUserOrSignUp(userInfoResponse: KakaoUserInfoResponse): SignInUpDto {
         userRepository.findByPhoneNumberAndDeletedFalse(userInfoResponse.kakao_account.phone_number)?.let { user ->
             log.info { "전화번호 ${userInfoResponse.kakao_account.phone_number} 유저 존재하여 조회 후 반환" }
-            if (user.signUpType == SignUpType.NORMAL) {
-                throw ConflictException("이미 가입한 회원이에요")
-            }
             return SignInUpDto(userId = user.id, isSignUp = false)
         } ?: run {
             log.info { "전화번호 ${userInfoResponse.kakao_account.phone_number} 유저 존재하지 않아 회원가입" }
