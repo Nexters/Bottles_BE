@@ -3,6 +3,7 @@ package com.nexters.bottles.api.auth.facade
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
+import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.MessageDto
@@ -21,6 +22,7 @@ import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -36,6 +38,7 @@ class AuthFacade(
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
     private val authCodeGenerator: AuthCodeGenerator,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${super-user-number}")
     private val superUserNumber: String,
@@ -118,6 +121,7 @@ class AuthFacade(
 
     fun delete(userId: Long) {
         userService.softDelete(userId)
+        applicationEventPublisher.publishEvent(DeleteUserEventDto(userId = userId))
     }
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
