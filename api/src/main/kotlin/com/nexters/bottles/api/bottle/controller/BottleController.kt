@@ -12,6 +12,7 @@ import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
+import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController
 class BottleController(
     private val bottleFacade: BottleFacade
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     @ApiOperation("홈 - 받은 보틀 목록 조회하기")
     @GetMapping

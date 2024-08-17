@@ -1,12 +1,8 @@
 package com.nexters.bottles.api.user.facade
 
-import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
-import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
-import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
-import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
-import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
-import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
+import com.nexters.bottles.api.user.facade.dto.*
 import com.nexters.bottles.app.common.component.ImageUploader
+import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
@@ -133,6 +129,22 @@ class UserProfileFacade(
     fun findUserInfo(userId: Long): UserInfoResponse {
         val user = userService.findByIdAndNotDeleted(userId)
         return UserInfoResponse(name = user.name)
+    }
+
+    fun findUserProfileStatus(userId: Long): UserProfileStatusResponse {
+        val userProfile = profileService.findUserProfile(userId)
+        return UserProfileStatusResponse(
+            getUserProfileStatus(userProfile)
+        )
+    }
+
+    private fun getUserProfileStatus(userProfile: UserProfile?): UserProfileStatus {
+        return when {
+            userProfile == null -> UserProfileStatus.EMPTY
+            userProfile.introduction.isNotEmpty() -> UserProfileStatus.INTRODUCE_DONE
+            userProfile.imageUrl != null -> UserProfileStatus.PHOTO_DONE
+            else -> UserProfileStatus.ONLY_PROFILE_CREATED
+        }
     }
 
     companion object {
