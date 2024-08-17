@@ -30,7 +30,6 @@ import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.service.UserReportService
 import com.nexters.bottles.app.user.service.UserService
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.context.ApplicationEventPublisher
@@ -311,11 +310,7 @@ class BottleFacade(
     }
 
     private fun isPhotoStatusNone(myLetter: Letter, otherLetter: Letter): Boolean {
-        return myLetter.letters.zip(otherLetter.letters)
-            .getOrNull(2)
-            ?.let { (mySingleLetter, otherSingleLetter) ->
-                mySingleLetter.answer != null && otherSingleLetter.answer != null
-            } ?: false
+        return myLetter.notFinishedLastAnswer() || otherLetter.notFinishedLastAnswer()
     }
 
     private fun getMatchedStatus(myLetter: Letter, otherLetter: Letter, bottle: Bottle): MatchStatusType {
