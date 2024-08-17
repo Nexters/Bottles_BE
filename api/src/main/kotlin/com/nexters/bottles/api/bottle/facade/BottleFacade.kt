@@ -310,7 +310,7 @@ class BottleFacade(
     }
 
     private fun isPhotoStatusNone(myLetter: Letter, otherLetter: Letter): Boolean {
-        return myLetter.notFinishedLastAnswer() && otherLetter.notFinishedLastAnswer()
+        return myLetter.notFinishedLastAnswer() || otherLetter.notFinishedLastAnswer()
     }
 
     private fun getMatchedStatus(myLetter: Letter, otherLetter: Letter, bottle: Bottle): MatchStatusType {
