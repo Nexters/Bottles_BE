@@ -134,7 +134,6 @@ class AuthFacade(
 
     fun delete(userId: Long) {
         userService.softDelete(userId)
-        fcmTokenService.deleteAllFcmTokenByUserId(userId)
         applicationEventPublisher.publishEvent(DeleteUserEventDto(userId = userId))
     }
 
