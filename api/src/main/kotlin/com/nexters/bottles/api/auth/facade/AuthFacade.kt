@@ -22,7 +22,9 @@ import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
+import com.nexters.bottles.app.user.service.dto.SignUpProfileRequestV2
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
+import com.nexters.bottles.app.user.service.dto.SignUpRequestV2
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -77,11 +79,29 @@ class AuthFacade(
         return RefreshAccessTokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
-    fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
+    fun smsSignUp(signUpRequest: SignUpRequest): SignUpResponse {
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
         lastAuthSms.validate(signUpRequest.authCode)
 
         val user = userService.signUp(signUpRequest)
+        signUpRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
+        }
+
+        val accessToken = jwtTokenProvider.createAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
+
+        return SignUpResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken
+        )
+    }
+
+    fun smsSignUpV2(signUpRequest: SignUpRequestV2): SignUpResponse {
+        val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
+        lastAuthSms.validate(signUpRequest.authCode)
+
+        val user = userService.signUpV2(signUpRequest)
         signUpRequest.fcmDeviceToken?.let {
             fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
         }
@@ -159,6 +179,10 @@ class AuthFacade(
             hasCompleteUserProfile = userProfile != null,
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
+    }
+
+    fun registerSignupProfile(userId: Long, signUpProfileRequestV2: SignUpProfileRequestV2) {
+        userService.signUpProfile(userId, signUpProfileRequestV2.name, signUpProfileRequestV2.convertBirthDateToLocalDate())
     }
 
     private fun isSuperUser(phoneNumber: String) = phoneNumber == superUserNumber

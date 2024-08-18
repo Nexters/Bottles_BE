@@ -45,7 +45,7 @@ class AuthController(
     @ApiOperation("일반 회원가입")
     @PostMapping("/signup")
     fun signUp(@RequestBody signUpRequest: SignUpRequest): SignUpResponse {
-        return authFacade.signUp(signUpRequest)
+        return authFacade.smsSignUp(signUpRequest)
     }
 
     @ApiOperation("문자 인증 발송 요청하기")
