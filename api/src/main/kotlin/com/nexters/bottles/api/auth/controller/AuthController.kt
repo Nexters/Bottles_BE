@@ -69,7 +69,7 @@ class AuthController(
     @ApiOperation("로그아웃하기")
     @PostMapping("/logout")
     @AuthRequired
-    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String, @RequestBody logoutRequest: LogoutRequest) {
+    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String, @RequestBody logoutRequest: LogoutRequest?) {
         authFacade.logout(userId, accessToken, logoutRequest)
     }
 

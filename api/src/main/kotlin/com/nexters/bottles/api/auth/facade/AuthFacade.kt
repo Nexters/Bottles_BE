@@ -124,10 +124,10 @@ class AuthFacade(
         lastAuthSms.validate(lastAuthSms.authCode)
     }
 
-    fun logout(userId: Long, accessToken: String, logoutRequest: LogoutRequest) {
+    fun logout(userId: Long, accessToken: String, logoutRequest: LogoutRequest?) {
         blackListService.add(accessToken)
         refreshTokenService.delete(userId)
-        logoutRequest.fcmDeviceToken?.let {
+        logoutRequest?.fcmDeviceToken?.let {
             fcmTokenService.deleteFcmToken(userId, logoutRequest.fcmDeviceToken)
         }
     }
