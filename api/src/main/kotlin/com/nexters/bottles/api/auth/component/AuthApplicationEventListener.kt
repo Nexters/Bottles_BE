@@ -3,6 +3,7 @@ package com.nexters.bottles.api.auth.component
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
 import com.nexters.bottles.app.bottle.service.BottleCachingService
 import com.nexters.bottles.app.bottle.service.BottleService
+import com.nexters.bottles.app.notification.service.FcmTokenService
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Component
 @Component
 class AuthApplicationEventListener(
     private val bottleService: BottleService,
-    private val bottleCachingService: BottleCachingService
+    private val bottleCachingService: BottleCachingService,
+    private val fcmTokenService: FcmTokenService
 ) {
 
     @Async
@@ -21,5 +23,7 @@ class AuthApplicationEventListener(
             val stoppedBottle = bottleService.stop(userId = event.userId, bottleId = it.id)
             bottleCachingService.evictPingPongList(stoppedBottle.sourceUser.id, stoppedBottle.targetUser.id)
         }
+
+        fcmTokenService.deleteAllFcmTokenByUserId(event.userId)
     }
 }

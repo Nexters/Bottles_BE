@@ -5,7 +5,9 @@ import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
+import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
 import com.nexters.bottles.api.auth.facade.dto.MessageDto
 import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
@@ -16,6 +18,7 @@ import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
 import com.nexters.bottles.app.auth.service.RefreshTokenService
+import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
@@ -32,6 +35,7 @@ class AuthFacade(
     private val userService: UserService,
     private val userProfileService: UserProfileService,
     private val authSmsService: AuthSmsService,
+    private val fcmTokenService: FcmTokenService,
     private val blackListService: BlackListService,
     private val refreshTokenService: RefreshTokenService,
     private val webClientAdapter: WebClientAdapter,
@@ -46,10 +50,13 @@ class AuthFacade(
 
     private val log = KotlinLogging.logger { }
 
-    fun kakaoSignInUp(code: String): KakaoSignInUpResponse {
-        val userInfoResponse = webClientAdapter.sendAuthRequest(code).convert()
+    fun kakaoSignInUp(kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
+        val userInfoResponse = webClientAdapter.sendAuthRequest(kakaoSignInUpRequest.code).convert()
         val signInUpDto = userService.findKakaoUserOrSignUp(userInfoResponse)
         val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
+        kakaoSignInUpRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(signInUpDto.userId, kakaoSignInUpRequest.fcmDeviceToken)
+        }
 
         val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
@@ -75,6 +82,9 @@ class AuthFacade(
         lastAuthSms.validate(signUpRequest.authCode)
 
         val user = userService.signUp(signUpRequest)
+        signUpRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
+        }
 
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
@@ -114,9 +124,12 @@ class AuthFacade(
         lastAuthSms.validate(lastAuthSms.authCode)
     }
 
-    fun logout(userId: Long, accessToken: String) {
+    fun logout(userId: Long, accessToken: String, logoutRequest: LogoutRequest) {
         blackListService.add(accessToken)
         refreshTokenService.delete(userId)
+        logoutRequest.fcmDeviceToken?.let {
+            fcmTokenService.deleteFcmToken(userId, logoutRequest.fcmDeviceToken)
+        }
     }
 
     fun delete(userId: Long) {
@@ -132,6 +145,10 @@ class AuthFacade(
             ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
 
         val userProfile = userProfileService.findUserProfile(user.id)
+
+        smsSignInRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(user.id, smsSignInRequest.fcmDeviceToken)
+        }
 
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
