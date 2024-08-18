@@ -28,6 +28,7 @@ CREATE TABLE user_profile
     created_at        DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_user_id ON user_profile (user_id);
 
 CREATE TABLE bottle
 (
@@ -47,6 +48,11 @@ CREATE TABLE bottle
     updated_at           DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE INDEX idx_target_user_id ON bottle (target_user_id);
+CREATE INDEX idx_source_user_id ON bottle (source_user_id);
+CREATE INDEX idx_expired_at ON bottle (expired_at);
+CREATE INDEX idx_stopped_at ON bottle (stopped_at);
+
 CREATE TABLE letter
 (
     id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -59,6 +65,8 @@ CREATE TABLE letter
     created_at            DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at            DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_bottle_id ON letter (bottle_id);
+CREATE INDEX idx_user_id ON letter (user_id);
 
 CREATE TABLE question
 (
@@ -70,11 +78,12 @@ CREATE TABLE refresh_tokens
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT                             NOT NULL,
-    token       VARCHAR(2048)                      NOT NULL,
+    token       VARCHAR(512)                      NOT NULL,
     expiry_date DATETIME                           NOT NULL,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_user_id ON refresh_tokens (user_id);
 
 CREATE TABLE auth_sms
 (
@@ -85,6 +94,7 @@ CREATE TABLE auth_sms
     created_at   DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_phone_number ON auth_sms (phone_number);
 
 CREATE TABLE bottle_history
 (
@@ -95,15 +105,17 @@ CREATE TABLE bottle_history
     created_at      DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_user_id ON bottle_history (user_id);
 
 
 CREATE TABLE black_list
 (
     id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    expired_access_token VARCHAR(2048)                      NOT NULL,
+    expired_access_token VARCHAR(512)                      NOT NULL,
     created_at           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_expired_access_token ON black_list (expired_access_token);
 
 CREATE TABLE fcm_token
 (
@@ -113,8 +125,7 @@ CREATE TABLE fcm_token
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
-
-CREATE INDEX idx_phone_number ON auth_sms (phone_number);
+CREATE INDEX idx_user_id ON fcm_token (user_id);
 
 CREATE TABLE user_report
 (
