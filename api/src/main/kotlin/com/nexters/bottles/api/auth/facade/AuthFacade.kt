@@ -98,6 +98,15 @@ class AuthFacade(
     }
 
     fun smsSignUpV2(signUpRequest: SignUpRequestV2): SignUpResponse {
+        log.info { "super: $superUserNumber, phone: $signUpRequest.phoneNumber" }
+        if (isSuperUser(signUpRequest.phoneNumber)) {
+            val user = userService.findByPhoneNumber(signUpRequest.phoneNumber)!!
+
+            return SignUpResponse(
+                accessToken = jwtTokenProvider.createAccessToken(user.id),
+                refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
+            )
+        }
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
         lastAuthSms.validate(signUpRequest.authCode)
 
