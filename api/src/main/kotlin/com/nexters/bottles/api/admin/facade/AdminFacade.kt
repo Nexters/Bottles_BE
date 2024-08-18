@@ -10,12 +10,15 @@ import com.nexters.bottles.api.user.facade.dto.InterestDto
 import com.nexters.bottles.api.user.facade.dto.RegionDto
 import com.nexters.bottles.app.admin.service.AdminService
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.domain.enum.SignUpType
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Caching
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -92,6 +95,29 @@ class AdminFacade(
     private fun saveMockUser(mockUser: User): User {
         adminService.saveMockUser(mockUser)
         return mockUser
+    }
+
+    fun expireToken(expireTokenRequest: ExpireTokenRequest, isAccessToken: Boolean) {
+        if (isAccessToken) {
+            adminService.expireAccessToken(expireTokenRequest.token)
+        } else {
+            val userId = jwtTokenProvider.getUserIdFromToken(expireTokenRequest.token, false)
+                ?: throw IllegalArgumentException("유효하지 않은 리프레시 토큰입니다")
+            adminService.expireRefreshToken(expireTokenRequest.token, userId)
+        }
+    }
+
+    @Caching(
+        evict = [
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "1"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "2"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "9"),
+        ]
+    )
+    fun forceCleanUp() {
+        adminService.cleanUpMockUpData(mockMaleUser)
+        adminService.cleanUpMockUpData(mockFemaleUser1)
+        adminService.cleanUpMockUpData(mockFemaleUser2)
     }
 
     companion object {
@@ -184,7 +210,6 @@ class AdminFacade(
             blurredImageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/blurred_%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1",
             imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
         )
-
         val mockFemaleUserProfile2 = UserProfile(
             user = mockFemaleUser2,
             profileSelect = UserProfileSelect(
@@ -212,21 +237,5 @@ class AdminFacade(
             blurredImageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/blurred_%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1",
             imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
         )
-    }
-
-    fun expireToken(expireTokenRequest: ExpireTokenRequest, isAccessToken: Boolean) {
-        if (isAccessToken) {
-            adminService.expireAccessToken(expireTokenRequest.token)
-        } else {
-            val userId = jwtTokenProvider.getUserIdFromToken(expireTokenRequest.token, false)
-                ?: throw IllegalArgumentException("유효하지 않은 리프레시 토큰입니다")
-            adminService.expireRefreshToken(expireTokenRequest.token, userId)
-        }
-    }
-
-    fun forceCleanUp() {
-        adminService.cleanUpMockUpData(mockMaleUser)
-        adminService.cleanUpMockUpData(mockFemaleUser1)
-        adminService.cleanUpMockUpData(mockFemaleUser2)
     }
 }

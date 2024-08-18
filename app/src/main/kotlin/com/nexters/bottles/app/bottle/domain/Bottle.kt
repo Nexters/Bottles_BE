@@ -110,6 +110,10 @@ class Bottle(
         return pingPongStatus == PingPongStatus.STOPPED
     }
 
+    fun isActive(): Boolean {
+        return pingPongStatus == PingPongStatus.ACTIVE
+    }
+
     fun calculateDeletedAfterDays(): Long? {
         if (stoppedAt == null) return null
 
