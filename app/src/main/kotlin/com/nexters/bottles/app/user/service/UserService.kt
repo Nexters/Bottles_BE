@@ -5,13 +5,12 @@ import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.domain.enum.SignUpType
 import com.nexters.bottles.app.user.repository.UserRepository
-import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
-import com.nexters.bottles.app.user.service.dto.SignInUpDto
-import com.nexters.bottles.app.user.service.dto.SignUpRequest
+import com.nexters.bottles.app.user.service.dto.*
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -62,6 +61,22 @@ class UserService(
         }
     }
 
+    @Transactional
+    fun signUpV2(signUpRequest: SignUpRequestV2): User {
+        userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
+            throw ConflictException("이미 가입한 회원이에요")
+        } ?: run {
+            return userRepository.save(
+                User(
+                    birthdate = LocalDate.now(),
+                    name = "보틀",
+                    phoneNumber = signUpRequest.phoneNumber,
+                    signUpType = SignUpType.NORMAL
+                )
+            )
+        }
+    }
+
     @Transactional(readOnly = true)
     fun findByPhoneNumber(phoneNumber: String): User? {
         return userRepository.findByPhoneNumberAndDeletedFalse(phoneNumber)
@@ -98,5 +113,13 @@ class UserService(
         userRepository.findByIdOrNull(userId)?.let { user ->
             user.updateLastActivatedAt(basedAt)
         }
+    }
+
+    @Transactional
+    fun signUpProfile(userId: Long, name: String, birthDate: LocalDate) {
+        userRepository.findByIdOrNull(userId)?.let { user ->
+            user.name = name
+            user.birthdate = birthDate
+        } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
 }
