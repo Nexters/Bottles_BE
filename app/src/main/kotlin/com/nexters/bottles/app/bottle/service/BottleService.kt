@@ -47,7 +47,7 @@ class BottleService(
     }
 
     @Transactional
-    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?, questions: List<Question>) {
+    fun acceptBottle(userId: Long, bottleId: Long, likeMessage: String?, questions: List<Question>): Bottle {
         val bottle =
             bottleRepository.findByIdAndStatusAndNotExpiredAndDeletedFalse(
                 bottleId,
@@ -80,6 +80,7 @@ class BottleService(
                 saveLetter(bottle, sourceUser, letters)
             }
         }
+        return bottle
     }
 
     private fun findRandomQuestions(questions: List<Question>) = questions
