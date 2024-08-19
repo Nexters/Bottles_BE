@@ -10,4 +10,6 @@ interface UserRepository : JpaRepository<User, Long> {
     fun findByIdAndDeletedFalse(id: Long): User?
 
     fun findAllByDeletedFalse(): List<User>
+
+    fun findByPhoneNumber(phoneNumber: String): User?
 }

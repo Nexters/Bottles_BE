@@ -19,7 +19,7 @@ class AuthControllerV2(
     private val authFacade: AuthFacade,
 ) {
 
-    @ApiOperation("일반 회원가입하기 v2 - 문자")
+    @ApiOperation("일반 회원가입 / 로그인 하기 v2 - 문자")
     @PostMapping("/signup")
     fun signInUp(@RequestBody signUpRequestV2: SignUpRequestV2): SignUpResponseV2 {
         return authFacade.smsSignUpV2(signUpRequestV2)

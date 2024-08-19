@@ -78,8 +78,13 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun findByPhoneNumber(phoneNumber: String): User? {
+    fun findByPhoneNumberNotDeletedUser(phoneNumber: String): User? {
         return userRepository.findByPhoneNumberAndDeletedFalse(phoneNumber)
+    }
+
+    @Transactional(readOnly = true)
+    fun findByPhoneNumber(phoneNumber: String): User? {
+        return userRepository.findByPhoneNumber(phoneNumber)
     }
 
     @Transactional(readOnly = true)
@@ -121,5 +126,17 @@ class UserService(
             user.name = name
             user.birthdate = birthDate
         } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    }
+
+    @Transactional
+    fun resetUser(id: Long) {
+        userRepository.findByIdOrNull(id)?.let {
+            it.deleted = false
+            it.name = "보틀"
+            it.city = null
+            it.state = null
+            it.kakaoId = null
+            it.deletedAt = null
+        }
     }
 }
