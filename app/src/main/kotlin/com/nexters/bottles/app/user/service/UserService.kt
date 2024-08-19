@@ -66,7 +66,7 @@ class UserService(
         userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
             return SignInUpDtoV2(
                 userId = it.id,
-                signInUpStep = if (it.name == "보틀") SignInUpStep.SIGN_UP_SMS else SignInUpStep.SIGN_UP_REQUIREED_FINISHED
+                signInUpStep = if (it.name == "보틀") SignInUpStep.SIGN_UP_SMS_FINISHED else SignInUpStep.SIGN_UP_NAME_GENDER_AGE_FINISHED
             )
         } ?: run {
             val user = userRepository.save(
@@ -79,7 +79,7 @@ class UserService(
             )
             return SignInUpDtoV2(
                 userId = user.id,
-                signInUpStep = SignInUpStep.SIGN_UP_SMS
+                signInUpStep = SignInUpStep.SIGN_UP_SMS_FINISHED
             )
         }
     }
