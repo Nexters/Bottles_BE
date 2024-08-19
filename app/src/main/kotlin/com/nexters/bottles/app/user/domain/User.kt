@@ -66,4 +66,8 @@ class User(
     fun isMatchInactive(): Boolean {
         return !isMatchActivated
     }
+
+    fun isNotRegisterProfile(): Boolean {
+        return userProfile?.isNotRegisterIntroductionOrImage() ?: false
+    }
 }

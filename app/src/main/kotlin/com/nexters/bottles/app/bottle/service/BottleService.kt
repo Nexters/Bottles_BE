@@ -55,17 +55,12 @@ class BottleService(
                 LocalDateTime.now()
             ) ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        val targetUser =
-            userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        val sourceUser = userRepository.findByIdAndDeletedFalse(bottle.sourceUser.id)
-            ?: throw IllegalArgumentException("탈퇴한 회원이에요")
-
         when (bottle.bottleStatus) {
             BottleStatus.RANDOM -> {
                 requireNotNull(likeMessage) { "고객센터에 문의해주세요" }
                 bottle.sendLikeMessage(
-                    from = targetUser,
-                    to = sourceUser,
+                    from = bottle.targetUser,
+                    to = bottle.sourceUser,
                     likeMessage = likeMessage,
                     LocalDateTime.now()
                 )
@@ -76,8 +71,8 @@ class BottleService(
                 bottle.startPingPong()
 
                 val letters = findRandomQuestions(questions)
-                saveLetter(bottle, targetUser, letters)
-                saveLetter(bottle, sourceUser, letters)
+                saveLetter(bottle, bottle.targetUser, letters)
+                saveLetter(bottle, bottle.sourceUser, letters)
             }
         }
         return bottle
@@ -108,11 +103,10 @@ class BottleService(
                 LocalDateTime.now()
             ) ?: throw IllegalArgumentException("이미 떠내려간 보틀이에요")
 
-        val targetUser =
+        val refusedUser =
             userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        userRepository.findByIdAndDeletedFalse(bottle.sourceUser.id) ?: throw IllegalArgumentException("탈퇴한 회원이에요")
 
-        bottle.refuse(targetUser)
+        bottle.refuse(refusedUser)
         return bottle
     }
 
@@ -160,9 +154,10 @@ class BottleService(
 
     @Transactional
     fun matchRandomBottle(user: User, matchingHour: Int): Bottle? {
-        val matchingTime = getMatchingTime(matchingHour)
+        if (user.isNotRegisterProfile()) return null
         if (user.isMatchInactive()) return null
 
+        val matchingTime = getMatchingTime(matchingHour)
         val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
             targetUser = user,
             bottleStatus = BottleStatus.RANDOM,
