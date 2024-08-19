@@ -96,25 +96,23 @@ class AuthFacade(
                 refreshToken = jwtTokenProvider.upsertRefreshToken(user.id),
                 hasCompleteUserProfile = false,
                 hasCompleteIntroduction = false,
-                signInUpStep = SignInUpStep.SIGN_IN,
             )
         }
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
         lastAuthSms.validate(signUpRequest.authCode)
 
-        val signInUpDtoV2 = userService.signInUpV2(signUpRequest)
+        val user = userService.signInUpV2(signUpRequest)
         signUpRequest.fcmDeviceToken?.let {
-            fcmTokenService.registerFcmToken(signInUpDtoV2.userId, signUpRequest.fcmDeviceToken!!)
+            fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
         }
-        val userProfile = userProfileService.findUserProfile(signInUpDtoV2.userId)
+        val userProfile = userProfileService.findUserProfile(user.id)
 
-        val accessToken = jwtTokenProvider.createAccessToken(signInUpDtoV2.userId)
-        val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDtoV2.userId)
+        val accessToken = jwtTokenProvider.createAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
 
         return SignUpResponseV2(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            signInUpStep = signInUpDtoV2.signInUpStep,
             hasCompleteUserProfile = userProfile != null,
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
