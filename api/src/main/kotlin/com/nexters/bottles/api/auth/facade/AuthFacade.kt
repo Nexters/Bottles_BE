@@ -89,14 +89,7 @@ class AuthFacade(
 
     fun smsSignUpV2(signUpRequest: SignUpRequestV2): SignUpResponseV2 {
         if (signUpRequest.phoneNumber == superUserNumberV2) {
-            val user = userService.findByPhoneNumber(signUpRequest.phoneNumber)!!
-
-            return SignUpResponseV2(
-                accessToken = jwtTokenProvider.createAccessToken(user.id),
-                refreshToken = jwtTokenProvider.upsertRefreshToken(user.id),
-                hasCompleteUserProfile = false,
-                hasCompleteIntroduction = false,
-            )
+            return handleSuperUser(signUpRequest)
         }
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
         lastAuthSms.validate(signUpRequest.authCode)
@@ -113,6 +106,23 @@ class AuthFacade(
         return SignUpResponseV2(
             accessToken = accessToken,
             refreshToken = refreshToken,
+            hasCompleteUserProfile = userProfile != null,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
+        )
+    }
+
+    private fun handleSuperUser(signUpRequest: SignUpRequestV2): SignUpResponseV2 {
+        val user = userService.findByPhoneNumber(signUpRequest.phoneNumber)!!
+
+        if (user.deleted) {
+            userService.resetUser(user.id)
+            userProfileService.deleteUserProfile(user.id)
+        }
+
+        val userProfile = userProfileService.findUserProfile(user.id)
+        return SignUpResponseV2(
+            accessToken = jwtTokenProvider.createAccessToken(user.id),
+            refreshToken = jwtTokenProvider.upsertRefreshToken(user.id),
             hasCompleteUserProfile = userProfile != null,
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
@@ -162,7 +172,7 @@ class AuthFacade(
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
         if (isSuperUser(smsSignInRequest.phoneNumber)) {
-            val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)!!
+            val user = userService.findByPhoneNumberNotDeletedUser(smsSignInRequest.phoneNumber)!!
 
             return SmsSignInResponse(
                 accessToken = jwtTokenProvider.createAccessToken(user.id),
@@ -175,7 +185,7 @@ class AuthFacade(
         val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
         lastAuthSms.validate(smsSignInRequest.authCode)
 
-        val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)
+        val user = userService.findByPhoneNumberNotDeletedUser(smsSignInRequest.phoneNumber)
             ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
 
         val userProfile = userProfileService.findUserProfile(user.id)

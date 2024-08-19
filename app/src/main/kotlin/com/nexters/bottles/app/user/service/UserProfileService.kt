@@ -63,4 +63,11 @@ class UserProfileService(
             it.blurredImageUrl = blurredImageUrl
         } ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
+
+    @Transactional
+    fun deleteUserProfile(userId: Long) {
+        profileRepository.findByUserId(userId)?.let { profile ->
+            profileRepository.deleteById(profile.id)
+        }
+    }
 }
