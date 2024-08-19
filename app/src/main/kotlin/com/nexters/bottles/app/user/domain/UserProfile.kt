@@ -36,6 +36,10 @@ class UserProfile(
     fun hasCompleteIntroduction(): Boolean {
         return introduction.isNotEmpty()
     }
+
+    fun isNotRegisterIntroductionOrImage(): Boolean {
+        return introduction.isEmpty() || imageUrl == null
+    }
 }
 
 data class UserProfileSelect(
