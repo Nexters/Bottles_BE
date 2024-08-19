@@ -68,6 +68,6 @@ class User(
     }
 
     fun isNotRegisterProfile(): Boolean {
-        return userProfile?.isNotRegisterIntroductionOrImage() ?: false
+        return userProfile?.isNotRegisterIntroductionOrImage() ?: true
     }
 }
