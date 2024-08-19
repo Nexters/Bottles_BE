@@ -32,6 +32,7 @@ services:
       IS_MATCHING_ACTIVE: ${IS_MATCHING_ACTIVE}
       FCM_ADMIN_KEY_PATH: /app/config/bottles-firebase-adminsdk.json
       SUPER_USER_NUMBER: ${SUPER_USER_NUMBER}
+      SUPER_USER_NUMBER_V2: ${SUPER_USER_NUMBER_V2}
     ports:
       - "8080:8080"
     volumes:

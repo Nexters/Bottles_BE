@@ -4,16 +4,7 @@ import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
-import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
-import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
-import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
-import com.nexters.bottles.api.auth.facade.dto.MessageDto
-import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
-import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
-import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
-import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
+import com.nexters.bottles.api.auth.facade.dto.*
 import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
@@ -21,10 +12,7 @@ import com.nexters.bottles.app.auth.service.RefreshTokenService
 import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
-import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
-import com.nexters.bottles.app.user.service.dto.SignUpProfileRequestV2
-import com.nexters.bottles.app.user.service.dto.SignUpRequest
-import com.nexters.bottles.app.user.service.dto.SignUpRequestV2
+import com.nexters.bottles.app.user.service.dto.*
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -48,6 +36,8 @@ class AuthFacade(
 
     @Value("\${super-user-number}")
     private val superUserNumber: String,
+    @Value("\${super-user-number-v2}")
+    private val superUserNumberV2: String,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -97,13 +87,15 @@ class AuthFacade(
         )
     }
 
-    fun smsSignUpV2(signUpRequest: SignUpRequestV2): SignUpResponse {
-        if (isSuperUser(signUpRequest.phoneNumber)) {
+    fun smsSignUpV2(signUpRequest: SignUpRequestV2): SignUpResponseV2 {
+        if (signUpRequest.phoneNumber == superUserNumberV2) {
             val user = userService.findByPhoneNumber(signUpRequest.phoneNumber)!!
 
-            return SignUpResponse(
+            return SignUpResponseV2(
                 accessToken = jwtTokenProvider.createAccessToken(user.id),
-                refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
+                refreshToken = jwtTokenProvider.upsertRefreshToken(user.id),
+                hasCompleteUserProfile = false,
+                hasCompleteIntroduction = false,
             )
         }
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
@@ -113,13 +105,16 @@ class AuthFacade(
         signUpRequest.fcmDeviceToken?.let {
             fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
         }
+        val userProfile = userProfileService.findUserProfile(user.id)
 
         val accessToken = jwtTokenProvider.createAccessToken(user.id)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
 
-        return SignUpResponse(
+        return SignUpResponseV2(
             accessToken = accessToken,
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
+            hasCompleteUserProfile = userProfile != null,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
 

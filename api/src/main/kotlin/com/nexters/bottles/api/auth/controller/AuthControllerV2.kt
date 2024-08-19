@@ -2,6 +2,7 @@ package com.nexters.bottles.api.auth.controller
 
 import com.nexters.bottles.api.auth.facade.AuthFacade
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.app.user.service.dto.SignUpProfileRequestV2
@@ -20,7 +21,7 @@ class AuthControllerV2(
 
     @ApiOperation("일반 회원가입하기 v2 - 문자")
     @PostMapping("/signup")
-    fun signUp(@RequestBody signUpRequestV2: SignUpRequestV2): SignUpResponse {
+    fun signInUp(@RequestBody signUpRequestV2: SignUpRequestV2): SignUpResponseV2 {
         return authFacade.smsSignUpV2(signUpRequestV2)
     }
 
