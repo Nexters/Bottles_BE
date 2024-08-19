@@ -109,7 +109,7 @@ class AuthFacade(
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
         lastAuthSms.validate(signUpRequest.authCode)
 
-        val user = userService.signUpV2(signUpRequest)
+        val user = userService.signInUpV2(signUpRequest)
         signUpRequest.fcmDeviceToken?.let {
             fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
         }
