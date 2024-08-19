@@ -62,17 +62,24 @@ class UserService(
     }
 
     @Transactional
-    fun signInUpV2(signUpRequest: SignUpRequestV2): User {
+    fun signInUpV2(signUpRequest: SignUpRequestV2): SignInUpDtoV2 {
         userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
-            return it
+            return SignInUpDtoV2(
+                userId = it.id,
+                signInUpStep = if (it.name == "보틀") SignInUpStep.SIGN_UP_SMS else SignInUpStep.SIGN_UP_REQUIREED_FINISHED
+            )
         } ?: run {
-            return userRepository.save(
+            val user = userRepository.save(
                 User(
                     birthdate = LocalDate.now(),
                     name = "보틀",
                     phoneNumber = signUpRequest.phoneNumber,
                     signUpType = SignUpType.NORMAL
                 )
+            )
+            return SignInUpDtoV2(
+                userId = user.id,
+                signInUpStep = SignInUpStep.SIGN_UP_SMS
             )
         }
     }

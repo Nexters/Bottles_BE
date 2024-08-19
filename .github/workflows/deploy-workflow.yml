@@ -119,6 +119,7 @@ jobs:
             
             echo "export IS_MATCHING_ACTIVE=${{ secrets.IS_MATCHING_ACTIVE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export SUPER_USER_NUMBER=${{ secrets.SUPER_USER_NUMBER }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export SUPER_USER_NUMBER_V2=${{ secrets.SUPER_USER_NUMBER_V2 }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
 
