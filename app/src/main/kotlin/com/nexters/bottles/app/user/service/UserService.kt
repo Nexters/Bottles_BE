@@ -62,9 +62,9 @@ class UserService(
     }
 
     @Transactional
-    fun signUpV2(signUpRequest: SignUpRequestV2): User {
+    fun signInUpV2(signUpRequest: SignUpRequestV2): User {
         userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
-            throw ConflictException("이미 가입한 회원이에요")
+            return it
         } ?: run {
             return userRepository.save(
                 User(
