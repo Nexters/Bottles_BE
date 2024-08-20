@@ -104,7 +104,7 @@ class JwtTokenProvider(
     }
 
     fun <T> decodePayload(token: String, targetClass: Class<T>): T {
-        val tokenParts = token.split("\\.")
+        val tokenParts = token.split(".")
         val payloadJWT = tokenParts[1]
         val decoder = Base64.getUrlDecoder()
         val payload = String(decoder.decode(payloadJWT))

@@ -3,15 +3,16 @@ package com.nexters.bottles.api.auth.component
 import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
+import org.bouncycastle.openssl.PEMParser
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.io.StringReader
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.security.KeyFactory
-import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.*
 
 
 @Component
@@ -43,15 +44,11 @@ class AppleAuthClientSecretKeyGenerator(
             stringBuilder.toString()
         }
 
-        val privateKeyPEM = keyPath
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "")
-            .replace("\\s+".toRegex(), "")
-
-        val decodedKey = Base64.getDecoder().decode(privateKeyPEM)
-        val keySpec = PKCS8EncodedKeySpec(decodedKey)
-        val keyFactory = KeyFactory.getInstance("RSA")
-        val privateKey = keyFactory.generatePrivate(keySpec)
+        val reader = StringReader(keyPath)
+        val pemParser = PEMParser(reader)
+        val jcaPEMKeyConverter = JcaPEMKeyConverter()
+        val privateKeyInfo = pemParser.readObject() as PrivateKeyInfo
+        val privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo)
 
         val now = LocalDateTime.now()
         val expiryDate = now.plus(Duration.ofMillis(1000 * 120))

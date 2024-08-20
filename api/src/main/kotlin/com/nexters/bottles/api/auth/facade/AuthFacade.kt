@@ -1,6 +1,5 @@
 package com.nexters.bottles.api.auth.facade
 
-import com.nexters.bottles.api.auth.component.AppleAuthClientSecretKeyGenerator
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
@@ -47,7 +46,6 @@ class AuthFacade(
     private val refreshTokenService: RefreshTokenService,
     private val webClientAdapter: WebClientAdapter,
     private val jwtTokenProvider: JwtTokenProvider,
-    private val appleAuthClientSecretKeyGenerator: AppleAuthClientSecretKeyGenerator,
     private val naverSmsEncoder: NaverSmsEncoder,
     private val authCodeGenerator: AuthCodeGenerator,
     private val applicationEventPublisher: ApplicationEventPublisher,
@@ -81,10 +79,8 @@ class AuthFacade(
     }
 
     fun appleSignInUp(appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {
-        val clientSecretKey = appleAuthClientSecretKeyGenerator.generate()
-        val appleUserInfoResponse = webClientAdapter.sendAppleAuthRequest(clientSecretKey, appleSignInUpRequest.code)
         val appleIdTokenPayload =
-            jwtTokenProvider.decodePayload(appleUserInfoResponse.id_token, AppleIdTokenPayload::class.java)
+            jwtTokenProvider.decodePayload(appleSignInUpRequest.code, AppleIdTokenPayload::class.java)
         val signInUpDto = userService.findAppleUserOrSignUp(appleIdTokenPayload.sub)
 
         val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
