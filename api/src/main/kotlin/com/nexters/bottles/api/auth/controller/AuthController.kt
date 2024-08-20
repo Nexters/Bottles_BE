@@ -86,8 +86,8 @@ class AuthController(
     @ApiOperation("회원 탈퇴하기")
     @PostMapping("/delete")
     @AuthRequired
-    fun delete(@AuthUserId userId: Long) {
-        authFacade.delete(userId)
+    fun delete(@AuthUserId userId: Long, @AccessToken accessToken: String) {
+        authFacade.delete(userId, accessToken)
     }
 
     @ApiOperation("애플 로그인 탈퇴를 위한 client secret 값 조회하기")

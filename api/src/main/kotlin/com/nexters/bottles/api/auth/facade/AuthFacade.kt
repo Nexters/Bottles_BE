@@ -206,9 +206,12 @@ class AuthFacade(
         }
     }
 
-    fun delete(userId: Long) {
+    fun delete(userId: Long, accessToken: String) {
         userService.softDelete(userId)
-        applicationEventPublisher.publishEvent(DeleteUserEventDto(userId = userId))
+
+        applicationEventPublisher.publishEvent(
+            DeleteUserEventDto(userId = userId, accessToken = accessToken)
+        )
     }
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
