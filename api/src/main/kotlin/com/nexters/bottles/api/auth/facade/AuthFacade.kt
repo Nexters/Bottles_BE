@@ -1,10 +1,12 @@
 package com.nexters.bottles.api.auth.facade
 
+import com.nexters.bottles.api.auth.component.AppleAuthClientSecretKeyGenerator
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
 import com.nexters.bottles.api.auth.facade.dto.AppleIdTokenPayload
+import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
@@ -48,6 +50,7 @@ class AuthFacade(
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
     private val authCodeGenerator: AuthCodeGenerator,
+    private val appleAuthClientSecretKeyGenerator: AppleAuthClientSecretKeyGenerator,
     private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${super-user-number}")
@@ -250,6 +253,11 @@ class AuthFacade(
             signUpProfileRequestV2.convertBirthDateToLocalDate(),
             signUpProfileRequestV2.gender
         )
+    }
+
+    fun getAppleClientSecret(): AppleRevokeResponse {
+        val clientSecret = appleAuthClientSecretKeyGenerator.generate()
+        return AppleRevokeResponse(clientSecret = clientSecret)
     }
 
     private fun isSuperUser(phoneNumber: String) = phoneNumber == superUserNumber
