@@ -20,6 +20,16 @@ dependencies {
 
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
+
+    val isMacOS: Boolean = System.getProperty("os.name").startsWith("Mac OS X")
+    val architecture = System.getProperty("os.arch").toLowerCase()
+    if (isMacOS && architecture == "aarch64")  {
+        implementation("io.netty:netty-resolver-dns-native-macos:4.1.75.Final") {
+            artifact {
+                classifier = "osx-aarch_64"
+            }
+        }
+    }
 }
 
 tasks.named("jar") {
