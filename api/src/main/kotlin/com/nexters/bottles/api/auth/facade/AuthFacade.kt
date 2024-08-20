@@ -5,7 +5,6 @@ import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
-import com.nexters.bottles.api.auth.facade.dto.AppleIdTokenPayload
 import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
@@ -35,8 +34,13 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import java.math.BigInteger
+import java.security.KeyFactory
+import java.security.spec.RSAPublicKeySpec
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
+
 
 @Component
 class AuthFacade(
@@ -82,9 +86,24 @@ class AuthFacade(
     }
 
     fun appleSignInUp(appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {
-        val appleIdTokenPayload =
-            jwtTokenProvider.decodePayload(appleSignInUpRequest.code, AppleIdTokenPayload::class.java)
-        val signInUpDto = userService.findAppleUserOrSignUp(appleIdTokenPayload.sub)
+        val applePublicKeys = webClientAdapter.sendAppleAuthKeysRequest()
+        val tokenHeaders = jwtTokenProvider.parseHeaders(appleSignInUpRequest.code)
+        val applePublicKey = applePublicKeys.keys
+            .findLast { key -> key.kid == tokenHeaders["kid"] && key.alg == tokenHeaders["alg"] }
+            ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        val nBytes = Base64.getUrlDecoder().decode(applePublicKey.n)
+        val eBytes = Base64.getUrlDecoder().decode(applePublicKey.e)
+
+        val publicKeySpec = RSAPublicKeySpec(
+            BigInteger(1, nBytes),
+            BigInteger(1, eBytes)
+        )
+
+        val keyFactory = KeyFactory.getInstance(applePublicKey.kty)
+        val publicKey = keyFactory.generatePublic(publicKeySpec)
+
+        val appleAccountId = jwtTokenProvider.getAppleTokenClaims(appleSignInUpRequest.code, publicKey).subject
+        val signInUpDto = userService.findAppleUserOrSignUp(appleAccountId)
 
         val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
         appleSignInUpRequest.fcmDeviceToken?.let {
