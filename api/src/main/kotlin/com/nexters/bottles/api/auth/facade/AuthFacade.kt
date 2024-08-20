@@ -247,7 +247,8 @@ class AuthFacade(
         userService.signUpProfile(
             userId,
             signUpProfileRequestV2.name,
-            signUpProfileRequestV2.convertBirthDateToLocalDate()
+            signUpProfileRequestV2.convertBirthDateToLocalDate(),
+            signUpProfileRequestV2.gender
         )
     }
 
