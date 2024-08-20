@@ -16,7 +16,7 @@ data class BottlePingPongResponse(
 
 data class PingPongUserProfile(
     val userId: Long,
-    val userName: String,
+    val userName: String? = null,
     val age: Int,
     val profileSelect: UserProfileSelect? = null,
     val userImageUrl: String? = null,

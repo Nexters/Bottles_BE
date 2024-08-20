@@ -6,7 +6,7 @@ import com.nexters.bottles.app.user.domain.UserProfileSelect
 data class BottleDetailResponse(
     val id: Long,
     val userId: Long,
-    val userName: String,
+    val userName: String? = null,
     val age: Int,
     val introduction: List<QuestionAndAnswer>? = null,
     val profileSelect: UserProfileSelect? = null,

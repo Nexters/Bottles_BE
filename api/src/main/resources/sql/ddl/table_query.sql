@@ -9,6 +9,7 @@ CREATE TABLE user
     phone_number       VARCHAR(255) DEFAULT NULL comment 'ex) 01012345678',
     gender             VARCHAR(10)  DEFAULT 'MALE',
     sign_up_type       VARCHAR(20)  DEFAULT 'NORMAL'          NOT NULL,
+    apple_account_id   VARCHAR(255) DEFAULT NULL,
     deleted            BOOLEAN      DEFAULT FALSE             NOT NULL,
     deleted_at         DATETIME     DEFAULT CURRENT_TIMESTAMP,
     last_activated_at  DATETIME     DEFAULT CURRENT_TIMESTAMP comment '유저의 최근 활성 시간으로, 보틀 목록 조회하기 api 요청시 갱신',
@@ -78,7 +79,7 @@ CREATE TABLE refresh_tokens
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT                             NOT NULL,
-    token       VARCHAR(512)                      NOT NULL,
+    token       VARCHAR(512)                       NOT NULL,
     expiry_date DATETIME                           NOT NULL,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
@@ -111,7 +112,7 @@ CREATE INDEX idx_user_id ON bottle_history (user_id);
 CREATE TABLE black_list
 (
     id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    expired_access_token VARCHAR(512)                      NOT NULL,
+    expired_access_token VARCHAR(512)                       NOT NULL,
     created_at           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );

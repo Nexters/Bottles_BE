@@ -4,7 +4,7 @@ import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 
 data class UserProfileResponse(
-    val userName: String,
+    val userName: String?,
     val age: Int,
     val imageUrl: String? = null,
     val introduction: List<QuestionAndAnswer>,

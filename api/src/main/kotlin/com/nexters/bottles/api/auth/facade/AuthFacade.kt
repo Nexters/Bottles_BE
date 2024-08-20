@@ -4,7 +4,20 @@ import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
-import com.nexters.bottles.api.auth.facade.dto.*
+import com.nexters.bottles.api.auth.facade.dto.AppleIdTokenPayload
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
+import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
+import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
+import com.nexters.bottles.api.auth.facade.dto.MessageDto
+import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
+import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
+import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
+import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
+import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
@@ -12,7 +25,10 @@ import com.nexters.bottles.app.auth.service.RefreshTokenService
 import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
-import com.nexters.bottles.app.user.service.dto.*
+import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
+import com.nexters.bottles.app.user.service.dto.SignUpProfileRequestV2
+import com.nexters.bottles.app.user.service.dto.SignUpRequest
+import com.nexters.bottles.app.user.service.dto.SignUpRequestV2
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -43,7 +59,7 @@ class AuthFacade(
     private val log = KotlinLogging.logger { }
 
     fun kakaoSignInUp(kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
-        val userInfoResponse = webClientAdapter.sendAuthRequest(kakaoSignInUpRequest.code).convert()
+        val userInfoResponse = webClientAdapter.sendKakaoAuthRequest(kakaoSignInUpRequest.code).convert()
         val signInUpDto = userService.findKakaoUserOrSignUp(userInfoResponse)
         val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
         kakaoSignInUpRequest.fcmDeviceToken?.let {
@@ -54,6 +70,28 @@ class AuthFacade(
         val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
 
         return KakaoSignInUpResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            isSignUp = signInUpDto.isSignUp,
+            hasCompleteUserProfile = userProfile != null,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
+        )
+    }
+
+    fun appleSignInUp(appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {
+        val appleIdTokenPayload =
+            jwtTokenProvider.decodePayload(appleSignInUpRequest.code, AppleIdTokenPayload::class.java)
+        val signInUpDto = userService.findAppleUserOrSignUp(appleIdTokenPayload.sub)
+
+        val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
+        appleSignInUpRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(signInUpDto.userId, appleSignInUpRequest.fcmDeviceToken)
+        }
+
+        val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
+
+        return AppleSignInUpResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
             isSignUp = signInUpDto.isSignUp,
@@ -206,7 +244,11 @@ class AuthFacade(
     }
 
     fun registerSignupProfile(userId: Long, signUpProfileRequestV2: SignUpProfileRequestV2) {
-        userService.signUpProfile(userId, signUpProfileRequestV2.name, signUpProfileRequestV2.convertBirthDateToLocalDate())
+        userService.signUpProfile(
+            userId,
+            signUpProfileRequestV2.name,
+            signUpProfileRequestV2.convertBirthDateToLocalDate()
+        )
     }
 
     private fun isSuperUser(phoneNumber: String) = phoneNumber == superUserNumber

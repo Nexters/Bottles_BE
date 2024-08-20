@@ -5,7 +5,10 @@ import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.domain.enum.SignUpType
 import com.nexters.bottles.app.user.repository.UserRepository
-import com.nexters.bottles.app.user.service.dto.*
+import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
+import com.nexters.bottles.app.user.service.dto.SignInUpDto
+import com.nexters.bottles.app.user.service.dto.SignUpRequest
+import com.nexters.bottles.app.user.service.dto.SignUpRequestV2
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -38,6 +41,22 @@ class UserService(
                         "성별을 확인해주세요"
                     ),
                     signUpType = SignUpType.KAKAO
+                )
+            )
+            return SignInUpDto(userId = user.id, isSignUp = true)
+        }
+    }
+
+    @Transactional
+    fun findAppleUserOrSignUp(appleAccountId: String): SignInUpDto {
+        // TODO 이미 카카오 회원가입을 한 사람은 가입하지 못하게 막아야 됨 -> 프로필 등록 시 전화번호가 이미 존재하면 막기?
+        userRepository.findByAppleAccountIdAndDeletedFalse(appleAccountId)?.let { user ->
+            return SignInUpDto(userId = user.id, isSignUp = false)
+        } ?: run {
+            val user = userRepository.save(
+                User(
+                    signUpType = SignUpType.APPLE,
+                    appleAccountId = appleAccountId
                 )
             )
             return SignInUpDto(userId = user.id, isSignUp = true)
