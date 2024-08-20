@@ -166,7 +166,7 @@ class BottleService(
         if (todayMatchingBottle.isNotEmpty()) return null
 
         log.info { "userId: ${user.id}, gender: ${user.gender}" }
-        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender)
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
         if (usersCanBeMatched.isEmpty()) return null
 
         val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
@@ -192,7 +192,7 @@ class BottleService(
     ): UsersCanBeMatchedDto {
         return usersCanBeMatchedDtos.shuffled()
             .firstOrNull {
-                targetUser.gender.name != it.willMatchUserGender
+                targetUser.gender?.name != it.willMatchUserGender
                 targetUser.city == it.willMatchCity
             } ?: usersCanBeMatchedDtos[0]
     }

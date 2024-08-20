@@ -58,3 +58,11 @@ firebase:
   service-account-key-path: ${FCM_ADMIN_KEY_PATH}
 
 super-user-number: ${SUPER_USER_NUMBER}
+super-user-number-v2: ${SUPER_USER_NUMBER_V2}
+
+apple-auth:
+  apple-url: https://appleid.apple.com
+  apple-key-id: ${APPLE_KEY_ID}
+  apple-key-id-path: ${APPLE_KEY_ID_PATH}
+  apple-client-id: ${APPLE_CLIENT_ID}
+  apple-team-id: ${APPLE_TEAM_ID}

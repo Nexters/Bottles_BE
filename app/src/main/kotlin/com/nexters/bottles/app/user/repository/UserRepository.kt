@@ -12,4 +12,6 @@ interface UserRepository : JpaRepository<User, Long> {
     fun findAllByDeletedFalse(): List<User>
 
     fun findByPhoneNumber(phoneNumber: String): User?
+
+    fun findByAppleAccountIdAndDeletedFalse(appleAccountId: String): User?
 }

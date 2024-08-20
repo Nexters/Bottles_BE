@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.auth.component
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nexters.bottles.app.auth.domain.BlackList
 import com.nexters.bottles.app.auth.service.BlackListService
 import com.nexters.bottles.app.auth.service.RefreshTokenService
@@ -14,6 +15,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import javax.servlet.http.HttpServletRequest
+
 
 @Component
 class JwtTokenProvider(
@@ -31,6 +33,7 @@ class JwtTokenProvider(
 
     private val refreshTokenService: RefreshTokenService,
     private val blackListService: BlackListService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
@@ -97,6 +100,19 @@ class JwtTokenProvider(
             parser.parseClaimsJws(token).body
         } catch (e: Exception) {
             null
+        }
+    }
+
+    fun <T> decodePayload(token: String, targetClass: Class<T>): T {
+        val tokenParts = token.split("\\.")
+        val payloadJWT = tokenParts[1]
+        val decoder = Base64.getUrlDecoder()
+        val payload = String(decoder.decode(payloadJWT))
+
+        return try {
+            objectMapper.readValue(payload, targetClass)
+        } catch (e: Exception) {
+            throw RuntimeException("Error decoding token payload", e)
         }
     }
 }

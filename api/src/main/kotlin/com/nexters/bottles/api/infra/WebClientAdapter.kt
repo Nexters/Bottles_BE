@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.infra
 
+import com.nexters.bottles.api.auth.facade.dto.AppleUserInfoResponse
 import com.nexters.bottles.api.auth.facade.dto.MessageDto
 import com.nexters.bottles.api.auth.facade.dto.SmsRequest
 import com.nexters.bottles.api.auth.facade.dto.SmsResponse
@@ -15,6 +16,12 @@ class WebClientAdapter(
     @Value("\${webclient.kakao-auth-url}")
     val kakaoAuthUrl: String,
 
+    @Value("\${apple-auth.apple-url}")
+    val appleAuthUrl: String,
+
+    @Value("\${apple-auth.apple-client-id}")
+    val appleClientId: String,
+
     @Value("\${naver-cloud-sms.accessKey}")
     val naverSmsAccessKey: String,
 
@@ -25,7 +32,7 @@ class WebClientAdapter(
     val naverSmsSenderPhone: String,
 ) {
 
-    fun sendAuthRequest(code: String): KakaoUserInfoResponse {
+    fun sendKakaoAuthRequest(code: String): KakaoUserInfoResponse {
         val webClient = WebClient.builder()
             .baseUrl(kakaoAuthUrl)
             .build()
@@ -35,6 +42,26 @@ class WebClientAdapter(
             .header("Authorization", "Bearer $code")
             .retrieve()
             .bodyToMono(KakaoUserInfoResponse::class.java)
+            .block() ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
+    }
+
+    fun sendAppleAuthRequest(clientSecretKey: String, code: String): AppleUserInfoResponse {
+        val webClient = WebClient.builder()
+            .baseUrl(appleAuthUrl)
+            .build()
+
+        return webClient.post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/auth/token")
+                    .queryParam("grant_type", "authorization_code")
+                    .queryParam("client_id", appleClientId)
+                    .queryParam("client_secret", clientSecretKey)
+                    .queryParam("code", code)
+                    .build()
+            }
+            .retrieve()
+            .bodyToMono(AppleUserInfoResponse::class.java)
             .block() ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
     }
 

@@ -1,6 +1,13 @@
 package com.nexters.bottles.api.user.facade
 
-import com.nexters.bottles.api.user.facade.dto.*
+import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
+import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
+import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
+import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
+import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
+import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
+import com.nexters.bottles.api.user.facade.dto.UserProfileStatus
+import com.nexters.bottles.api.user.facade.dto.UserProfileStatusResponse
 import com.nexters.bottles.app.common.component.ImageUploader
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
@@ -132,7 +139,7 @@ class UserProfileFacade(
         return UserInfoResponse(name = user.name, signInUpStep = getSignInUpStep(user.name))
     }
 
-    private fun getSignInUpStep(name: String): SignInUpStep {
+    private fun getSignInUpStep(name: String?): SignInUpStep {
         return if (name == "보틀") {
             SignInUpStep.SIGN_UP_SMS_FINISHED
         } else {

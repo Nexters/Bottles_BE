@@ -1,6 +1,8 @@
 package com.nexters.bottles.api.auth.controller
 
 import com.nexters.bottles.api.auth.facade.AuthFacade
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
@@ -33,6 +35,12 @@ class AuthController(
     @PostMapping("/kakao")
     fun kakaoSignInUp(@RequestBody kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
         return authFacade.kakaoSignInUp(kakaoSignInUpRequest)
+    }
+
+    @ApiOperation("애플 회원가입/로그인으로 엑세스 토큰 얻기")
+    @PostMapping("/apple")
+    fun appleSignInUp(@RequestBody appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {
+        return authFacade.appleSignInUp(appleSignInUpRequest)
     }
 
     @ApiOperation("토큰 재발행")
