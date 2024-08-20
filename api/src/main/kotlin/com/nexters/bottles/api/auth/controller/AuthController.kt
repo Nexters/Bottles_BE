@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.auth.controller
 
 import com.nexters.bottles.api.auth.facade.AuthFacade
+import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
@@ -20,6 +21,7 @@ import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.global.resolver.RefreshTokenUserId
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
 import io.swagger.annotations.ApiOperation
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -86,5 +88,12 @@ class AuthController(
     @AuthRequired
     fun delete(@AuthUserId userId: Long) {
         authFacade.delete(userId)
+    }
+
+    @ApiOperation("애플 로그인 탈퇴를 위한 client secret 값 조회하기")
+    @GetMapping("/apple/revoke")
+    @AuthRequired
+    fun getAppleClientSecret(): AppleRevokeResponse {
+        return authFacade.getAppleClientSecret()
     }
 }
