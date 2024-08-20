@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository : JpaRepository<User, Long> {
 
-    fun findByPhoneNumberAndDeletedFalse(phoneNumber: String): User?
+    fun findByPhoneNumberAndDeletedFalse(phoneNumber: String?): User?
 
     fun findByIdAndDeletedFalse(id: Long): User?
 
