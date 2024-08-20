@@ -279,10 +279,10 @@ fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {
 /**
  * +82 10-1234-3456 으로 들어온 전화번호를  01012343456 으로 변환합니다.
  */
-private fun convertFromInternationalToKr(phoneNumber: String): String {
+private fun convertFromInternationalToKr(phoneNumber: String?): String? {
     return phoneNumber
-        .replace("+82 ", "0")
-        .replace("-", "")
+        ?.replace("+82 ", "0")
+        ?.replace("-", "")
 }
 
 /**
