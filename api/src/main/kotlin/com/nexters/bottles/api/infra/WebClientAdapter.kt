@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.infra
 
+import com.nexters.bottles.api.auth.facade.dto.ApplePublicKeys
 import com.nexters.bottles.api.auth.facade.dto.AppleUserInfoResponse
 import com.nexters.bottles.api.auth.facade.dto.MessageDto
 import com.nexters.bottles.api.auth.facade.dto.SmsRequest
@@ -42,6 +43,18 @@ class WebClientAdapter(
             .header("Authorization", "Bearer $code")
             .retrieve()
             .bodyToMono(KakaoUserInfoResponse::class.java)
+            .block() ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
+    }
+
+    fun sendAppleAuthKeysRequest(): ApplePublicKeys {
+        val webClient = WebClient.builder()
+            .baseUrl(appleAuthUrl)
+            .build()
+
+        return webClient.get()
+            .uri("/auth/keys")
+            .retrieve()
+            .bodyToMono(ApplePublicKeys::class.java)
             .block() ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
     }
 
