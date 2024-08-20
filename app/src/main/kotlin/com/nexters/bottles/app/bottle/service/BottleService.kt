@@ -13,6 +13,7 @@ import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -200,5 +201,10 @@ class BottleService(
                 targetUser.gender.name != it.willMatchUserGender
                 targetUser.city == it.willMatchCity
             } ?: usersCanBeMatchedDtos[0]
+    }
+
+    @Transactional(readOnly = true)
+    fun findBottleById(bottleId: Long): Bottle {
+        return bottleRepository.findByIdOrNull(bottleId) ?: throw IllegalArgumentException("존재하지 않는 보틀입니다")
     }
 }
