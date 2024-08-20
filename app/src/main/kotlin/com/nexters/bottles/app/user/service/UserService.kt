@@ -140,10 +140,11 @@ class UserService(
     }
 
     @Transactional
-    fun signUpProfile(userId: Long, name: String, birthDate: LocalDate) {
+    fun signUpProfile(userId: Long, name: String, birthDate: LocalDate, gender: Gender) {
         userRepository.findByIdOrNull(userId)?.let { user ->
             user.name = name
             user.birthdate = birthDate
+            user.gender = gender
         } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
 

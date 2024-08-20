@@ -9,6 +9,7 @@ import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatus
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatusResponse
 import com.nexters.bottles.app.common.component.ImageUploader
+import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.service.UserProfileService
@@ -136,12 +137,12 @@ class UserProfileFacade(
 
     fun findUserInfo(userId: Long): UserInfoResponse {
         val user = userService.findByIdAndNotDeleted(userId)
-        return UserInfoResponse(name = user.name, signInUpStep = getSignInUpStep(user.name))
+        return UserInfoResponse(name = user.name, signInUpStep = getSignInUpStep(user))
     }
 
-    private fun getSignInUpStep(name: String?): SignInUpStep {
-        return if (name == "보틀") {
-            SignInUpStep.SIGN_UP_SMS_FINISHED
+    private fun getSignInUpStep(user: User): SignInUpStep {
+        return if (user.name == null || user.birthdate == null || user.gender == null) {
+            SignInUpStep.SIGN_UP_APPLE_LOGIN_FINISHED
         } else {
             SignInUpStep.SIGN_UP_NAME_GENDER_AGE_FINISHED
         }

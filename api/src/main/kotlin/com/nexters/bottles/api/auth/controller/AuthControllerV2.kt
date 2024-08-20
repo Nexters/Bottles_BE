@@ -1,7 +1,6 @@
 package com.nexters.bottles.api.auth.controller
 
 import com.nexters.bottles.api.auth.facade.AuthFacade
-import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
@@ -25,7 +24,7 @@ class AuthControllerV2(
         return authFacade.smsSignUpV2(signUpRequestV2)
     }
 
-    @ApiOperation("일반 회원가입하기 v2 -  생년월일 / 성별 /이름 입력")
+    @ApiOperation("일반 회원가입하기 v2 -  생년월일 / 성별 / 이름 입력")
     @PostMapping("/profile")
     @AuthRequired
     fun signUpProfile(@AuthUserId userId: Long, @RequestBody signUpProfileRequestV2: SignUpProfileRequestV2) {
