@@ -273,7 +273,7 @@ class AuthFacade(
             userId,
             signUpProfileRequestV2.name,
             signUpProfileRequestV2.convertBirthDateToLocalDate(),
-            signUpProfileRequestV2.gender
+            signUpProfileRequestV2.gender!!,
         )
     }
 
