@@ -1,6 +1,12 @@
 package com.nexters.bottles.api.bottle.facade
 
-import com.nexters.bottles.api.bottle.event.dto.BottleApplicationEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleAcceptEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleRefuseEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleRegisterLetterEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleShareContactEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleShareImageEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
 import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
 import com.nexters.bottles.api.bottle.facade.dto.BottleDto
@@ -25,7 +31,6 @@ import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.LetterService
 import com.nexters.bottles.app.bottle.service.QuestionCachingService
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE
-import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.service.UserReportService
@@ -58,10 +63,9 @@ class BottleFacade(
             bottleService.matchRandomBottle(user, matchingHour)
                 ?.also {
                     applicationEventPublisher.publishEvent(
-                        BottleApplicationEventDto(
+                        BottleMatchEventDto(
                             sourceUserId = it.sourceUser.id,
                             targetUserId = it.targetUser.id,
-                            isRefused = false,
                         )
                     )
                 }
@@ -133,7 +137,6 @@ class BottleFacade(
         )
     }
 
-    @CacheEvict(PING_PONG_BOTTLE_LIST, key = "#userId")
     fun acceptBottle(userId: Long, bottleId: Long, acceptBottleRequest: AcceptBottleRequest) {
         val allQuestions = questionCachingService.findAllQuestions()
         val acceptBottle = bottleService.acceptBottle(userId, bottleId, acceptBottleRequest.likeMessage, allQuestions)
@@ -143,16 +146,21 @@ class BottleFacade(
                 targetUserId = acceptBottle.targetUser.id
             )
         }
+
+        applicationEventPublisher.publishEvent(
+            BottleAcceptEventDto(
+                bottleId = acceptBottle.id
+            )
+        )
     }
 
     fun refuseBottle(userId: Long, bottleId: Long) {
         bottleService.refuseBottle(userId, bottleId)
             .also {
                 applicationEventPublisher.publishEvent(
-                    BottleApplicationEventDto(
+                    BottleRefuseEventDto(
                         sourceUserId = userId,
-                        targetUserId = it.findOtherUserId(userId),
-                        isRefused = true
+                        targetUserId = it.findOtherUserId(userId)
                     )
                 )
             }
@@ -203,6 +211,13 @@ class BottleFacade(
             registerLetterRequest.order,
             registerLetterRequest.answer
         )
+
+        applicationEventPublisher.publishEvent(
+            BottleRegisterLetterEventDto(
+                bottleId = pingPongBottle.id,
+                userId = user.id
+            )
+        )
     }
 
     fun readPingPongBottle(userId: Long, bottleId: Long) {
@@ -216,6 +231,12 @@ class BottleFacade(
     fun stopBottle(userId: Long, bottleId: Long) {
         val stoppedBottle = bottleService.stop(userId, bottleId)
         bottleCachingService.evictPingPongList(stoppedBottle.sourceUser.id, stoppedBottle.targetUser.id)
+
+        applicationEventPublisher.publishEvent(
+            BottleStopEventDto(
+                bottleId = stoppedBottle.id
+            )
+        )
     }
 
     fun getBottlePingPong(userId: Long, bottleId: Long): BottlePingPongResponse {
@@ -346,6 +367,13 @@ class BottleFacade(
         bottleCachingService.evictPingPongList(pingPongBottle.sourceUser.id, pingPongBottle.targetUser.id)
 
         letterService.shareImage(pingPongBottle, user, willShare)
+
+        applicationEventPublisher.publishEvent(
+            BottleShareImageEventDto(
+                bottleId = bottleId,
+                userId = userId,
+            )
+        )
     }
 
     @CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
@@ -354,10 +382,13 @@ class BottleFacade(
         val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
         bottleCachingService.evictPingPongList(pingPongBottle.sourceUser.id, pingPongBottle.targetUser.id)
 
-        val previousStatus = pingPongBottle.pingPongStatus
         letterService.shareContact(pingPongBottle, user, willMatch)
-        val afterStatus = pingPongBottle.pingPongStatus
 
-        // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
+        applicationEventPublisher.publishEvent(
+            BottleShareContactEventDto(
+                bottleId = bottleId,
+                userId = userId,
+            )
+        )
     }
 }

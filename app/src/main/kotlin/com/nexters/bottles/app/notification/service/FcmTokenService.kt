@@ -35,4 +35,14 @@ class FcmTokenService(
     fun deleteAllFcmTokenByUserId(userId: Long) {
         fcmTokenRepository.findAllByUserId(userId).forEach { fcmTokenRepository.delete(it) }
     }
+
+    @Transactional(readOnly = true)
+    fun findAllByUserId(userId: Long): List<FcmToken> {
+        return fcmTokenRepository.findAllByUserId(userId)
+    }
+
+    @Transactional(readOnly = true)
+    fun findAllByUserIds(userIds: List<Long>): List<FcmToken> {
+        return fcmTokenRepository.findAllByUserIdIn(userIds)
+    }
 }

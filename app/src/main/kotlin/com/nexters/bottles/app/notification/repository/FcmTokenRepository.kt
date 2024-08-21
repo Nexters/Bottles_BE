@@ -8,4 +8,6 @@ interface FcmTokenRepository : JpaRepository<FcmToken, Long> {
     fun findAllByUserId(userId: Long): List<FcmToken>
 
     fun findByUserIdAndToken(userId: Long, token: String): FcmToken?
+
+    fun findAllByUserIdIn(userIds: List<Long>): List<FcmToken>
 }

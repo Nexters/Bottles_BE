@@ -199,6 +199,11 @@ class BottleService(
     }
 
     @Transactional(readOnly = true)
+    fun findBottleById(bottleId: Long): Bottle {
+        return bottleRepository.findByIdOrNull(bottleId) ?: throw IllegalArgumentException("존재하지 않는 보틀입니다")
+    }
+
+    @Transactional(readOnly = true)
     fun getPingPongBottlesByDeletedUser(userId: Long): List<Bottle> {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         return bottleRepository.findAllByUserAndStatusAndDeletedFalse(

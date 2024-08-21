@@ -122,6 +122,10 @@ class Bottle(
         return DELETE_AFTER_DAYS - daysBetween
     }
 
+    fun isSentLikeMessageAndNotStart(): Boolean {
+        return bottleStatus == BottleStatus.SENT && pingPongStatus == PingPongStatus.NONE
+    }
+
     companion object {
         private const val DELETE_AFTER_DAYS = 3
     }
