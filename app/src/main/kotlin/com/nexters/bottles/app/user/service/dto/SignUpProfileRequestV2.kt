@@ -12,6 +12,9 @@ data class SignUpProfileRequestV2(
 ) {
 
     fun convertBirthDateToLocalDate(): LocalDate {
-        return LocalDate.of(birthYear!!, birthMonth!!, birthDay!!)
+        if (birthYear == null || birthMonth == null || birthDay == null) {
+            return LocalDate.now()
+        }
+        return LocalDate.of(birthYear, birthMonth, birthDay)
     }
 }

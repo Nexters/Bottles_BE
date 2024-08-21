@@ -53,6 +53,9 @@ class User(
 ) : BaseEntity() {
 
     fun getKoreanAge(): Int {
+        if (birthdate == null) {
+            return 0
+        }
         return LocalDate.now().year - birthdate!!.year + 1
     }
 
