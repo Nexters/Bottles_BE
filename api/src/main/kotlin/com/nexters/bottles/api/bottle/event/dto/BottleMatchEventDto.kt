@@ -1,6 +1,8 @@
 package com.nexters.bottles.api.bottle.event.dto
 
-data class BottleRefuseEventDto(
+data class BottleMatchEventDto(
     val sourceUserId: Long,
-    val targetUserId: Long,
-)
+    val targetUserId: Long
+) {
+
+}

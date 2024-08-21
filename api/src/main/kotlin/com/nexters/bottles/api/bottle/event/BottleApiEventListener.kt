@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.bottle.event
 
 import com.nexters.bottles.api.bottle.event.dto.BottleAcceptEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRefuseEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRegisterLetterEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
@@ -26,11 +27,13 @@ class BottleApiEventListener(
     @Async
     @EventListener
     fun handleCustomEvent(event: BottleRefuseEventDto) {
-        when (event.isRefused) {
-            true -> bottleHistoryService.saveRefuseHistory(event.sourceUserId, event.targetUserId)
-            false -> bottleHistoryService.saveMatchingHistory(event.sourceUserId, event.targetUserId)
-        }
+        bottleHistoryService.saveRefuseHistory(event.sourceUserId, event.targetUserId)
+    }
 
+    @Async
+    @EventListener
+    fun handleCustomEvent(event: BottleMatchEventDto) {
+        bottleHistoryService.saveMatchingHistory(event.sourceUserId, event.targetUserId)
     }
 
     @Async

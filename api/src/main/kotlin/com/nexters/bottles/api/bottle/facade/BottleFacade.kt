@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.bottle.facade
 
 import com.nexters.bottles.api.bottle.event.dto.BottleAcceptEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRefuseEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRegisterLetterEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
@@ -60,10 +61,9 @@ class BottleFacade(
             bottleService.matchRandomBottle(user, matchingHour)
                 ?.also {
                     applicationEventPublisher.publishEvent(
-                        BottleRefuseEventDto(
+                        BottleMatchEventDto(
                             sourceUserId = it.sourceUser.id,
                             targetUserId = it.targetUser.id,
-                            isRefused = false,
                         )
                     )
                 }
@@ -158,8 +158,7 @@ class BottleFacade(
                 applicationEventPublisher.publishEvent(
                     BottleRefuseEventDto(
                         sourceUserId = userId,
-                        targetUserId = it.findOtherUserId(userId),
-                        isRefused = true
+                        targetUserId = it.findOtherUserId(userId)
                     )
                 )
             }
