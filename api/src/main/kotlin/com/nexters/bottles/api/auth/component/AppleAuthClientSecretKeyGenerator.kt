@@ -51,7 +51,7 @@ class AppleAuthClientSecretKeyGenerator(
         val privateKey = jcaPEMKeyConverter.getPrivateKey(privateKeyInfo)
 
         val now = LocalDateTime.now()
-        val expiryDate = now.plus(Duration.ofMillis(1000 * 120))
+        val expiryDate = now.plus(Duration.ofMillis(EXPIRATION_MILLIS))
         return Jwts
             .builder()
             .setHeaderParam(JwsHeader.KEY_ID, appleKeyId)
@@ -62,6 +62,10 @@ class AppleAuthClientSecretKeyGenerator(
             .setExpiration(toDate(expiryDate))
             .signWith(privateKey, SignatureAlgorithm.ES256)
             .compact()
+    }
+
+    companion object {
+        const val EXPIRATION_MILLIS = (1000 * 60 * 6).toLong() // 6시간
     }
 }
 
