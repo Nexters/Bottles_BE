@@ -15,7 +15,8 @@ import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.SignInUpStep
-import com.nexters.bottles.app.user.service.dto.SignInUpStep.*
+import com.nexters.bottles.app.user.service.dto.SignInUpStep.SIGN_UP_APPLE_LOGIN_FINISHED
+import com.nexters.bottles.app.user.service.dto.SignInUpStep.SIGN_UP_NAME_GENDER_AGE_FINISHED
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -157,7 +158,8 @@ class UserProfileFacade(
     }
 
     fun findUserProfileStatus(userId: Long): UserProfileStatusResponse {
-        val userProfile = profileService.findUserProfile(userId)
+        val user = userService.findByIdAndNotDeleted(userId)
+        val userProfile = profileService.findUserProfile(user.id)
         return UserProfileStatusResponse(
             getUserProfileStatus(userProfile)
         )
