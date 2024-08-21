@@ -5,13 +5,13 @@ import java.time.LocalDate
 
 data class SignUpProfileRequestV2(
     val name: String,
-    val birthYear: Int,
-    val birthMonth: Int,
-    val birthDay: Int,
-    val gender: Gender,
+    val birthYear: Int? = LocalDate.now().year,
+    val birthMonth: Int? = LocalDate.now().monthValue,
+    val birthDay: Int? = LocalDate.now().dayOfMonth,
+    val gender: Gender? = Gender.FEMALE,
 ) {
 
     fun convertBirthDateToLocalDate(): LocalDate {
-        return LocalDate.of(birthYear, birthMonth, birthDay)
+        return LocalDate.of(birthYear!!, birthMonth!!, birthDay!!)
     }
 }
