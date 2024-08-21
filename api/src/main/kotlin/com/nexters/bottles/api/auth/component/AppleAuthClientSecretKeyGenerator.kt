@@ -65,7 +65,7 @@ class AppleAuthClientSecretKeyGenerator(
     }
 
     companion object {
-        const val EXPIRATION_MILLIS = (1000 * 60 * 6).toLong() // 6시간
+        const val EXPIRATION_MILLIS = (1000 * 60 * 60 * 6).toLong() // 6시간
     }
 }
 
