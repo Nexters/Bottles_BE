@@ -25,9 +25,9 @@ class AuthApplicationEventListener(
         blackListService.add(event.accessToken)
         refreshTokenService.delete(event.userId)
 
-        val pingPongBottles = bottleService.getPingPongBottles(event.userId)
+        val pingPongBottles = bottleService.getPingPongBottlesByDeletedUser(event.userId)
         pingPongBottles.forEach {
-            val stoppedBottle = bottleService.stop(userId = event.userId, bottleId = it.id)
+            val stoppedBottle = bottleService.stopByDeletedUser(userId = event.userId, bottle = it)
             bottleCachingService.evictPingPongList(stoppedBottle.sourceUser.id, stoppedBottle.targetUser.id)
         }
 
