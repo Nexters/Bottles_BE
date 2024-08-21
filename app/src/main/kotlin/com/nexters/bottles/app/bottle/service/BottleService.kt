@@ -131,7 +131,7 @@ class BottleService(
     @Transactional(readOnly = true)
     fun getPingPongBottles(userId: Long): List<Bottle> {
         val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        return bottleRepository.findAllByUserAndStatusAndDeletedFalse(
+        return bottleRepository.findAllByNotDeletedUserAndStatusAndDeletedFalse(
             user,
             setOf(
                 PingPongStatus.ACTIVE,
@@ -201,5 +201,25 @@ class BottleService(
     @Transactional(readOnly = true)
     fun findBottleById(bottleId: Long): Bottle {
         return bottleRepository.findByIdOrNull(bottleId) ?: throw IllegalArgumentException("존재하지 않는 보틀입니다")
+    }
+
+    @Transactional(readOnly = true)
+    fun getPingPongBottlesByDeletedUser(userId: Long): List<Bottle> {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        return bottleRepository.findAllByUserAndStatusAndDeletedFalse(
+            user,
+            setOf(
+                PingPongStatus.NONE,
+                PingPongStatus.ACTIVE,
+                PingPongStatus.MATCHED,
+            )
+        )
+    }
+
+    @Transactional
+    fun stopByDeletedUser(userId: Long, bottle: Bottle): Bottle {
+        val stoppedUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        bottle.stop(stoppedUser, LocalDateTime.now())
+        return bottle
     }
 }

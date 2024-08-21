@@ -25,7 +25,7 @@ class LoggingFilter(private val jwtTokenProvider: JwtTokenProvider) : OncePerReq
                 MDC.put("userId", "anonymous")
             }
 
-            log.info("MDC set in filter: ${MDC.get("userId")}")
+            log.info("Request: method: ${request.method} ${request.requestURI} userId: ${MDC.get("userId")}")
             filterChain.doFilter(request, response)
         } finally {
             MDC.clear()

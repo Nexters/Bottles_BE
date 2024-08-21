@@ -15,6 +15,7 @@ import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.SignInUpStep
+import com.nexters.bottles.app.user.service.dto.SignInUpStep.*
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -140,11 +141,18 @@ class UserProfileFacade(
         return UserInfoResponse(name = user.name, signInUpStep = getSignInUpStep(user))
     }
 
+    /**
+     * 애플 로그인으로 가입하는 경우 성별/나이를 입력 받지 못해 서버에서 '오늘' 날짜를 입력해줍니다.
+     * 성별/나이를 입력받지 않아도 화면상으로 다 입력 받은 다음 단계로 가야하기 때문에 2024년 출생으로
+     * 되어있으면 이름/성별/나이를 입력했다고 내려줍니다.
+     */
     private fun getSignInUpStep(user: User): SignInUpStep {
-        return if (user.name == null || user.birthdate == null || user.gender == null) {
-            SignInUpStep.SIGN_UP_APPLE_LOGIN_FINISHED
+        return if (user.birthdate?.year == 2024) {
+            SIGN_UP_NAME_GENDER_AGE_FINISHED
+        } else if (user.name == null || user.birthdate == null || user.gender == null) {
+            SIGN_UP_APPLE_LOGIN_FINISHED
         } else {
-            SignInUpStep.SIGN_UP_NAME_GENDER_AGE_FINISHED
+            SIGN_UP_NAME_GENDER_AGE_FINISHED
         }
     }
 
