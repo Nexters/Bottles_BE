@@ -85,7 +85,7 @@ class BottleApiEventListener(
         fcmTokenService.findAllByUserId(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
                 title = "${otherUser.name}님이 답변을 완료했어요 👀",
-                body = "두근두근, ${otherUser.name}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요! "
+                body = "두근두근, ${otherUser.name}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요!"
             )
             fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
