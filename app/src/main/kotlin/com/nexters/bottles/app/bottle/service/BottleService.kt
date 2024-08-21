@@ -13,6 +13,7 @@ import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -130,7 +131,7 @@ class BottleService(
     @Transactional(readOnly = true)
     fun getPingPongBottles(userId: Long): List<Bottle> {
         val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        return bottleRepository.findAllByUserAndStatusAndDeletedFalse(
+        return bottleRepository.findAllByNotDeletedUserAndStatusAndDeletedFalse(
             user,
             setOf(
                 PingPongStatus.ACTIVE,
@@ -195,5 +196,25 @@ class BottleService(
                 targetUser.gender?.name != it.willMatchUserGender
                 targetUser.city == it.willMatchCity
             } ?: usersCanBeMatchedDtos[0]
+    }
+
+    @Transactional(readOnly = true)
+    fun getPingPongBottlesByDeletedUser(userId: Long): List<Bottle> {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        return bottleRepository.findAllByUserAndStatusAndDeletedFalse(
+            user,
+            setOf(
+                PingPongStatus.NONE,
+                PingPongStatus.ACTIVE,
+                PingPongStatus.MATCHED,
+            )
+        )
+    }
+
+    @Transactional
+    fun stopByDeletedUser(userId: Long, bottle: Bottle): Bottle {
+        val stoppedUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        bottle.stop(stoppedUser, LocalDateTime.now())
+        return bottle
     }
 }

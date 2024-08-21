@@ -41,6 +41,17 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "AND b.pingPongStatus IN :pingPongStatus " +
                 "AND b.deleted = false "
     )
+    fun findAllByNotDeletedUserAndStatusAndDeletedFalse(
+        @Param("user") user: User,
+        @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
+    ): List<Bottle>
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE b.targetUser = :user OR b.sourceUser = :user " +
+                "AND b.pingPongStatus IN :pingPongStatus " +
+                "AND b.deleted = false "
+    )
     fun findAllByUserAndStatusAndDeletedFalse(
         @Param("user") user: User,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
