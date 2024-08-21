@@ -4,6 +4,8 @@ import com.nexters.bottles.api.bottle.event.dto.BottleAcceptEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRefuseEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRegisterLetterEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleShareContactEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleShareImageEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
 import com.nexters.bottles.api.bottle.facade.dto.AcceptBottleRequest
 import com.nexters.bottles.api.bottle.facade.dto.BottleDetailResponse
@@ -365,6 +367,13 @@ class BottleFacade(
         bottleCachingService.evictPingPongList(pingPongBottle.sourceUser.id, pingPongBottle.targetUser.id)
 
         letterService.shareImage(pingPongBottle, user, willShare)
+
+        applicationEventPublisher.publishEvent(
+            BottleShareImageEventDto(
+                bottleId = bottleId,
+                userId = userId,
+            )
+        )
     }
 
     @CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
@@ -373,10 +382,13 @@ class BottleFacade(
         val pingPongBottle = bottleCachingService.getPingPongBottle(bottleId)
         bottleCachingService.evictPingPongList(pingPongBottle.sourceUser.id, pingPongBottle.targetUser.id)
 
-        val previousStatus = pingPongBottle.pingPongStatus
         letterService.shareContact(pingPongBottle, user, willMatch)
-        val afterStatus = pingPongBottle.pingPongStatus
 
-        // TODO: previousStatus는 match가 아니였는데 afterStatus가 match라면 푸시보내기
+        applicationEventPublisher.publishEvent(
+            BottleShareContactEventDto(
+                bottleId = bottleId,
+                userId = userId,
+            )
+        )
     }
 }
