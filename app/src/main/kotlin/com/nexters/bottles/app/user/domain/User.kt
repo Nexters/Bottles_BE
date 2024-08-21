@@ -21,9 +21,9 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    var birthdate: LocalDate,
+    var birthdate: LocalDate? = null,
 
-    var name: String,
+    var name: String? = null,
 
     var city: String? = null,  // 시
     var state: String? = null, // 구
@@ -36,10 +36,12 @@ class User(
     var userProfile: UserProfile? = null,
 
     @Enumerated(EnumType.STRING)
-    var gender: Gender = Gender.MALE,
+    var gender: Gender? = null,
 
     @Enumerated(EnumType.STRING)
     var signUpType: SignUpType = SignUpType.NORMAL,
+
+    var appleAccountId: String? = null,
 
     var deleted: Boolean = false,
 
@@ -51,7 +53,7 @@ class User(
 ) : BaseEntity() {
 
     fun getKoreanAge(): Int {
-        return LocalDate.now().year - birthdate.year + 1
+        return LocalDate.now().year - birthdate!!.year + 1
     }
 
     fun softDelete() {
@@ -65,5 +67,9 @@ class User(
 
     fun isMatchInactive(): Boolean {
         return !isMatchActivated
+    }
+
+    fun isNotRegisterProfile(): Boolean {
+        return userProfile?.isNotRegisterIntroductionOrImage() ?: true
     }
 }

@@ -1,9 +1,13 @@
 package com.nexters.bottles.api.auth.facade
 
+import com.nexters.bottles.api.auth.component.AppleAuthClientSecretKeyGenerator
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
+import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
@@ -12,6 +16,7 @@ import com.nexters.bottles.api.auth.facade.dto.MessageDto
 import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
 import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
 import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.api.infra.WebClientAdapter
@@ -22,13 +27,20 @@ import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
+import com.nexters.bottles.app.user.service.dto.SignUpProfileRequestV2
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
+import com.nexters.bottles.app.user.service.dto.SignUpRequestV2
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import java.math.BigInteger
+import java.security.KeyFactory
+import java.security.spec.RSAPublicKeySpec
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
+
 
 @Component
 class AuthFacade(
@@ -42,16 +54,19 @@ class AuthFacade(
     private val jwtTokenProvider: JwtTokenProvider,
     private val naverSmsEncoder: NaverSmsEncoder,
     private val authCodeGenerator: AuthCodeGenerator,
+    private val appleAuthClientSecretKeyGenerator: AppleAuthClientSecretKeyGenerator,
     private val applicationEventPublisher: ApplicationEventPublisher,
 
     @Value("\${super-user-number}")
     private val superUserNumber: String,
+    @Value("\${super-user-number-v2}")
+    private val superUserNumberV2: String,
 ) {
 
     private val log = KotlinLogging.logger { }
 
     fun kakaoSignInUp(kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
-        val userInfoResponse = webClientAdapter.sendAuthRequest(kakaoSignInUpRequest.code).convert()
+        val userInfoResponse = webClientAdapter.sendKakaoAuthRequest(kakaoSignInUpRequest.code).convert()
         val signInUpDto = userService.findKakaoUserOrSignUp(userInfoResponse)
         val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
         kakaoSignInUpRequest.fcmDeviceToken?.let {
@@ -70,6 +85,43 @@ class AuthFacade(
         )
     }
 
+    fun appleSignInUp(appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {
+        val applePublicKeys = webClientAdapter.sendAppleAuthKeysRequest()
+        val tokenHeaders = jwtTokenProvider.parseHeaders(appleSignInUpRequest.code)
+        val applePublicKey = applePublicKeys.keys
+            .findLast { key -> key.kid == tokenHeaders["kid"] && key.alg == tokenHeaders["alg"] }
+            ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        val nBytes = Base64.getUrlDecoder().decode(applePublicKey.n)
+        val eBytes = Base64.getUrlDecoder().decode(applePublicKey.e)
+
+        val publicKeySpec = RSAPublicKeySpec(
+            BigInteger(1, nBytes),
+            BigInteger(1, eBytes)
+        )
+
+        val keyFactory = KeyFactory.getInstance(applePublicKey.kty)
+        val publicKey = keyFactory.generatePublic(publicKeySpec)
+
+        val appleAccountId = jwtTokenProvider.getAppleTokenClaims(appleSignInUpRequest.code, publicKey).subject
+        val signInUpDto = userService.findAppleUserOrSignUp(appleAccountId)
+
+        val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
+        appleSignInUpRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(signInUpDto.userId, appleSignInUpRequest.fcmDeviceToken)
+        }
+
+        val accessToken = jwtTokenProvider.createAccessToken(signInUpDto.userId)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(signInUpDto.userId)
+
+        return AppleSignInUpResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            isSignUp = signInUpDto.isSignUp,
+            hasCompleteUserProfile = userProfile != null,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
+        )
+    }
+
     fun refreshToken(userId: Long): RefreshAccessTokenResponse {
         val accessToken = jwtTokenProvider.createAccessToken(userId)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(userId)
@@ -77,7 +129,7 @@ class AuthFacade(
         return RefreshAccessTokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
-    fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
+    fun smsSignUp(signUpRequest: SignUpRequest): SignUpResponse {
         val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
         lastAuthSms.validate(signUpRequest.authCode)
 
@@ -92,6 +144,47 @@ class AuthFacade(
         return SignUpResponse(
             accessToken = accessToken,
             refreshToken = refreshToken
+        )
+    }
+
+    fun smsSignUpV2(signUpRequest: SignUpRequestV2): SignUpResponseV2 {
+        if (signUpRequest.phoneNumber == superUserNumberV2) {
+            return handleSuperUser(signUpRequest)
+        }
+        val lastAuthSms = authSmsService.findLastAuthSms(signUpRequest.phoneNumber)
+        lastAuthSms.validate(signUpRequest.authCode)
+
+        val user = userService.signInUpV2(signUpRequest)
+        signUpRequest.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(user.id, signUpRequest.fcmDeviceToken!!)
+        }
+        val userProfile = userProfileService.findUserProfile(user.id)
+
+        val accessToken = jwtTokenProvider.createAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.upsertRefreshToken(user.id)
+
+        return SignUpResponseV2(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            hasCompleteUserProfile = userProfile != null,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
+        )
+    }
+
+    private fun handleSuperUser(signUpRequest: SignUpRequestV2): SignUpResponseV2 {
+        val user = userService.findByPhoneNumber(signUpRequest.phoneNumber)!!
+
+        if (user.deleted) {
+            userService.resetUser(user.id)
+            userProfileService.deleteUserProfile(user.id)
+        }
+
+        val userProfile = userProfileService.findUserProfile(user.id)
+        return SignUpResponseV2(
+            accessToken = jwtTokenProvider.createAccessToken(user.id),
+            refreshToken = jwtTokenProvider.upsertRefreshToken(user.id),
+            hasCompleteUserProfile = userProfile != null,
+            hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
     }
 
@@ -124,24 +217,38 @@ class AuthFacade(
         lastAuthSms.validate(lastAuthSms.authCode)
     }
 
-    fun logout(userId: Long, accessToken: String, logoutRequest: LogoutRequest) {
+    fun logout(userId: Long, accessToken: String, logoutRequest: LogoutRequest?) {
         blackListService.add(accessToken)
         refreshTokenService.delete(userId)
-        logoutRequest.fcmDeviceToken?.let {
+        logoutRequest?.fcmDeviceToken?.let {
             fcmTokenService.deleteFcmToken(userId, logoutRequest.fcmDeviceToken)
         }
     }
 
-    fun delete(userId: Long) {
+    fun delete(userId: Long, accessToken: String) {
         userService.softDelete(userId)
-        applicationEventPublisher.publishEvent(DeleteUserEventDto(userId = userId))
+
+        applicationEventPublisher.publishEvent(
+            DeleteUserEventDto(userId = userId, accessToken = accessToken)
+        )
     }
 
     fun smsSignIn(smsSignInRequest: SmsSignInRequest): SmsSignInResponse {
+        if (isSuperUser(smsSignInRequest.phoneNumber)) {
+            val user = userService.findByPhoneNumberNotDeletedUser(smsSignInRequest.phoneNumber)!!
+
+            return SmsSignInResponse(
+                accessToken = jwtTokenProvider.createAccessToken(user.id),
+                refreshToken = jwtTokenProvider.upsertRefreshToken(user.id),
+                hasCompleteUserProfile = true,
+                hasCompleteIntroduction = true,
+            )
+        }
+
         val lastAuthSms = authSmsService.findLastAuthSms(smsSignInRequest.phoneNumber)
         lastAuthSms.validate(smsSignInRequest.authCode)
 
-        val user = userService.findByPhoneNumber(smsSignInRequest.phoneNumber)
+        val user = userService.findByPhoneNumberNotDeletedUser(smsSignInRequest.phoneNumber)
             ?: throw IllegalArgumentException("회원가입에 대해 문의해주세요")
 
         val userProfile = userProfileService.findUserProfile(user.id)
@@ -159,6 +266,20 @@ class AuthFacade(
             hasCompleteUserProfile = userProfile != null,
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         )
+    }
+
+    fun registerSignupProfile(userId: Long, signUpProfileRequestV2: SignUpProfileRequestV2) {
+        userService.signUpProfile(
+            userId,
+            signUpProfileRequestV2.name,
+            signUpProfileRequestV2.convertBirthDateToLocalDate(),
+            signUpProfileRequestV2.gender
+        )
+    }
+
+    fun getAppleClientSecret(): AppleRevokeResponse {
+        val clientSecret = appleAuthClientSecretKeyGenerator.generate()
+        return AppleRevokeResponse(clientSecret = clientSecret)
     }
 
     private fun isSuperUser(phoneNumber: String) = phoneNumber == superUserNumber
@@ -180,10 +301,11 @@ fun KakaoUserInfoResponse.convert(): KakaoUserInfoResponse {
 /**
  * +82 10-1234-3456 으로 들어온 전화번호를  01012343456 으로 변환합니다.
  */
-private fun convertFromInternationalToKr(phoneNumber: String): String {
+private fun convertFromInternationalToKr(phoneNumber: String?): String {
     return phoneNumber
-        .replace("+82 ", "0")
-        .replace("-", "")
+        ?.replace("+82 ", "0")
+        ?.replace("-", "")
+        ?: "" // 카카오 테스트 계정은 핸드폰 번호를 가져올 수 없어 조회시 null로 들어옵니다. 그러면 핸드폰 번호가 null인 애플 가입 계정과 구분할 수 없어 빈 문자열을 넣습니다.
 }
 
 /**

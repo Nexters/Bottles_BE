@@ -14,9 +14,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "JOIN FETCH b.sourceUser " +
                 "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.pingPongStatus = :pingPongStatus " +
-                "AND b.deleted = false "
+                "AND b.deleted = false AND b.targetUser.deleted = false AND b.sourceUser.deleted = false "
     )
     fun findAllByTargetUserAndStatusAndNotExpiredAndDeletedFalse(
         @Param("targetUser") targetUser: User,
@@ -26,9 +25,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "JOIN FETCH b.sourceUser " +
                 "WHERE b.id = :bottleId AND b.expiredAt > :currentDateTime AND b.pingPongStatus IN :pingPongStatus " +
-                "AND b.deleted = false "
+                "AND b.deleted = false AND b.targetUser.deleted = false AND b.sourceUser.deleted = false "
     )
     fun findByIdAndStatusAndNotExpiredAndDeletedFalse(
         @Param("bottleId") bottleId: Long,
@@ -38,7 +36,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
+                "WHERE (b.targetUser = :user AND b.targetUser.deleted = false) " +
+                "OR (b.sourceUser = :user AND b.sourceUser.deleted = false ) " +
                 "AND b.pingPongStatus IN :pingPongStatus " +
                 "AND b.deleted = false "
     )
@@ -49,7 +48,8 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus AND b.deleted = false "
+                "WHERE b.id = :bottleId AND b.pingPongStatus IN :pingPongStatus AND b.deleted = false " +
+                "AND b.targetUser.deleted = false AND b.sourceUser.deleted = false "
     )
     fun findByIdAndStatusAndDeletedFalse(
         @Param("bottleId") bottleId: Long,

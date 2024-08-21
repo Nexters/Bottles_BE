@@ -1,6 +1,9 @@
 package com.nexters.bottles.api.auth.controller
 
 import com.nexters.bottles.api.auth.facade.AuthFacade
+import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
@@ -18,6 +21,7 @@ import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.global.resolver.RefreshTokenUserId
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
 import io.swagger.annotations.ApiOperation
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -35,6 +39,12 @@ class AuthController(
         return authFacade.kakaoSignInUp(kakaoSignInUpRequest)
     }
 
+    @ApiOperation("애플 회원가입/로그인으로 엑세스 토큰 얻기")
+    @PostMapping("/apple")
+    fun appleSignInUp(@RequestBody appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {
+        return authFacade.appleSignInUp(appleSignInUpRequest)
+    }
+
     @ApiOperation("토큰 재발행")
     @PostMapping("/refresh")
     @RefreshAuthRequired
@@ -45,7 +55,7 @@ class AuthController(
     @ApiOperation("일반 회원가입")
     @PostMapping("/signup")
     fun signUp(@RequestBody signUpRequest: SignUpRequest): SignUpResponse {
-        return authFacade.signUp(signUpRequest)
+        return authFacade.smsSignUp(signUpRequest)
     }
 
     @ApiOperation("문자 인증 발송 요청하기")
@@ -69,14 +79,21 @@ class AuthController(
     @ApiOperation("로그아웃하기")
     @PostMapping("/logout")
     @AuthRequired
-    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String, @RequestBody logoutRequest: LogoutRequest) {
+    fun logout(@AuthUserId userId: Long, @AccessToken accessToken: String, @RequestBody logoutRequest: LogoutRequest?) {
         authFacade.logout(userId, accessToken, logoutRequest)
     }
 
     @ApiOperation("회원 탈퇴하기")
     @PostMapping("/delete")
     @AuthRequired
-    fun delete(@AuthUserId userId: Long) {
-        authFacade.delete(userId)
+    fun delete(@AuthUserId userId: Long, @AccessToken accessToken: String) {
+        authFacade.delete(userId, accessToken)
+    }
+
+    @ApiOperation("애플 로그인 탈퇴를 위한 client secret 값 조회하기")
+    @GetMapping("/apple/revoke")
+    @AuthRequired
+    fun getAppleClientSecret(): AppleRevokeResponse {
+        return authFacade.getAppleClientSecret()
     }
 }

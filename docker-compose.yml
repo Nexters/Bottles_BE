@@ -32,10 +32,16 @@ services:
       IS_MATCHING_ACTIVE: ${IS_MATCHING_ACTIVE}
       FCM_ADMIN_KEY_PATH: /app/config/bottles-firebase-adminsdk.json
       SUPER_USER_NUMBER: ${SUPER_USER_NUMBER}
+      SUPER_USER_NUMBER_V2: ${SUPER_USER_NUMBER_V2}
+      APPLE_KEY_ID: ${APPLE_KEY_ID}
+      APPLE_KEY_ID_PATH: /api/config/apple-auth-key.p8
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID}
     ports:
       - "8080:8080"
     volumes:
       - ${FCM_ADMIN_KEY_PATH}:/app/config/bottles-firebase-adminsdk.json
+      - ${APPLE_KEY_ID_PATH}:/api/config/apple-auth-key.p8
     depends_on:
       - db
 

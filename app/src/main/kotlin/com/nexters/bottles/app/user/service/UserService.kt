@@ -8,10 +8,12 @@ import com.nexters.bottles.app.user.repository.UserRepository
 import com.nexters.bottles.app.user.service.dto.KakaoUserInfoResponse
 import com.nexters.bottles.app.user.service.dto.SignInUpDto
 import com.nexters.bottles.app.user.service.dto.SignUpRequest
+import com.nexters.bottles.app.user.service.dto.SignUpRequestV2
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -46,6 +48,22 @@ class UserService(
     }
 
     @Transactional
+    fun findAppleUserOrSignUp(appleAccountId: String): SignInUpDto {
+        // TODO 이미 카카오 회원가입을 한 사람은 가입하지 못하게 막아야 됨 -> 프로필 등록 시 전화번호가 이미 존재하면 막기?
+        userRepository.findByAppleAccountIdAndDeletedFalse(appleAccountId)?.let { user ->
+            return SignInUpDto(userId = user.id, isSignUp = false)
+        } ?: run {
+            val user = userRepository.save(
+                User(
+                    signUpType = SignUpType.APPLE,
+                    appleAccountId = appleAccountId
+                )
+            )
+            return SignInUpDto(userId = user.id, isSignUp = true)
+        }
+    }
+
+    @Transactional
     fun signUp(signUpRequest: SignUpRequest): User {
         userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
             throw ConflictException("이미 가입한 회원이에요")
@@ -62,9 +80,30 @@ class UserService(
         }
     }
 
+    @Transactional
+    fun signInUpV2(signUpRequest: SignUpRequestV2): User {
+        userRepository.findByPhoneNumberAndDeletedFalse(signUpRequest.phoneNumber)?.let {
+            return it
+        } ?: run {
+            return userRepository.save(
+                User(
+                    birthdate = LocalDate.now(),
+                    name = "보틀",
+                    phoneNumber = signUpRequest.phoneNumber,
+                    signUpType = SignUpType.NORMAL
+                )
+            )
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun findByPhoneNumberNotDeletedUser(phoneNumber: String): User? {
+        return userRepository.findByPhoneNumberAndDeletedFalse(phoneNumber)
+    }
+
     @Transactional(readOnly = true)
     fun findByPhoneNumber(phoneNumber: String): User? {
-        return userRepository.findByPhoneNumberAndDeletedFalse(phoneNumber)
+        return userRepository.findByPhoneNumber(phoneNumber)
     }
 
     @Transactional(readOnly = true)
@@ -97,6 +136,27 @@ class UserService(
     fun updateLastActivatedAt(userId: Long, basedAt: LocalDateTime) {
         userRepository.findByIdOrNull(userId)?.let { user ->
             user.updateLastActivatedAt(basedAt)
+        }
+    }
+
+    @Transactional
+    fun signUpProfile(userId: Long, name: String, birthDate: LocalDate, gender: Gender) {
+        userRepository.findByIdOrNull(userId)?.let { user ->
+            user.name = name
+            user.birthdate = birthDate
+            user.gender = gender
+        } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    }
+
+    @Transactional
+    fun resetUser(id: Long) {
+        userRepository.findByIdOrNull(id)?.let {
+            it.deleted = false
+            it.name = "보틀"
+            it.city = null
+            it.state = null
+            it.kakaoId = null
+            it.deletedAt = null
         }
     }
 }

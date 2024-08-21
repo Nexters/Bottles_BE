@@ -1,5 +1,7 @@
 package com.nexters.bottles.api.auth.component
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.nexters.bottles.app.auth.domain.BlackList
 import com.nexters.bottles.app.auth.service.BlackListService
 import com.nexters.bottles.app.auth.service.RefreshTokenService
@@ -9,11 +11,13 @@ import io.jsonwebtoken.security.Keys
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.security.PublicKey
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import javax.servlet.http.HttpServletRequest
+
 
 @Component
 class JwtTokenProvider(
@@ -31,6 +35,7 @@ class JwtTokenProvider(
 
     private val refreshTokenService: RefreshTokenService,
     private val blackListService: BlackListService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     private val accessKey = Keys.hmacShaKeyFor(accessTokenSecretKey.toByteArray())
@@ -98,6 +103,25 @@ class JwtTokenProvider(
         } catch (e: Exception) {
             null
         }
+    }
+
+    fun parseHeaders(token: String): Map<String, String> {
+        val header = token.split(".")[0]
+        val decoder = Base64.getUrlDecoder()
+        val decodedHeader = String(decoder.decode(header))
+        return try {
+            objectMapper.readValue(decodedHeader)
+        } catch (e: Exception) {
+            throw RuntimeException("Error decoding token payload", e)
+        }
+    }
+
+    fun getAppleTokenClaims(token: String, publicKey: PublicKey): Claims {
+        return Jwts.parserBuilder()
+            .setSigningKey(publicKey)
+            .build()
+            .parseClaimsJws(token)
+            .body
     }
 }
 
