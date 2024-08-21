@@ -68,7 +68,7 @@ class UserProfileController(
         return profileFacade.existIntroduction(userId)
     }
 
-    @ApiOperation("유저 이름 (정보 조회)")
+    @ApiOperation("유저 이름 및 가입 상태 조회")
     @GetMapping("/info")
     @AuthRequired
     fun findInfo(@AuthUserId userId: Long): UserInfoResponse {
