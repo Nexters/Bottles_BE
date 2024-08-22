@@ -1,3 +1,9 @@
+# 서비스 다운로드
+iOS: https://url.kr/cps1z2
+Android: 베타 테스트 중 (출시 후 게시 예정)
+
+![img.png](img.png)
+
 # Infrastructure
 
 <img src="https://github.com/user-attachments/assets/d0ad4c6c-e902-4670-86f0-d5b1b9a3dbce"/>

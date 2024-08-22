@@ -71,7 +71,7 @@ class UserProfileFacade(
         profileService.saveIntroduction(userId, registerIntroductionRequest.introduction)
     }
 
-    fun getProfile(userId: Long): UserProfileResponse {
+    fun getMyProfile(userId: Long): UserProfileResponse {
 
         val userProfile = profileService.findUserProfile(userId)
         val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
@@ -137,7 +137,7 @@ class UserProfileFacade(
         return ExistIntroductionResponse(isExist = userProfile?.introduction?.isNotEmpty() ?: false)
     }
 
-    fun findUserInfo(userId: Long): UserInfoResponse {
+    fun findMyInfo(userId: Long): UserInfoResponse {
         val user = userService.findByIdAndNotDeleted(userId)
         return UserInfoResponse(name = user.name, signInUpStep = getSignInUpStep(user))
     }

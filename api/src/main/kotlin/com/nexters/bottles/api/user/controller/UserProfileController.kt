@@ -50,7 +50,7 @@ class UserProfileController(
     @GetMapping
     @AuthRequired
     fun getProfile(@AuthUserId userId: Long): UserProfileResponse {
-        return profileFacade.getProfile(userId)
+        return profileFacade.getMyProfile(userId)
     }
 
     @ApiOperation("마이페이지 사진 등록하기")
@@ -72,7 +72,7 @@ class UserProfileController(
     @GetMapping("/info")
     @AuthRequired
     fun findInfo(@AuthUserId userId: Long): UserInfoResponse {
-        return profileFacade.findUserInfo(userId)
+        return profileFacade.findMyInfo(userId)
     }
 
     @ApiOperation("유저 프로필 상태 조회")

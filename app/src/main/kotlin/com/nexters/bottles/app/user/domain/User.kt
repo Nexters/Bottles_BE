@@ -75,4 +75,13 @@ class User(
     fun isNotRegisterProfile(): Boolean {
         return userProfile?.isNotRegisterIntroductionOrImage() ?: true
     }
+
+    fun getMaskedName(): String {
+        val currentName = name ?: return ""
+        return when {
+            currentName.length <= 1 -> currentName
+            currentName.length == 2 -> currentName[0] + "*"
+            else -> currentName.first() + "*".repeat(currentName.length - 2) + currentName.last()
+        }
+    }
 }

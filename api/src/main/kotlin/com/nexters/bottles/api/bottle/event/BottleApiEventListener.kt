@@ -67,7 +67,7 @@ class BottleApiEventListener(
     }
 
     private fun findOtherUserName(userId: Long, bottle: Bottle): String? {
-        return if (userId == bottle.sourceUser.id) bottle.targetUser.name else bottle.sourceUser.name
+        return if (userId == bottle.sourceUser.id) bottle.targetUser.getMaskedName() else bottle.sourceUser.getMaskedName()
     }
 
     @Async
@@ -94,8 +94,8 @@ class BottleApiEventListener(
 
         fcmTokenService.findAllByUserId(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
-                title = "${user.name}님이 답변을 완료했어요 👀",
-                body = "두근두근, ${user.name}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요!"
+                title = "${user.getMaskedName()}님이 답변을 완료했어요 👀",
+                body = "두근두근, ${user.getMaskedName()}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요!"
             )
             fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
@@ -110,8 +110,8 @@ class BottleApiEventListener(
 
         fcmTokenService.findAllByUserId(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
-                title = "${user.name}님이 사진 공개 여부를 선택했어요 📸",
-                body = "두근두근, ${user.name}님의 선택을 확인해주세요!"
+                title = "${user.getMaskedName()}님이 사진 공개 여부를 선택했어요 📸",
+                body = "두근두근, ${user.getMaskedName()}님의 선택을 확인해주세요!"
             )
             fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
@@ -126,8 +126,8 @@ class BottleApiEventListener(
 
         fcmTokenService.findAllByUserId(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
-                title = "${user.name}님이 최종 선택을 완료했어요 💘",
-                body = "두근두근, ${user.name}님의 선택을 확인해주세요!"
+                title = "${user.getMaskedName()}님이 최종 선택을 완료했어요 💘",
+                body = "두근두근, ${user.getMaskedName()}님의 선택을 확인해주세요!"
             )
             fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
