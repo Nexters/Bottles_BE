@@ -8,11 +8,9 @@ services:
     volumes:
       - /etc/nginx/conf.d/${SERVER_NGINX_CONF}:/etc/nginx/conf.d/${SERVER_NGINX_CONF}
       - /etc/letsencrypt:/etc/letsencrypt
-    depends_on:
-      - springboot
 
-  springboot:
-    container_name: springboot
+  springboot_blue:
+    container_name: springboot_blue
     image: ${DOCKER_USERNAME}/bottles-api:${DOCKER_TAG}
     environment:
       TZ: Asia/Seoul
@@ -38,7 +36,41 @@ services:
       APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
       APPLE_TEAM_ID: ${APPLE_TEAM_ID}
     ports:
-      - "8080:8080"
+      - "8080"
+    volumes:
+      - ${FCM_ADMIN_KEY_PATH}:/app/config/bottles-firebase-adminsdk.json
+      - ${APPLE_KEY_ID_PATH}:/api/config/apple-auth-key.p8
+    depends_on:
+      - db
+
+  springboot_green:
+    container_name: springboot_green
+    image: ${DOCKER_USERNAME}/bottles-api:${DOCKER_TAG}
+    environment:
+      TZ: Asia/Seoul
+      DB_USER_NAME: ${DB_USER_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_REGION: ${S3_REGION}
+      ACCESS_TOKEN_SECRET_KEY: ${ACCESS_TOKEN_SECRET_KEY}
+      REFRESH_TOKEN_SECRET_KEY: ${REFRESH_TOKEN_SECRET_KEY}
+      NAVER_SMS_SERVICE_ID: ${NAVER_SMS_SERVICE_ID}
+      NAVER_SMS_API_KEY: ${NAVER_SMS_API_KEY}
+      NAVER_SMS_SECRET_KEY: ${NAVER_SMS_SECRET_KEY}
+      NAVER_SMS_SENDER_PHONE: ${NAVER_SMS_SENDER_PHONE}
+      IS_MATCHING_ACTIVE: ${IS_MATCHING_ACTIVE}
+      FCM_ADMIN_KEY_PATH: /app/config/bottles-firebase-adminsdk.json
+      SUPER_USER_NUMBER: ${SUPER_USER_NUMBER}
+      SUPER_USER_NUMBER_V2: ${SUPER_USER_NUMBER_V2}
+      APPLE_KEY_ID: ${APPLE_KEY_ID}
+      APPLE_KEY_ID_PATH: /api/config/apple-auth-key.p8
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID}
+    ports:
+      - "8080"
     volumes:
       - ${FCM_ADMIN_KEY_PATH}:/app/config/bottles-firebase-adminsdk.json
       - ${APPLE_KEY_ID_PATH}:/api/config/apple-auth-key.p8

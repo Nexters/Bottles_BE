@@ -6,7 +6,39 @@ sed 's/^export //' /home/${SERVER_USER_NAME}/deploy/env_vars.sh > /home/${SERVER
 
 sudo docker pull ${DOCKER_USERNAME}/bottles-api:${DOCKER_TAG}
 cd ../docker
-docker-compose up -d
+
+RUNNING_BLUE=$(sudo docker ps --filter "name=springboot_blue" --filter "status=running" -q)
+RUNNING_GREEN=$(sudo docker ps --filter "name=springboot_green" --filter "status=running" -q)
+
+if [ -n "RUNNING_BLUE" ]; then
+  AFTER_RUNNING_CONTAINER="springboot_green"
+  BEFORE_RUNNING_CONTAINER="springboot_blue"
+
+  echo "Blue 인스턴스가 실행 중입니다. Green 인스턴스를 배포합니다."
+  docker-compose up -d springboot_green mysql
+else
+  AFTER_RUNNING_CONTAINER="springboot_blue"
+  BEFORE_RUNNING_CONTAINER="springboot_green"
+
+  echo "Green 인스턴스가 실행 중입니다. Blue 인스턴스를 배포합니다."
+  docker-compose up -d springboot_blue mysql
+fi
+
+sleep 20
+
+if docker-compose ps $AFTER_RUNNING_CONTAINER | grep -q "Up"; then
+  docker-compose up -d nginx
+  sed '' /etc/nginx/conf.d/$AFTER_RUNNING_CONTAINER > /etc/nginx/conf.d/${SERVER_NGINX_CONF}
+  docker-compose restart nginx
+
+  echo "Nginx가 재시작되었습니다."
+
+  sleep 10
+
+  docker-compose stop $BEFORE_RUNNING_CONTAINER
+else
+  echo "Spring 컨테이너가 실행 중이 아닙니다. Nginx를 재시작하지 않습니다."
+fi
 
 # 중단된 컨테이너가 존재하는지 확인
 EXIT_CONTAINERS=$(docker-compose ps | grep 'Exit 1' | awk '{print $1}')
@@ -15,13 +47,6 @@ if [ -n "$EXIT_CONTAINERS" ]; then
   for CONTAINER in $EXIT_CONTAINERS; do
     ../deploy/notify_error.sh "$CONTAINER"
   done
-fi
-
-LATEST_TAG=${DOCKER_TAG}
-RUNNING_TAG=$(docker-compose ps --format "{{.Image}}" | grep "${DOCKER_USERNAME}/bottles-api" | awk -F: '{print $2}')
-
-if [ "$LATEST_TAG" != "$RUNNING_TAG" ]; then
-  ../deploy/notify_error.sh "bottles:$LATEST_TAG 배포를 실패했습니다.\n현재 bottles:$RUNNING_TAG 가 실행중입니다."
 fi
 
 sudo docker image prune -f
