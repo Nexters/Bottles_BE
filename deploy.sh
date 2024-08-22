@@ -15,13 +15,13 @@ if [ -n "RUNNING_BLUE" ]; then
   BEFORE_RUNNING_CONTAINER="springboot_blue"
 
   echo "Blue 인스턴스가 실행 중입니다. Green 인스턴스를 배포합니다."
-  docker-compose up -d springboot_green mysql
+  docker-compose up -d springboot_green db
 else
   AFTER_RUNNING_CONTAINER="springboot_blue"
   BEFORE_RUNNING_CONTAINER="springboot_green"
 
   echo "Green 인스턴스가 실행 중입니다. Blue 인스턴스를 배포합니다."
-  docker-compose up -d springboot_blue mysql
+  docker-compose up -d springboot_blue db
 fi
 
 sleep 20
