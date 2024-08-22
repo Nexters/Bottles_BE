@@ -10,7 +10,7 @@ cd ../docker
 RUNNING_BLUE=$(sudo docker ps --filter "name=springboot_blue" --filter "status=running" -q)
 RUNNING_GREEN=$(sudo docker ps --filter "name=springboot_green" --filter "status=running" -q)
 
-if [ -n "RUNNING_BLUE" ]; then
+if [ -n "$RUNNING_BLUE" ]; then
   AFTER_RUNNING_CONTAINER="springboot_green"
   BEFORE_RUNNING_CONTAINER="springboot_blue"
 
