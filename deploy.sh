@@ -29,15 +29,15 @@ sleep 20
 if docker-compose ps $AFTER_RUNNING_CONTAINER | grep -q "Up"; then
   docker-compose up -d nginx
   sed '' /etc/nginx/conf.d/$AFTER_RUNNING_CONTAINER > /etc/nginx/conf.d/${SERVER_NGINX_CONF}
-  docker-compose restart nginx
+  sudo docker exec nginx nginx -s reload
 
-  echo "Nginx가 재시작되었습니다."
+  echo "Nginx 설정을 변경했습니다."
 
   sleep 10
 
   docker-compose stop $BEFORE_RUNNING_CONTAINER
 else
-  echo "Spring 컨테이너가 실행 중이 아닙니다. Nginx를 재시작하지 않습니다."
+  echo "Spring 컨테이너가 실행 중이 아닙니다. Nginx 설정을 변경하지 않습니다."
 fi
 
 # 중단된 컨테이너가 존재하는지 확인
