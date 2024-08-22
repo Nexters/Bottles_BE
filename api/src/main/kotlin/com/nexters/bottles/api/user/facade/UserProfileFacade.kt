@@ -167,10 +167,10 @@ class UserProfileFacade(
 
     private fun getUserProfileStatus(userProfile: UserProfile?): UserProfileStatus {
         return when {
-            userProfile == null -> UserProfileStatus.EMPTY
-            userProfile.introduction.isNotEmpty() -> UserProfileStatus.INTRODUCE_DONE
-            userProfile.imageUrl != null -> UserProfileStatus.PHOTO_DONE
-            else -> UserProfileStatus.ONLY_PROFILE_CREATED
+            userProfile?.imageUrl != null -> UserProfileStatus.PHOTO_DONE
+            !userProfile?.introduction.isNullOrEmpty() -> UserProfileStatus.INTRODUCE_DONE
+            userProfile != null -> UserProfileStatus.ONLY_PROFILE_CREATED
+            else -> UserProfileStatus.EMPTY
         }
     }
 
