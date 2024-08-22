@@ -110,7 +110,7 @@ class BottleFacade(
         return BottleDto(
             id = bottle.id,
             userId = bottle.findOtherUserId(userId = userId),
-            userName = bottle.sourceUser.name,
+            userName = bottle.sourceUser.getMaskedName(),
             age = bottle.sourceUser.getKoreanAge(),
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
@@ -128,7 +128,7 @@ class BottleFacade(
         return BottleDetailResponse(
             id = bottle.id,
             userId = bottle.findOtherUserId(userId),
-            userName = bottle.sourceUser.name,
+            userName = bottle.sourceUser.getMaskedName(),
             age = bottle.sourceUser.getKoreanAge(),
             introduction = bottle.sourceUser.userProfile?.introduction,
             profileSelect = bottle.sourceUser.userProfile?.profileSelect,
@@ -192,7 +192,7 @@ class BottleFacade(
         return PingPongBottleDto(
             id = bottle.id,
             isRead = otherUserLetter.isReadByOtherUser,
-            userName = otherUser.name,
+            userName = otherUser.getMaskedName(),
             userId = otherUser.id,
             age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
@@ -254,7 +254,7 @@ class BottleFacade(
             deleteAfterDays = getDeleteAfterDays(bottle),
             userProfile = PingPongUserProfile(
                 userId = otherUser.id,
-                userName = otherUser.name,
+                userName = otherUser.getMaskedName(),
                 age = otherUser.getKoreanAge(),
                 profileSelect = otherUser.userProfile?.profileSelect,
                 userImageUrl = otherUser.userProfile?.blurredImageUrl
