@@ -13,7 +13,7 @@ class FcmTokenService(
 
     @Transactional
     fun registerFcmToken(userId: Long, token: String) {
-        fcmTokenRepository.findByUserIdAndToken(userId, token) ?: {
+        fcmTokenRepository.findByUserIdAndToken(userId, token) ?: run {
             val fcmToken = FcmToken(userId = userId, token = token)
             fcmTokenRepository.save(fcmToken)
         }
