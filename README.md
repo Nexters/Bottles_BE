@@ -78,7 +78,23 @@ vm options: `-Duser.timezone=Asia/Seoul`
 
 <table>
 <tr>
-<td align="center"><a href="https://github.com/injoon2019"><img src="https://avatars.githubusercontent.com/u/46641538?v=4" width="100px;" alt=""/><br /><sub><b>injoon2019</b></sub></a></td>
-<td align="center"><a href="https://github.com/miseongk"><img src="https://avatars.githubusercontent.com/u/39994337?v=4" width="100px;" alt=""/><br /><sub><b>miseongk</b></sub></a></td>
+  <td align="center">
+    <a href="https://github.com/injoon2019">
+      <img src="https://avatars.githubusercontent.com/u/46641538?v=4" width="150">
+    </a>
+  </td>
+  <td align="center">
+    <a href="https://github.com/miseongk">
+      <img src="https://avatars.githubusercontent.com/u/39994337?v=4" width="150">
+    </a>
+  </td>
+</tr>
+<tr>
+  <td align="center">
+    <p align="center"><a href="https://github.com/ham2174">injoon2019</a></p>
+  </td>
+  <td align="center">
+    <p align="center"><a href="https://github.com/injoon2019">miseongk</a></p>
+  </td>
 </tr>
 </table>
