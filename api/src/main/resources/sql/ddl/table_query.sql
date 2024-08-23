@@ -21,14 +21,13 @@ CREATE TABLE user
 
 CREATE TABLE user_profile
 (
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id           BIGINT                             NOT NULL,
-    profile_select    JSON,
-    introduction      JSON,
-    image_url         VARCHAR(2048),
-    blurred_image_url VARCHAR(2048),
-    created_at        DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id        BIGINT                             NOT NULL,
+    profile_select JSON,
+    introduction   JSON,
+    image_url      VARCHAR(2048),
+    created_at     DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_user_id ON user_profile (user_id);
 

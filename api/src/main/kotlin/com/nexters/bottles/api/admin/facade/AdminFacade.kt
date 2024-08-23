@@ -179,7 +179,6 @@ class AdminFacade(
                 |주말엔 책을 읽거나 맛집을 찾아 다니며 여유를 즐기고, 친구들과 소소한 모임으로 충전해요. 일상에서 소소한 행복을 찾아요.""".trimMargin()
                 )
             ),
-            blurredImageUrl = null,
             imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
         )
 
@@ -207,7 +206,6 @@ class AdminFacade(
                 |주말엔 책을 읽거나 맛집을 찾아 다니며 여유를 즐기고, 친구들과 소소한 모임으로 충전해요. 일상에서 소소한 행복을 찾아요.""".trimMargin()
                 )
             ),
-            blurredImageUrl = null,
             imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
         )
         val mockFemaleUserProfile2 = UserProfile(
@@ -234,7 +232,6 @@ class AdminFacade(
                 |주말엔 책을 읽거나 맛집을 찾아 다니며 여유를 즐기고, 친구들과 소소한 모임으로 충전해요. 일상에서 소소한 행복을 찾아요.""".trimMargin()
                 )
             ),
-            blurredImageUrl = null,
             imageUrl = "https://bottles-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%BC.jpeg_20240730233759_1"
         )
     }
