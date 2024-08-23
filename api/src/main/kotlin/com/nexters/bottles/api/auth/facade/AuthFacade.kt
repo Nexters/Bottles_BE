@@ -14,7 +14,8 @@ import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
 import com.nexters.bottles.api.auth.facade.dto.MessageDto
-import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
+import com.nexters.bottles.api.auth.facade.dto.ReissueTokenRequest
+import com.nexters.bottles.api.auth.facade.dto.ReissueTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
@@ -108,11 +109,15 @@ class AuthFacade(
         )
     }
 
-    fun refreshToken(userId: Long): RefreshAccessTokenResponse {
+    fun reissueToken(userId: Long, reissueTokenRequest: ReissueTokenRequest?): ReissueTokenResponse {
         val accessToken = jwtTokenProvider.createAccessToken(userId)
         val refreshToken = jwtTokenProvider.upsertRefreshToken(userId)
 
-        return RefreshAccessTokenResponse(accessToken = accessToken, refreshToken = refreshToken)
+        reissueTokenRequest?.fcmDeviceToken?.let {
+            fcmTokenService.registerFcmToken(userId, reissueTokenRequest.fcmDeviceToken)
+        }
+
+        return ReissueTokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
     fun smsSignUp(signUpRequest: SignUpRequest): SignUpResponse {
