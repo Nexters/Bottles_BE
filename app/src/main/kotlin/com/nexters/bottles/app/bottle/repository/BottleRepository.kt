@@ -1,7 +1,6 @@
 package com.nexters.bottles.app.bottle.repository
 
 import com.nexters.bottles.app.bottle.domain.Bottle
-import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.user.domain.User
 import org.springframework.data.jpa.repository.JpaRepository
@@ -71,10 +70,15 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     fun findAllBySourceUser(user: User): List<Bottle>
 
-    fun findByTargetUserAndBottleStatusAndCreatedAtAfter(
-        targetUser: User,
-        bottleStatus: BottleStatus,
-        matchingTime: LocalDateTime
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE (b.targetUser = :user AND b.targetUser.deleted = false) " +
+                "OR (b.sourceUser = :user AND b.sourceUser.deleted = false ) " +
+                "AND b.deleted = false AND b.expiredAt > :matchingTime"
+    )
+    fun findByUserAndExpiredAtAfter(
+        @Param("user") user: User,
+        @Param("matchingTime") matchingTime: LocalDateTime
     ): List<Bottle>
 
     @Modifying
