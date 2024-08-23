@@ -1,5 +1,6 @@
 package com.nexters.bottles.app.user.service
 
+import com.nexters.bottles.app.user.component.event.dto.IntroductionSaveEventDto
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
@@ -7,6 +8,7 @@ import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserProfileService(
     private val profileRepository: UserProfileRepository,
     private val userRepository: UserRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -47,7 +50,11 @@ class UserProfileService(
                     user = user,
                     introduction = introduction
                 )
-            )
+            ).also {
+                applicationEventPublisher.publishEvent(
+                    IntroductionSaveEventDto(userId = userId)
+                )
+            }
         }
     }
 
