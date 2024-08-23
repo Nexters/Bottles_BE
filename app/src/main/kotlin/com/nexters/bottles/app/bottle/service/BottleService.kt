@@ -159,9 +159,8 @@ class BottleService(
         if (user.isMatchInactive()) return null
 
         val matchingTime = getMatchingTime(matchingHour)
-        val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
-            targetUser = user,
-            bottleStatus = BottleStatus.RANDOM,
+        val todayMatchingBottle = bottleRepository.findByUserAndExpiredAtAfter(
+            user = user,
             matchingTime = matchingTime
         )
         if (todayMatchingBottle.isNotEmpty()) return null
