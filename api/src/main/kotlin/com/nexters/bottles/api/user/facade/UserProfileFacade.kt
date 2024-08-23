@@ -8,7 +8,7 @@ import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatus
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatusResponse
-import com.nexters.bottles.app.common.component.ImageUploader
+import com.nexters.bottles.app.common.component.FileService
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
 class UserProfileFacade(
     private val profileService: UserProfileService,
     private val userService: UserService,
-    private val imageUploader: ImageUploader,
+    private val fileService: FileService
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -120,10 +120,9 @@ class UserProfileFacade(
     fun uploadImage(userId: Long, file: MultipartFile) {
         val me = userService.findByIdAndNotDeleted(userId)
         val path = makePathWithUserId(file, me.id)
-        val originalImageUrl = imageUploader.upload(file, path);
-        val blurredImageUrl = imageUploader.uploadWithBlur(file, path);
+        val originalImageUrl = fileService.upload(file, path)
 
-        profileService.uploadImageUrl(me, originalImageUrl.toString(), blurredImageUrl.toString())
+        profileService.uploadImageUrl(me, originalImageUrl.toString())
     }
 
     private fun makePathWithUserId(
