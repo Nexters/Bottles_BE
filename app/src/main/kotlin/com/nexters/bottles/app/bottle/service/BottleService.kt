@@ -220,4 +220,22 @@ class BottleService(
         bottle.stop(stoppedUser, LocalDateTime.now())
         return bottle
     }
+
+    @Transactional
+    fun matchFirstRandomBottle(user: User): Bottle? {
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
+        if (usersCanBeMatched.isEmpty()) return null
+
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
+
+        val now = LocalDateTime.now()
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1))
+        val savedBottle = bottleRepository.save(bottle)
+
+        user.updateLastRandomMatchedAt(now)
+
+        return savedBottle
+    }
 }
