@@ -45,10 +45,10 @@ class BottleApiEventListener(
         val bottle = bottleService.findBottleById(event.bottleId)
         when {
             bottle.isSentLikeMessageAndNotStart() -> {
-                fcmTokenService.findAllByUserId(bottle.sourceUser.id).forEach {
+                fcmTokenService.findAllByUserId(bottle.targetUser.id).forEach {
                     val fcmNotification = FcmNotification(
-                        title = "누군가 ${bottle.sourceUser.name}님에게 편지를 보냈어요! 💘",
-                        body = "${bottle.sourceUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
+                        title = "누군가 ${bottle.targetUser.name}님에게 편지를 보냈어요! 💘",
+                        body = "${bottle.targetUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
                     )
                     fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                 }
@@ -79,7 +79,7 @@ class BottleApiEventListener(
         fcmTokenService.findAllByUserId(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
                 title = "아쉬워요! 다른 보틀을 열어볼까요? 😢",
-                body = "${bottle.stoppedUser!!.name}님이 대화를 중단했어요.\n대화는 3일 뒤에 삭제돼요."
+                body = "${bottle.stoppedUser!!.getMaskedName()}님이 대화를 중단했어요.\n대화는 3일 뒤에 삭제돼요."
             )
             fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
