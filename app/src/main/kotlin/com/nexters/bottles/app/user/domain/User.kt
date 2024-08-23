@@ -50,6 +50,8 @@ class User(
     var lastActivatedAt: LocalDateTime = LocalDateTime.now(),
 
     var isMatchActivated: Boolean = true,
+
+    var lastRandomMatchedAt: LocalDateTime = LocalDateTime.now(),
 ) : BaseEntity() {
 
     fun getKoreanAge(): Int {
@@ -83,5 +85,9 @@ class User(
             currentName.length == 2 -> currentName[0] + "*"
             else -> currentName.first() + "*".repeat(currentName.length - 2) + currentName.last()
         }
+    }
+
+    fun updateLastRandomMatchedAt(basedAt: LocalDateTime) {
+        this.lastRandomMatchedAt = basedAt
     }
 }

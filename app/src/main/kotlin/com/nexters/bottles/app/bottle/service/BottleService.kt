@@ -159,13 +159,8 @@ class BottleService(
         if (user.isMatchInactive()) return null
 
         val matchingTime = getMatchingTime(matchingHour)
-        val todayMatchingBottle = bottleRepository.findByUserAndExpiredAtAfter(
-            user = user,
-            matchingTime = matchingTime
-        )
-        if (todayMatchingBottle.isNotEmpty()) return null
+        if (user.lastRandomMatchedAt > matchingTime) return null
 
-        log.info { "userId: ${user.id}, gender: ${user.gender}" }
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
         if (usersCanBeMatched.isEmpty()) return null
 
@@ -174,7 +169,11 @@ class BottleService(
             ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
         val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = matchingTime.plusDays(1))
-        return bottleRepository.save(bottle)
+        val savedBottle = bottleRepository.save(bottle)
+
+        user.updateLastRandomMatchedAt(LocalDateTime.now())
+
+        return savedBottle
     }
 
     private fun getMatchingTime(matchingHour: Int): LocalDateTime {

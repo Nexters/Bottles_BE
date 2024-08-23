@@ -114,7 +114,7 @@ class BottleFacade(
             age = bottle.sourceUser.getKoreanAge(),
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
-            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
+            userImageUrl = bottle.sourceUser.userProfile?.imageUrl,
             expiredAt = bottle.expiredAt
         )
     }
@@ -133,7 +133,7 @@ class BottleFacade(
             introduction = bottle.sourceUser.userProfile?.introduction,
             profileSelect = bottle.sourceUser.userProfile?.profileSelect,
             likeMessage = bottle.likeMessage,
-            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl
+            userImageUrl = bottle.sourceUser.userProfile?.imageUrl
         )
     }
 
@@ -197,7 +197,7 @@ class BottleFacade(
             age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
-            userImageUrl = otherUser.userProfile?.blurredImageUrl,
+            userImageUrl = otherUser.userProfile?.imageUrl,
         )
     }
 
@@ -257,7 +257,7 @@ class BottleFacade(
                 userName = otherUser.getMaskedName(),
                 age = otherUser.getKoreanAge(),
                 profileSelect = otherUser.userProfile?.profileSelect,
-                userImageUrl = otherUser.userProfile?.blurredImageUrl
+                userImageUrl = otherUser.userProfile?.imageUrl
             ),
             introduction = otherUser.userProfile?.introduction,
             letters = getPingPongLetters(myLetter = myLetter, otherLetter = otherLetter),
