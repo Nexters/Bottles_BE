@@ -70,17 +70,6 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     fun findAllBySourceUser(user: User): List<Bottle>
 
-    @Query(
-        value = "SELECT b FROM Bottle b " +
-                "WHERE (b.targetUser = :user AND b.targetUser.deleted = false) " +
-                "OR (b.sourceUser = :user AND b.sourceUser.deleted = false ) " +
-                "AND b.deleted = false AND b.expiredAt > :matchingTime"
-    )
-    fun findByUserAndExpiredAtAfter(
-        @Param("user") user: User,
-        @Param("matchingTime") matchingTime: LocalDateTime
-    ): List<Bottle>
-
     @Modifying
     @Query(value = "UPDATE Bottle b SET b.deleted = true, b.deleted = :deletedAt WHERE b.stoppedAt < :stoppedAt")
     fun updateAllDeletedTrueAndDeletedAtByStoppedAtBefore(
