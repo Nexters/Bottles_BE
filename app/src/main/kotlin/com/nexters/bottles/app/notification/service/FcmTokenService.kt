@@ -22,7 +22,7 @@ class FcmTokenService(
     @Transactional(readOnly = true)
     fun findByUsers(users: List<User>): List<FcmToken> {
         return users.flatMap {
-            fcmTokenRepository.findAllByUserId(it.id)
+            fcmTokenRepository.findAllByUserIdAndTokenNotBlank(it.id)
         }
     }
 
@@ -38,11 +38,11 @@ class FcmTokenService(
 
     @Transactional(readOnly = true)
     fun findAllByUserId(userId: Long): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserId(userId)
+        return fcmTokenRepository.findAllByUserIdAndTokenNotBlank(userId)
     }
 
     @Transactional(readOnly = true)
     fun findAllByUserIds(userIds: List<Long>): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserIdIn(userIds)
+        return fcmTokenRepository.findAllByUserIdInAndTokenNotBlank(userIds)
     }
 }
