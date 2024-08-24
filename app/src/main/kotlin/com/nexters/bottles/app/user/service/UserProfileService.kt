@@ -41,20 +41,21 @@ class UserProfileService(
     @Transactional
     fun saveIntroduction(userId: Long, introduction: List<QuestionAndAnswer>) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-
         profileRepository.findByUserId(user.id)?.let {
+            val isFirstRegisterIntroduction = it.introduction.isEmpty()
             it.introduction = introduction
+            if (isFirstRegisterIntroduction) {
+                applicationEventPublisher.publishEvent(
+                    IntroductionSaveEventDto(userId = userId)
+                )
+            }
         } ?: run {
             profileRepository.save(
                 UserProfile(
                     user = user,
                     introduction = introduction
                 )
-            ).also {
-                applicationEventPublisher.publishEvent(
-                    IntroductionSaveEventDto(userId = userId)
-                )
-            }
+            )
         }
     }
 
