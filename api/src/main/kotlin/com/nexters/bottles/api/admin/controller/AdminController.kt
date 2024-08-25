@@ -1,10 +1,7 @@
 package com.nexters.bottles.api.admin.controller
 
 import com.nexters.bottles.api.admin.facade.AdminFacade
-import com.nexters.bottles.api.admin.facade.dto.CreateCustomTokenRequest
-import com.nexters.bottles.api.admin.facade.dto.CustomTokenResponse
-import com.nexters.bottles.api.admin.facade.dto.ExpireTokenRequest
-import com.nexters.bottles.api.admin.facade.dto.ForceAfterProfileResponse
+import com.nexters.bottles.api.admin.facade.dto.*
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
@@ -67,5 +64,13 @@ class AdminController(
         @RequestBody expireTokenRequest: ExpireTokenRequest
     ) {
         return adminFacade.expireToken(expireTokenRequest, false)
+    }
+
+    @ApiOperation("FCM 테스트 API")
+    @PostMapping("/test/fcm")
+    fun testFcm(
+        @RequestBody fcmTestRequest: FcmTestRequest
+    ): String? {
+        return adminFacade.testFcm(fcmTestRequest.fcmToken)
     }
 }

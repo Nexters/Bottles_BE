@@ -11,6 +11,8 @@ import com.nexters.bottles.api.user.facade.dto.RegionDto
 import com.nexters.bottles.app.admin.service.AdminService
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
+import com.nexters.bottles.app.notification.component.FcmClient
+import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
@@ -27,6 +29,7 @@ class AdminFacade(
     private val adminService: AdminService,
     private val jwtTokenProvider: JwtTokenProvider,
     private val testJwtTokenProvider: TestJwtTokenProvider,
+    private val fcmClient: FcmClient,
 ) {
 
     fun createCustomValidityToken(
@@ -118,6 +121,14 @@ class AdminFacade(
         adminService.cleanUpMockUpData(mockMaleUser)
         adminService.cleanUpMockUpData(mockFemaleUser1)
         adminService.cleanUpMockUpData(mockFemaleUser2)
+    }
+
+    fun testFcm(fcmToken: String,): String? {
+        val fcmNotification = FcmNotification(
+            title = "좋은 하루 되세요",
+            body = "테스트입니다"
+        )
+        return fcmClient.sendNotificationTo(userToken = fcmToken, fcmNotification = fcmNotification)
     }
 
     companion object {

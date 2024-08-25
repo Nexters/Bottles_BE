@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component
 @Component
 class FcmClient {
 
-    fun sendNotificationTo(userToken: String, fcmNotification: FcmNotification) {
+    fun sendNotificationTo(userToken: String, fcmNotification: FcmNotification): String? {
         val notification = makeNotification(fcmNotification)
         val message = Message.builder()
             .setNotification(notification)
             .setToken(userToken)
             .build()
-        val response = FirebaseMessaging.getInstance().send(message)
+        return FirebaseMessaging.getInstance().send(message)
     }
 
     fun sendNotificationAll(userTokens: List<String>, fcmNotification: FcmNotification) {
