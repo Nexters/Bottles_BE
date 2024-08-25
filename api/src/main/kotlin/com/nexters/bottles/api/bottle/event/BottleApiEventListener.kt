@@ -49,11 +49,11 @@ class BottleApiEventListener(
         when {
             bottle.isSentLikeMessageAndNotStart() -> {
                 val fcmNotification = FcmNotification(
-                    title = "누군가 ${bottle.sourceUser.name}님에게 편지를 보냈어요! 💘",
-                    body = "${bottle.sourceUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
+                    title = "누군가 ${bottle.targetUser.name}님에게 편지를 보냈어요! 💘",
+                    body = "${bottle.targetUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
                 )
 
-                fcmTokenService.findAllByUserIdAndTokenNotBlank(bottle.sourceUser.id).forEach {
+                fcmTokenService.findAllByUserIdAndTokenNotBlank(bottle.targetUser.id).forEach {
                     fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                     log.info { "[BottleAcceptEventDto] 호감 보냄 bottleId: ${bottle.id} targetUserId: ${bottle.targetUser.id} sourceUserId: ${bottle.sourceUser.id} sourceUserToken: ${it.token}" }
                 }
