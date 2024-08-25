@@ -53,19 +53,19 @@ class BottleApiEventListener(
                     body = "${bottle.sourceUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
                 )
 
-                fcmTokenService.findAllByUserId(bottle.sourceUser.id).forEach {
-                    //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                fcmTokenService.findAllByUserIdAndTokenNotBlank(bottle.sourceUser.id).forEach {
+                    fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                     log.info { "[BottleAcceptEventDto] 호감 보냄 bottleId: ${bottle.id} targetUserId: ${bottle.targetUser.id} sourceUserId: ${bottle.sourceUser.id} sourceUserToken: ${it.token}" }
                 }
             }
 
             bottle.isActive() -> {
-                fcmTokenService.findAllByUserIds(listOf(bottle.sourceUser.id, bottle.targetUser.id)).forEach {
+                fcmTokenService.findAllByUserIdsAndTokenNotBlank(listOf(bottle.sourceUser.id, bottle.targetUser.id)).forEach {
                     val fcmNotification = FcmNotification(
                         title = "${findOtherUserName(it.userId, bottle)}님과의 문답이 시작됐어요! 💌",
                         body = "어떤 질문이 기다리고 있을까요?\n지금부터 서로를 더 깊게 알아보세요!"
                     )
-                    //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                    fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                     log.info { "[BottleAcceptEventDto] 문답 시작 bottleId: ${bottle.id} userId: ${it.userId} token: ${it.token}" }
                 }
             }
@@ -82,12 +82,12 @@ class BottleApiEventListener(
         val bottle = bottleService.findBottleById(event.bottleId)
         val otherUser = bottle.findOtherUser(bottle.stoppedUser!!)
 
-        fcmTokenService.findAllByUserId(otherUser.id).forEach {
+        fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
                 title = "아쉬워요! 다른 보틀을 열어볼까요? 😢",
                 body = "${bottle.stoppedUser!!.getMaskedName()}님이 대화를 중단했어요.\n대화는 3일 뒤에 삭제돼요."
             )
-            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
             log.info { "[BottleStopEventDto] 대화 중지 token: ${it.token}" }
         }
     }
@@ -99,12 +99,12 @@ class BottleApiEventListener(
         val user = userService.findByIdAndNotDeleted(event.userId)
         val otherUser = bottle.findOtherUser(user)
 
-        fcmTokenService.findAllByUserId(otherUser.id).forEach {
+        fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
                 title = "${user.getMaskedName()}님이 답변을 완료했어요 👀",
                 body = "두근두근, ${user.getMaskedName()}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요!"
             )
-            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
             log.info { "[BottleRegisterLetterEventDto] bottleId: ${bottle.id} otherUserId: ${otherUser.id} token: ${it.token}" }
         }
     }
@@ -116,12 +116,12 @@ class BottleApiEventListener(
         val user = userService.findByIdAndNotDeleted(event.userId)
         val otherUser = bottle.findOtherUser(user)
 
-        fcmTokenService.findAllByUserId(otherUser.id).forEach {
+        fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
                 title = "${user.getMaskedName()}님이 사진 공개 여부를 선택했어요 📸",
                 body = "두근두근, ${user.getMaskedName()}님의 선택을 확인해주세요!"
             )
-            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
     }
 
@@ -132,12 +132,12 @@ class BottleApiEventListener(
         val user = userService.findByIdAndNotDeleted(event.userId)
         val otherUser = bottle.findOtherUser(user)
 
-        fcmTokenService.findAllByUserId(otherUser.id).forEach {
+        fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             val fcmNotification = FcmNotification(
                 title = "${user.getMaskedName()}님이 최종 선택을 완료했어요 💘",
                 body = "두근두근, ${user.getMaskedName()}님의 선택을 확인해주세요!"
             )
-            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
     }
 }
