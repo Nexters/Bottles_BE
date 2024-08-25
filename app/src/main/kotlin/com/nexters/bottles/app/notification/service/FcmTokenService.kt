@@ -31,14 +31,14 @@ class FcmTokenService(
     @Transactional(readOnly = true)
     fun findAllByUserIdAndTokenNotBlank(userId: Long): List<FcmToken> {
         return fcmTokenRepository.findAllByUserId(userId)
-            .filter { it.token.isBlank() }
+            .filterNot { it.token.isBlank() }
             .toList()
     }
 
     @Transactional(readOnly = true)
     fun findAllByUserIdsAndTokenNotBlank(userIds: List<Long>): List<FcmToken> {
         return fcmTokenRepository.findAllByUserIdIn(userIds)
-            .filter { it.token.isBlank() }
+            .filterNot { it.token.isBlank() }
             .toList()
     }
 }
