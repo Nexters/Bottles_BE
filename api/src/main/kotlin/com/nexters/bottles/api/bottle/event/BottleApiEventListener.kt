@@ -14,6 +14,7 @@ import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserService
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -26,6 +27,8 @@ class BottleApiEventListener(
     private val fcmClient: FcmClient,
     private val userService: UserService,
 ) {
+
+    private val log = KotlinLogging.logger {  }
 
     @Async
     @EventListener
@@ -52,6 +55,7 @@ class BottleApiEventListener(
 
                 fcmTokenService.findAllByUserId(bottle.sourceUser.id).forEach {
                     //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                    log.info { "[BottleAcceptEventDto] 호감 보냄 bottleId: ${bottle.id} targetUserId: ${bottle.targetUser.id} sourceUserId: ${bottle.sourceUser.id} sourceUserToken: ${it.token}" }
                 }
             }
 
@@ -62,6 +66,7 @@ class BottleApiEventListener(
                         body = "어떤 질문이 기다리고 있을까요?\n지금부터 서로를 더 깊게 알아보세요!"
                     )
                     //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                    log.info { "[BottleAcceptEventDto] 문답 시작 bottleId: ${bottle.id} userId: ${it.userId} token: ${it.token}" }
                 }
             }
         }
@@ -83,6 +88,7 @@ class BottleApiEventListener(
                 body = "${bottle.stoppedUser!!.getMaskedName()}님이 대화를 중단했어요.\n대화는 3일 뒤에 삭제돼요."
             )
             //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            log.info { "[BottleStopEventDto] 대화 중지 token: ${it.token}" }
         }
     }
 
@@ -99,6 +105,7 @@ class BottleApiEventListener(
                 body = "두근두근, ${user.getMaskedName()}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요!"
             )
             //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            log.info { "[BottleRegisterLetterEventDto] bottleId: ${bottle.id} otherUserId: ${otherUser.id} token: ${it.token}" }
         }
     }
 
