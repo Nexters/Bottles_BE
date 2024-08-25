@@ -29,12 +29,16 @@ class FcmTokenService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByUserId(userId: Long): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserIdAndTokenNotBlank(userId)
+    fun findAllByUserIdAndTokenNotBlank(userId: Long): List<FcmToken> {
+        return fcmTokenRepository.findAllByUserIdAndToken(userId)
+            .filter { it.token.isBlank() }
+            .toList()
     }
 
     @Transactional(readOnly = true)
-    fun findAllByUserIds(userIds: List<Long>): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserIdInAndTokenNotBlank(userIds)
+    fun findAllByUserIdsAndTokenNotBlank(userIds: List<Long>): List<FcmToken> {
+        return fcmTokenRepository.findAllByUserIdIn(userIds)
+            .filter { it.token.isBlank() }
+            .toList()
     }
 }

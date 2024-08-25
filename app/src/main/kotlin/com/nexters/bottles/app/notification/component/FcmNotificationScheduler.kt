@@ -16,7 +16,7 @@ class FcmNotificationScheduler(
     @Scheduled(cron = "0 0 18 * * *")
     fun notifyMatching() {
         val userIds = userService.findAllByNotDeleted().map { it.id }
-        val fcmTokens = fcmTokenService.findAllByUserIds(userIds)
+        val fcmTokens = fcmTokenService.findAllByUserIdsAndTokenNotBlank(userIds)
         val tokens = fcmTokens.map { it.token }
 
         val fcmNotification = FcmNotification(
