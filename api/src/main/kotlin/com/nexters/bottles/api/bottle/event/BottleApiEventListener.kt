@@ -45,12 +45,13 @@ class BottleApiEventListener(
         val bottle = bottleService.findBottleById(event.bottleId)
         when {
             bottle.isSentLikeMessageAndNotStart() -> {
-                fcmTokenService.findAllByUserId(bottle.targetUser.id).forEach {
-                    val fcmNotification = FcmNotification(
-                        title = "누군가 ${bottle.targetUser.name}님에게 편지를 보냈어요! 💘",
-                        body = "${bottle.targetUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
-                    )
-                    fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                val fcmNotification = FcmNotification(
+                    title = "누군가 ${bottle.sourceUser.name}님에게 편지를 보냈어요! 💘",
+                    body = "${bottle.sourceUser.name}님에게 호감을 표현한 사람이 있어요.\n도착한 보틀을 확인해주세요!"
+                )
+
+                fcmTokenService.findAllByUserId(bottle.sourceUser.id).forEach {
+                    //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                 }
             }
 
@@ -60,7 +61,7 @@ class BottleApiEventListener(
                         title = "${findOtherUserName(it.userId, bottle)}님과의 문답이 시작됐어요! 💌",
                         body = "어떤 질문이 기다리고 있을까요?\n지금부터 서로를 더 깊게 알아보세요!"
                     )
-                    fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                    //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                 }
             }
         }
@@ -81,7 +82,7 @@ class BottleApiEventListener(
                 title = "아쉬워요! 다른 보틀을 열어볼까요? 😢",
                 body = "${bottle.stoppedUser!!.getMaskedName()}님이 대화를 중단했어요.\n대화는 3일 뒤에 삭제돼요."
             )
-            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
     }
 
@@ -97,7 +98,7 @@ class BottleApiEventListener(
                 title = "${user.getMaskedName()}님이 답변을 완료했어요 👀",
                 body = "두근두근, ${user.getMaskedName()}님은 어떻게 생각할까요?\n지금 바로 확인해 보세요!"
             )
-            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
     }
 
@@ -113,7 +114,7 @@ class BottleApiEventListener(
                 title = "${user.getMaskedName()}님이 사진 공개 여부를 선택했어요 📸",
                 body = "두근두근, ${user.getMaskedName()}님의 선택을 확인해주세요!"
             )
-            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
     }
 
@@ -129,7 +130,7 @@ class BottleApiEventListener(
                 title = "${user.getMaskedName()}님이 최종 선택을 완료했어요 💘",
                 body = "두근두근, ${user.getMaskedName()}님의 선택을 확인해주세요!"
             )
-            fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+            //fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
         }
     }
 }
