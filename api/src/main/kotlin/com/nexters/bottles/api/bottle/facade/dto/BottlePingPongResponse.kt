@@ -62,7 +62,9 @@ data class MatchResult(
     val otherContact: String,
     val shouldAnswer: Boolean,
     val isFirstSelect: Boolean,
+    @Deprecated("iOS에서 제거하면 삭제예정")
     val meetingPlace: String? = null,
+    @Deprecated("iOS에서 제거하면 삭제예정")
     val meetingPlaceImageUrl: String? = null,
 )
 
