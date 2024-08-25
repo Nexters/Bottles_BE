@@ -50,6 +50,8 @@ class User(
     var lastActivatedAt: LocalDateTime = LocalDateTime.now(),
 
     var isMatchActivated: Boolean = true,
+
+    var lastRandomMatchedAt: LocalDateTime = LocalDateTime.now(),
 ) : BaseEntity() {
 
     fun getKoreanAge(): Int {
@@ -74,5 +76,18 @@ class User(
 
     fun isNotRegisterProfile(): Boolean {
         return userProfile?.isNotRegisterIntroductionOrImage() ?: true
+    }
+
+    fun getMaskedName(): String {
+        val currentName = name ?: return ""
+        return when {
+            currentName.length <= 1 -> currentName
+            currentName.length == 2 -> currentName[0] + "*"
+            else -> currentName.first() + "*".repeat(currentName.length - 2) + currentName.last()
+        }
+    }
+
+    fun updateLastRandomMatchedAt(basedAt: LocalDateTime) {
+        this.lastRandomMatchedAt = basedAt
     }
 }

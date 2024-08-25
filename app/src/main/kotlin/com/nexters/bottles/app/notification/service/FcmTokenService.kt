@@ -2,7 +2,6 @@ package com.nexters.bottles.app.notification.service
 
 import com.nexters.bottles.app.notification.domain.FcmToken
 import com.nexters.bottles.app.notification.repository.FcmTokenRepository
-import com.nexters.bottles.app.user.domain.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,13 +18,6 @@ class FcmTokenService(
         }
     }
 
-    @Transactional(readOnly = true)
-    fun findByUsers(users: List<User>): List<FcmToken> {
-        return users.flatMap {
-            fcmTokenRepository.findAllByUserId(it.id)
-        }
-    }
-
     @Transactional
     fun deleteFcmToken(userId: Long, token: String) {
         fcmTokenRepository.findByUserIdAndToken(userId, token)?.let { fcmTokenRepository.delete(it) }
@@ -38,11 +30,11 @@ class FcmTokenService(
 
     @Transactional(readOnly = true)
     fun findAllByUserId(userId: Long): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserId(userId)
+        return fcmTokenRepository.findAllByUserIdAndTokenNotBlank(userId)
     }
 
     @Transactional(readOnly = true)
     fun findAllByUserIds(userIds: List<Long>): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserIdIn(userIds)
+        return fcmTokenRepository.findAllByUserIdInAndTokenNotBlank(userIds)
     }
 }

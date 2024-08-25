@@ -1,6 +1,5 @@
-package com.nexters.bottles.batch.scheduler
+package com.nexters.bottles.app.notification.component
 
-import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.service.UserService

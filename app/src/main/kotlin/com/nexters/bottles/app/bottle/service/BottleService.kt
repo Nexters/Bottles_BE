@@ -159,14 +159,8 @@ class BottleService(
         if (user.isMatchInactive()) return null
 
         val matchingTime = getMatchingTime(matchingHour)
-        val todayMatchingBottle = bottleRepository.findByTargetUserAndBottleStatusAndCreatedAtAfter(
-            targetUser = user,
-            bottleStatus = BottleStatus.RANDOM,
-            matchingTime = matchingTime
-        )
-        if (todayMatchingBottle.isNotEmpty()) return null
+        if (user.lastRandomMatchedAt > matchingTime) return null
 
-        log.info { "userId: ${user.id}, gender: ${user.gender}" }
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
         if (usersCanBeMatched.isEmpty()) return null
 
@@ -175,7 +169,11 @@ class BottleService(
             ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
         val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = matchingTime.plusDays(1))
-        return bottleRepository.save(bottle)
+        val savedBottle = bottleRepository.save(bottle)
+
+        user.updateLastRandomMatchedAt(LocalDateTime.now())
+
+        return savedBottle
     }
 
     private fun getMatchingTime(matchingHour: Int): LocalDateTime {
@@ -221,5 +219,23 @@ class BottleService(
         val stoppedUser = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         bottle.stop(stoppedUser, LocalDateTime.now())
         return bottle
+    }
+
+    @Transactional
+    fun matchFirstRandomBottle(user: User): Bottle? {
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
+        if (usersCanBeMatched.isEmpty()) return null
+
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
+
+        val now = LocalDateTime.now()
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1))
+        val savedBottle = bottleRepository.save(bottle)
+
+        user.updateLastRandomMatchedAt(now)
+
+        return savedBottle
     }
 }

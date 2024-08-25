@@ -8,7 +8,8 @@ import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
 import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
-import com.nexters.bottles.api.auth.facade.dto.RefreshAccessTokenResponse
+import com.nexters.bottles.api.auth.facade.dto.ReissueTokenRequest
+import com.nexters.bottles.api.auth.facade.dto.ReissueTokenResponse
 import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
 import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
 import com.nexters.bottles.api.auth.facade.dto.SmsSendRequest
@@ -48,8 +49,11 @@ class AuthController(
     @ApiOperation("토큰 재발행")
     @PostMapping("/refresh")
     @RefreshAuthRequired
-    fun requestRefresh(@RefreshTokenUserId userId: Long): RefreshAccessTokenResponse {
-        return authFacade.refreshToken(userId)
+    fun reissueToken(
+        @RefreshTokenUserId userId: Long,
+        @RequestBody reissueTokenRequest: ReissueTokenRequest?
+    ): ReissueTokenResponse {
+        return authFacade.reissueToken(userId, reissueTokenRequest)
     }
 
     @ApiOperation("일반 회원가입")
