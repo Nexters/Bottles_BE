@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param
 
 interface FcmTokenRepository : JpaRepository<FcmToken, Long> {
 
-    fun findAllByUserIdAndToken(userId: Long): List<FcmToken>
-
     fun findAllByUserId(userId: Long): List<FcmToken>
 
     fun findByUserIdAndToken(userId: Long, token: String): FcmToken?

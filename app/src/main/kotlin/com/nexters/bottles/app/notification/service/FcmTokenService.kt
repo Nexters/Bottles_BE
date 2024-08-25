@@ -30,7 +30,7 @@ class FcmTokenService(
 
     @Transactional(readOnly = true)
     fun findAllByUserIdAndTokenNotBlank(userId: Long): List<FcmToken> {
-        return fcmTokenRepository.findAllByUserIdAndToken(userId)
+        return fcmTokenRepository.findAllByUserId(userId)
             .filter { it.token.isBlank() }
             .toList()
     }
