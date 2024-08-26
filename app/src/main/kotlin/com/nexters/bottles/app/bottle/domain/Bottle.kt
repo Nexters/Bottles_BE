@@ -126,6 +126,14 @@ class Bottle(
         return bottleStatus == BottleStatus.SENT && pingPongStatus == PingPongStatus.NONE
     }
 
+    fun isExpired(now: LocalDateTime): Boolean {
+        return expiredAt.plusDays(1L) <= now
+    }
+
+    fun isNotExpired(now: LocalDateTime): Boolean {
+        return !isExpired(now)
+    }
+
     companion object {
         private const val DELETE_AFTER_DAYS = 3
     }
