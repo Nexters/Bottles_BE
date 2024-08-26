@@ -273,6 +273,10 @@ class AuthFacade(
         return AppleRevokeResponse(clientSecret = clientSecret)
     }
 
+    fun updateFcmToken(userId: Long, fcmToken: String) {
+        fcmTokenService.registerFcmToken(userId, fcmToken)
+    }
+
     private fun isSuperUser(phoneNumber: String) = phoneNumber == superUserNumber
 }
 

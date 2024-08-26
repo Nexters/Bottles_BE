@@ -12,4 +12,6 @@ interface FcmTokenRepository : JpaRepository<FcmToken, Long> {
     fun findByUserIdAndToken(userId: Long, token: String): FcmToken?
 
     fun findAllByUserIdIn(@Param("userIds") userIds: List<Long>): List<FcmToken>
+
+    fun deleteByToken(userToken: String)
 }

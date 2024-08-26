@@ -180,6 +180,7 @@ class BottleFacade(
             ?: emptyList()
         val doneBottles =
             (groupByStatus[PingPongStatus.STOPPED].orEmpty() + groupByStatus[PingPongStatus.MATCHED].orEmpty())
+                .filter { it.isNotExpired(LocalDateTime.now()) }
                 .map { toPingPongBottleDto(it, user) }
                 .filter { it.userId !in blockedUserIds }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)

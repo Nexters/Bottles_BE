@@ -1,20 +1,7 @@
 package com.nexters.bottles.api.auth.controller
 
 import com.nexters.bottles.api.auth.facade.AuthFacade
-import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
-import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
-import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
-import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
-import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
-import com.nexters.bottles.api.auth.facade.dto.ReissueTokenRequest
-import com.nexters.bottles.api.auth.facade.dto.ReissueTokenResponse
-import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
-import com.nexters.bottles.api.auth.facade.dto.SmsSendRequest
-import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
-import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
+import com.nexters.bottles.api.auth.facade.dto.*
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.interceptor.RefreshAuthRequired
 import com.nexters.bottles.api.global.resolver.AccessToken
@@ -99,5 +86,12 @@ class AuthController(
     @AuthRequired
     fun getAppleClientSecret(): AppleRevokeResponse {
         return authFacade.getAppleClientSecret()
+    }
+
+    @ApiOperation("fcm 토큰 갱신")
+    @PostMapping("/fcm")
+    @AuthRequired
+    fun insertFcmToken(@AuthUserId userId: Long, @RequestBody fcmUpdateRequest: FcmUpdateRequest) {
+        authFacade.updateFcmToken(userId, fcmUpdateRequest.fcmToken)
     }
 }
