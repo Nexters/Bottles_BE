@@ -41,4 +41,9 @@ class FcmTokenService(
             .filterNot { it.token.isBlank() }
             .toList()
     }
+
+    @Transactional
+    fun deleteByToken(userToken: String) {
+        fcmTokenRepository.deleteByToken(userToken)
+    }
 }
