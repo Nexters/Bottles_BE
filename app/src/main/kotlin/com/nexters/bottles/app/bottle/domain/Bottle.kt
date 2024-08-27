@@ -126,12 +126,16 @@ class Bottle(
         return bottleStatus == BottleStatus.SENT && pingPongStatus == PingPongStatus.NONE
     }
 
-    fun isExpired(now: LocalDateTime): Boolean {
-        return expiredAt.plusDays(1L) <= now
+    fun isExpiredAfterStopped(now: LocalDateTime): Boolean {
+        return if (stoppedAt == null) {
+            false
+        } else {
+            stoppedAt!!.plusDays(1L) <= now
+        }
     }
 
-    fun isNotExpired(now: LocalDateTime): Boolean {
-        return !isExpired(now)
+    fun isNotExpiredAfterStopped(now: LocalDateTime): Boolean {
+        return !isExpiredAfterStopped(now)
     }
 
     companion object {
