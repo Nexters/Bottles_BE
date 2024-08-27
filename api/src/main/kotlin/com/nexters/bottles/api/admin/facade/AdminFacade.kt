@@ -1,10 +1,7 @@
 package com.nexters.bottles.api.admin.facade
 
 import com.nexters.bottles.api.admin.component.TestJwtTokenProvider
-import com.nexters.bottles.api.admin.facade.dto.CreateCustomTokenRequest
-import com.nexters.bottles.api.admin.facade.dto.CustomTokenResponse
-import com.nexters.bottles.api.admin.facade.dto.ExpireTokenRequest
-import com.nexters.bottles.api.admin.facade.dto.ForceAfterProfileResponse
+import com.nexters.bottles.api.admin.facade.dto.*
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.user.facade.dto.InterestDto
 import com.nexters.bottles.api.user.facade.dto.RegionDto
@@ -13,6 +10,7 @@ import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
+import com.nexters.bottles.app.notification.service.FcmTokenService
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
@@ -30,6 +28,7 @@ class AdminFacade(
     private val jwtTokenProvider: JwtTokenProvider,
     private val testJwtTokenProvider: TestJwtTokenProvider,
     private val fcmClient: FcmClient,
+    private val fcmTokenService: FcmTokenService,
 ) {
 
     fun createCustomValidityToken(
@@ -129,6 +128,21 @@ class AdminFacade(
             body = "테스트입니다"
         )
         return fcmClient.sendNotificationTo(userToken = fcmToken, fcmNotification = fcmNotification)
+    }
+
+    fun sendPushMessages(pushMessagesRequest: PushMessageRequest) {
+        val fcmNotification = FcmNotification(
+            title = pushMessagesRequest.title,
+            body = pushMessagesRequest.body
+        )
+        val userIds = pushMessagesRequest.userIds
+
+        userIds.forEach {
+            fcmTokenService.findAllByUserIdAndTokenNotBlank(it)
+                .forEach { fcmToken ->
+                    fcmClient.sendNotificationTo(userToken = fcmToken.token, fcmNotification = fcmNotification)
+                }
+        }
     }
 
     companion object {

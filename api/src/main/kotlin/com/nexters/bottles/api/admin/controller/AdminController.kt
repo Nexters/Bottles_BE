@@ -73,4 +73,10 @@ class AdminController(
     ): String? {
         return adminFacade.testFcm(fcmTestRequest.fcmToken)
     }
+
+    @ApiOperation("푸시 다건 발송")
+    @PostMapping("/push/messages")
+    fun sendPushMessages(@RequestBody pushMessagesRequest: PushMessageRequest) {
+        adminFacade.sendPushMessages(pushMessagesRequest)
+    }
 }
