@@ -6,6 +6,7 @@ import com.google.firebase.messaging.MulticastMessage
 import com.google.firebase.messaging.Notification
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.repository.FcmTokenRepository
+import com.nexters.bottles.app.notification.service.FcmTokenService
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class FcmClient(
     private val fcmTokenRepository: FcmTokenRepository,
+    private val fcmTokenService: FcmTokenService,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -27,7 +29,7 @@ class FcmClient(
         try {
             return FirebaseMessaging.getInstance().send(message)
         } catch (e: Exception) {
-            fcmTokenRepository.deleteByToken(userToken)
+            fcmTokenService.deleteByToken(userToken)
             log.info { "fcmToken 404 예외 - 더이상 유효하지 않아 삭제 $userToken" }
             return null
         }

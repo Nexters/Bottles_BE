@@ -17,6 +17,7 @@ import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.domain.enum.SignUpType
+import mu.KotlinLogging
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
 import org.springframework.stereotype.Component
@@ -30,6 +31,8 @@ class AdminFacade(
     private val fcmClient: FcmClient,
     private val fcmTokenService: FcmTokenService,
 ) {
+
+    private val log = KotlinLogging.logger {  }
 
     fun createCustomValidityToken(
         userId: Long,
@@ -141,6 +144,7 @@ class AdminFacade(
             fcmTokenService.findAllByUserIdAndTokenNotBlank(it)
                 .forEach { fcmToken ->
                     fcmClient.sendNotificationTo(userToken = fcmToken.token, fcmNotification = fcmNotification)
+                    log.info { "수기 다건 발생으로 $it 에게 ${pushMessagesRequest.title} 푸시 발송" }
                 }
         }
     }
