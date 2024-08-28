@@ -6,6 +6,7 @@ import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
+import com.nexters.bottles.api.auth.event.dto.SignUpEventDto
 import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
@@ -81,7 +82,16 @@ class AuthFacade(
             isSignUp = signInUpDto.isSignUp,
             hasCompleteUserProfile = userProfile != null,
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
-        )
+        ).also {
+            if (signInUpDto.isSignUp) {
+                applicationEventPublisher.publishEvent(
+                    SignUpEventDto(
+                        userId = signInUpDto.userId,
+                        userName = signInUpDto.userName
+                    )
+                )
+            }
+        }
     }
 
     fun appleSignInUp(appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {

@@ -43,7 +43,7 @@ class UserService(
                     signUpType = SignUpType.KAKAO
                 )
             )
-            return SignInUpDto(userId = user.id, isSignUp = true)
+            return SignInUpDto(userId = user.id, isSignUp = true, userName = userInfoResponse.kakao_account.name)
         }
     }
 
