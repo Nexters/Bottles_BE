@@ -1,5 +1,7 @@
 package com.nexters.bottles.api.bottle.facade.dto
 
+import java.time.LocalDateTime
+
 data class PingPongListResponse(
     val activeBottles: List<PingPongBottleDto>,
     val doneBottles: List<PingPongBottleDto>
@@ -14,4 +16,5 @@ data class PingPongBottleDto(
     val mbti: String?,
     val keyword: List<String>?,
     val userImageUrl: String?,
+    val lastActivatedAt: LocalDateTime?,
 )

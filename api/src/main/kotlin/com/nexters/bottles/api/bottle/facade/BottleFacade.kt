@@ -202,6 +202,7 @@ class BottleFacade(
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
             userImageUrl = otherUser.userProfile?.imageUrl,
+            lastActivatedAt = otherUser.lastActivatedAt
         )
     }
 
@@ -277,7 +278,9 @@ class BottleFacade(
                 meetingPlace = null,
                 meetingPlaceImageUrl = null,
             )
-        )
+        ).also {
+            applicationEventPublisher.publishEvent(UserApplicationEventDto(userId = userId, basedAt = LocalDateTime.now()))
+        }
     }
 
     private fun getDeleteAfterDays(bottle: Bottle): Long? {
