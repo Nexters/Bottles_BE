@@ -17,6 +17,7 @@ data class BottleDto(
     val mbti: String?,
     val keyword: List<String>?,
     val userImageUrl: String?,
+    val lastActivatedAt: String?,
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val expiredAt: LocalDateTime

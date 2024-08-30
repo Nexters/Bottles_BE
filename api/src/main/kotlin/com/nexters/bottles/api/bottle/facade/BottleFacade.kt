@@ -21,6 +21,7 @@ import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
+import com.nexters.bottles.api.bottle.util.getLastActivatedAtInKorean
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -115,7 +116,8 @@ class BottleFacade(
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
             userImageUrl = bottle.sourceUser.userProfile?.imageUrl,
-            expiredAt = bottle.expiredAt
+            expiredAt = bottle.expiredAt,
+            lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
         )
     }
 
@@ -202,7 +204,7 @@ class BottleFacade(
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
             userImageUrl = otherUser.userProfile?.imageUrl,
-            lastActivatedAt = otherUser.lastActivatedAt
+            lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now())
         )
     }
 
