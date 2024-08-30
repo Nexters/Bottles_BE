@@ -80,7 +80,8 @@ class UserProfileFacade(
             age = user.getKoreanAge(),
             imageUrl = userProfile?.imageUrl,
             introduction = userProfile?.introduction ?: emptyList(),
-            profileSelect = userProfile?.profileSelect
+            profileSelect = userProfile?.profileSelect,
+            isMatchActivated = user.isMatchActivated
         )
     }
 
