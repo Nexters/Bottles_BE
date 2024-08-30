@@ -15,7 +15,7 @@ class FcmNotificationScheduler(
 
     @Scheduled(cron = "0 0 18 * * *")
     fun notifyMatching() {
-        val userIds = userService.findAllByNotDeleted().map { it.id }
+        val userIds = userService.findAllByDeletedFalseAndMatchActivatedTrue().map { it.id }
         val fcmTokens = fcmTokenService.findAllByUserIdsAndTokenNotBlank(userIds)
         val tokens = fcmTokens.map { it.token }
 
@@ -25,4 +25,6 @@ class FcmNotificationScheduler(
         )
         fcmClient.sendNotificationAll(userTokens = tokens, fcmNotification = fcmNotification)
     }
+
+    // TODO 매칭 비활성화 된 유저에게 푸시 알림 보내기
 }

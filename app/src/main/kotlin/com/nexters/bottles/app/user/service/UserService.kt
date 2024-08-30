@@ -128,8 +128,8 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByNotDeleted(): List<User> {
-        return userRepository.findAllByDeletedFalse()
+    fun findAllByDeletedFalseAndMatchActivatedTrue(): List<User> {
+        return userRepository.findAllByDeletedFalseAndIsMatchActivatedTrue()
     }
 
     @Transactional
