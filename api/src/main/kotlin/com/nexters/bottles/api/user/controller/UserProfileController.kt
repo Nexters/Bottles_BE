@@ -3,7 +3,14 @@ package com.nexters.bottles.api.user.controller
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserProfileFacade
-import com.nexters.bottles.api.user.facade.dto.*
+import com.nexters.bottles.api.user.facade.dto.ActivateMatchingRequest
+import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
+import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
+import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
+import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
+import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
+import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
+import com.nexters.bottles.api.user.facade.dto.UserProfileStatusResponse
 import io.swagger.annotations.ApiOperation
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile
 class UserProfileController(
     private val profileFacade: UserProfileFacade,
 ) {
-    
+
     private val log = KotlinLogging.logger {}
 
     @ApiOperation("온보딩 프로필 등록하기")
@@ -80,5 +87,12 @@ class UserProfileController(
     @AuthRequired
     fun findStatus(@AuthUserId userId: Long): UserProfileStatusResponse {
         return profileFacade.findUserProfileStatus(userId)
+    }
+
+    @ApiOperation("매칭 활성/비활성화")
+    @PostMapping("/activate/matching")
+    @AuthRequired
+    fun activateAccount(@AuthUserId userId: Long, @RequestBody activateMatchingRequest: ActivateMatchingRequest) {
+        profileFacade.activateMatching(userId, activateMatchingRequest)
     }
 }

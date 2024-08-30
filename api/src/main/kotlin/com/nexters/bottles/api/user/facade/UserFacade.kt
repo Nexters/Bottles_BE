@@ -10,7 +10,6 @@ class UserFacade(
     private val userReportService: UserReportService,
 ) {
 
-
     fun reportUser(userId: Long, reportUserRequest: ReportUserRequest) {
         userReportService.saveReport(
             UserReport(

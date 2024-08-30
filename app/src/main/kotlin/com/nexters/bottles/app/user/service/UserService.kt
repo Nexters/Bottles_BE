@@ -159,4 +159,11 @@ class UserService(
             it.deletedAt = null
         }
     }
+
+    @Transactional
+    fun activateMatching(userId: Long, activate: Boolean) {
+        userRepository.findByIdAndDeletedFalse(userId)?.let { user ->
+            user.isMatchActivated = activate
+        } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+    }
 }

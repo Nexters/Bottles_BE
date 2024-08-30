@@ -1,5 +1,6 @@
 package com.nexters.bottles.api.user.facade
 
+import com.nexters.bottles.api.user.facade.dto.ActivateMatchingRequest
 import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
 import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
@@ -72,7 +73,6 @@ class UserProfileFacade(
     }
 
     fun getMyProfile(userId: Long): UserProfileResponse {
-
         val userProfile = profileService.findUserProfile(userId)
         val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
         return UserProfileResponse(
@@ -171,6 +171,10 @@ class UserProfileFacade(
             userProfile != null -> UserProfileStatus.ONLY_PROFILE_CREATED
             else -> UserProfileStatus.EMPTY
         }
+    }
+
+    fun activateMatching(userId: Long, activateMatchingRequest: ActivateMatchingRequest) {
+        userService.activateMatching(userId, activateMatchingRequest.activate)
     }
 
     companion object {
