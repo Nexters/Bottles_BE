@@ -4,9 +4,9 @@ import com.nexters.bottles.app.bottle.service.BottleHistoryService
 import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.user.component.event.dto.IntroductionSaveEventDto
 import com.nexters.bottles.app.user.service.UserService
-import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import org.springframework.transaction.event.TransactionalEventListener
 
 @Component
 class UserProfileApplicationEventListener(
@@ -16,7 +16,7 @@ class UserProfileApplicationEventListener(
 ) {
 
     @Async
-    @EventListener
+    @TransactionalEventListener
     fun handleCustomEvent(event: IntroductionSaveEventDto) {
         val user = userService.findByIdAndNotDeleted(event.userId)
         bottleService.matchFirstRandomBottle(user)?.let {

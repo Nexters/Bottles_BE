@@ -44,7 +44,6 @@ class UserProfileService(
         profileRepository.findByUserId(user.id)?.let {
             val isFirstRegisterIntroduction = it.introduction.isEmpty()
             it.introduction = introduction
-            // TODO introduction 저장 실패시 이벤트 처리 수정
             if (isFirstRegisterIntroduction) {
                 applicationEventPublisher.publishEvent(
                     IntroductionSaveEventDto(userId = userId)
