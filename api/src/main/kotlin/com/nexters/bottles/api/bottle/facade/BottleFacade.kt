@@ -117,7 +117,8 @@ class BottleFacade(
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
             userImageUrl = bottle.sourceUser.userProfile?.imageUrl,
             expiredAt = bottle.expiredAt,
-            lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
+            //lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
+            lastActivatedAt = null,
         )
     }
 
@@ -204,7 +205,8 @@ class BottleFacade(
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
             userImageUrl = otherUser.userProfile?.imageUrl,
-            lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now())
+            //lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now()),
+            lastActivatedAt = null,
         )
     }
 
