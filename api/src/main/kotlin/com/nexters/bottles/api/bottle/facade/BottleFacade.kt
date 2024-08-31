@@ -118,7 +118,6 @@ class BottleFacade(
             userImageUrl = bottle.sourceUser.userProfile?.imageUrl,
             expiredAt = bottle.expiredAt,
             //lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
-            lastActivatedAt = null,
         )
     }
 
@@ -206,7 +205,6 @@ class BottleFacade(
             keyword = otherUser.userProfile?.profileSelect?.keyword,
             userImageUrl = otherUser.userProfile?.imageUrl,
             //lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now()),
-            lastActivatedAt = null,
         )
     }
 
