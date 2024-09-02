@@ -21,7 +21,6 @@ import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
-import com.nexters.bottles.api.bottle.util.getLastActivatedAtInKorean
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -34,6 +33,7 @@ import com.nexters.bottles.app.bottle.service.QuestionCachingService
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
+import com.nexters.bottles.app.user.service.BlockContactListService
 import com.nexters.bottles.app.user.service.UserReportService
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
@@ -52,6 +52,7 @@ class BottleFacade(
     private val bottleCachingService: BottleCachingService,
     private val questionCachingService: QuestionCachingService,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val blockContactListService: BlockContactListService,
 
     @Value("\${matching.isActive}")
     private val isActiveMatching: Boolean,
@@ -73,14 +74,19 @@ class BottleFacade(
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
-        val blockedUserIds = userReportService.getReportRespondentList(userId)
+        val reportUserIds = userReportService.getReportRespondentList(userId)
             .map { it.respondentUserId }
             .toSet()
+        val blockContacts = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet()
+        val blockedContacts = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
+            .map{ it.userId }.toSet()
 
         val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it, userId) } ?: emptyList()
         val sentBottles = groupByStatus[BottleStatus.SENT]
             ?.map { toBottleDto(it, userId) }
-            ?.filter { it.userId !in blockedUserIds }
+            ?.filter { it.userId !in reportUserIds }
+            ?.filter { it.userId !in blockContacts }
+            ?.filter { it.userId !in blockedContacts }
             ?: emptyList()
 
         return BottleListResponse(

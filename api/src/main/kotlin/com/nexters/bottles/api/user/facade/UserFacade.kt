@@ -1,13 +1,16 @@
 package com.nexters.bottles.api.user.facade
 
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
+import com.nexters.bottles.app.user.domain.BlockContact
 import com.nexters.bottles.app.user.domain.UserReport
+import com.nexters.bottles.app.user.service.BlockContactListService
 import com.nexters.bottles.app.user.service.UserReportService
 import org.springframework.stereotype.Component
 
 @Component
 class UserFacade(
     private val userReportService: UserReportService,
+    private val blockContactListService: BlockContactListService,
 ) {
 
 
@@ -19,5 +22,15 @@ class UserFacade(
                 reportReasonShortAnswer = reportUserRequest.reportReasonShortAnswer,
             )
         )
+    }
+
+
+    fun blockContactList(userId: Long, blockContacts: Set<String>) {
+        val savedBlockContacts = blockContactListService.findAllByUserId(userId = userId).map { it.blockContact }.toSet()
+        val newBlockContacts = blockContacts.minus(savedBlockContacts).map { BlockContact(userId = userId, blockContact = it) }.toList()
+        val deletedBlockContacts = savedBlockContacts.minus(blockContacts).map { BlockContact(userId = userId, blockContact = it) }.toList()
+
+        blockContactListService.saveAll(newBlockContacts)
+        blockContactListService.deleteAll(deletedBlockContacts)
     }
 }
