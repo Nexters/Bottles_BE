@@ -27,9 +27,9 @@ class AuthApplicationEventListener(
 
         val pingPongBottles = bottleService.getPingPongBottlesByDeletedUser(event.userId)
         pingPongBottles.forEach {
-            val stoppedBottle = bottleService.stopByDeletedUser(userId = event.userId, bottle = it)
-            bottleCachingService.evictPingPongList(stoppedBottle.sourceUser.id, stoppedBottle.targetUser.id)
+            bottleCachingService.evictPingPongList(it.sourceUser.id, it.targetUser.id)
         }
+        bottleService.stopPingPongBottlesByDeletedUser(event.userId)
 
         fcmTokenService.deleteAllFcmTokenByUserId(event.userId)
     }
