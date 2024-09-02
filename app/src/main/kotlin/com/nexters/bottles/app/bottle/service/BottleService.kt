@@ -217,13 +217,13 @@ class BottleService(
     @Transactional
     fun stopPingPongBottlesByDeletedUser(userId: Long) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        val pingPongBottles = bottleRepository.findAllByUserAndStatusAndDeletedFalse(
+        val activeBottles = bottleRepository.findAllByUserAndStatusAndDeletedFalse(
             user,
             setOf(
                 PingPongStatus.ACTIVE,
             )
         )
-        pingPongBottles.forEach {
+        activeBottles.forEach {
             it.stop(user, LocalDateTime.now())
         }
     }
