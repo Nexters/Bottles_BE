@@ -26,9 +26,9 @@ class UserFacade(
 
 
     fun blockContactList(userId: Long, blockContacts: Set<String>) {
-        val savedBlockContacts = blockContactListService.findAllByUserId(userId = userId).map { it.blockContact }.toSet()
-        val newBlockContacts = blockContacts.minus(savedBlockContacts).map { BlockContact(userId = userId, blockContact = it) }.toList()
-        val deletedBlockContacts = savedBlockContacts.minus(blockContacts).map { BlockContact(userId = userId, blockContact = it) }.toList()
+        val savedBlockContacts = blockContactListService.findAllByUserId(userId = userId).map { it.phoneNumber }.toSet()
+        val newBlockContacts = blockContacts.minus(savedBlockContacts).map { BlockContact(userId = userId, phoneNumber = it) }.toList()
+        val deletedBlockContacts = savedBlockContacts.minus(blockContacts).map { BlockContact(userId = userId, phoneNumber = it) }.toList()
 
         blockContactListService.saveAll(newBlockContacts)
         blockContactListService.deleteAll(deletedBlockContacts)
