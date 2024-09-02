@@ -35,7 +35,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "WHERE (b.targetUser = :user OR b.sourceUser = :user)" +
+                "WHERE (b.targetUser = :user OR b.sourceUser = :user) " +
                 "AND b.targetUser.deleted = false " +
                 "AND b.sourceUser.deleted = false " +
                 "AND b.pingPongStatus IN :pingPongStatus " +
