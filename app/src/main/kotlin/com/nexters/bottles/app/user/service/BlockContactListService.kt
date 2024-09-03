@@ -25,7 +25,7 @@ class BlockContactListService(
         blockContactListRepository.deleteAll(newBlockContacts)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun findAllByPhoneNumber(phoneNumber: String): List<BlockContact> {
         return blockContactListRepository.findAllByPhoneNumber(phoneNumber)
     }

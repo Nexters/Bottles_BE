@@ -143,7 +143,7 @@ CREATE TABLE block_contact_list
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id      BIGINT       NOT NULL COMMENT '차단등록한 userId',
-    phone_number varchar(255) NOT NULL COMMENT '차단된 연락처 목록 (JSON 형식으로 저장)',
+    phone_number varchar(255) NOT NULL COMMENT '차단된 연락처',
     created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX        idx_reporter_user_id (user_id),
