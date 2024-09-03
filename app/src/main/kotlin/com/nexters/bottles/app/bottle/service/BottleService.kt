@@ -154,7 +154,7 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(user: User, matchingHour: Int): Bottle? {
+    fun matchRandomBottle(user: User, matchingHour: Int, blockUserIds: Set<Long>, blockedMeUserIds: Set<Long>): Bottle? {
         if (user.isNotRegisterProfile()) return null
         if (user.isMatchInactive()) return null
 
@@ -162,6 +162,9 @@ class BottleService(
         if (user.lastRandomMatchedAt > matchingTime) return null
 
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
+            .filter { it.willMatchUserId !in blockUserIds }
+            .filter { it.willMatchUserId !in blockedMeUserIds }
+
         if (usersCanBeMatched.isEmpty()) return null
 
         val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)

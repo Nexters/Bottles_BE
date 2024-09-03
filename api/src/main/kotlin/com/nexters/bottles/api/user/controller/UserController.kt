@@ -3,6 +3,7 @@ package com.nexters.bottles.api.user.controller
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserFacade
+import com.nexters.bottles.api.user.facade.dto.BlockContactListRequest
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,5 +22,12 @@ class UserController(
     @AuthRequired
     fun reportUser(@AuthUserId userId: Long, @RequestBody reportUserRequest: ReportUserRequest) {
         userFacade.reportUser(userId, reportUserRequest)
+    }
+
+    @ApiOperation("연락처 차단 목록 등록")
+    @PostMapping("/block/contact-list")
+    @AuthRequired
+    fun blockContactList(@AuthUserId userId: Long, @RequestBody blockContactListRequest: BlockContactListRequest) {
+        userFacade.blockContactList(userId, blockContactListRequest.blockContacts)
     }
 }

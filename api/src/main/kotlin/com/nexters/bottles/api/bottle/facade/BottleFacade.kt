@@ -21,7 +21,6 @@ import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
-import com.nexters.bottles.api.bottle.util.getLastActivatedAtInKorean
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -34,6 +33,7 @@ import com.nexters.bottles.app.bottle.service.QuestionCachingService
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
+import com.nexters.bottles.app.user.service.BlockContactListService
 import com.nexters.bottles.app.user.service.UserReportService
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
@@ -52,6 +52,7 @@ class BottleFacade(
     private val bottleCachingService: BottleCachingService,
     private val questionCachingService: QuestionCachingService,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val blockContactListService: BlockContactListService,
 
     @Value("\${matching.isActive}")
     private val isActiveMatching: Boolean,
@@ -59,9 +60,13 @@ class BottleFacade(
 
     fun getNewBottles(userId: Long): BottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
+        val blockUserIds = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet() // 내가 차단한 유저
+        val blockedMeUserIds = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
+            .map{ it.userId }.toSet() // 나를 차단한 유저
+
         if (isActiveMatching) {
             val matchingHour = 18
-            bottleService.matchRandomBottle(user, matchingHour)
+            bottleService.matchRandomBottle(user, matchingHour, blockUserIds, blockedMeUserIds)
                 ?.also {
                     applicationEventPublisher.publishEvent(
                         BottleMatchEventDto(
@@ -73,14 +78,19 @@ class BottleFacade(
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
-        val blockedUserIds = userReportService.getReportRespondentList(userId)
+        val reportUserIds = userReportService.getReportRespondentList(userId)
             .map { it.respondentUserId }
             .toSet()
 
-        val randomBottles = groupByStatus[BottleStatus.RANDOM]?.map { toBottleDto(it, userId) } ?: emptyList()
+        val randomBottles = groupByStatus[BottleStatus.RANDOM]
+            ?.map { toBottleDto(it, userId) }
+            ?: emptyList()
+
         val sentBottles = groupByStatus[BottleStatus.SENT]
             ?.map { toBottleDto(it, userId) }
-            ?.filter { it.userId !in blockedUserIds }
+            ?.filter { it.userId !in reportUserIds }
+            ?.filter { it.userId !in blockUserIds }
+            ?.filter { it.userId !in blockedMeUserIds }
             ?: emptyList()
 
         return BottleListResponse(
@@ -172,13 +182,18 @@ class BottleFacade(
         val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottles = bottleCachingService.getPingPongBottles(userId)
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
-        val blockedUserIds = userReportService.getReportRespondentList(userId)
+        val reportUserIds = userReportService.getReportRespondentList(userId)
             .map { it.respondentUserId }
             .toSet()
+        val blockUserIds = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet() // 내가 차단한 유저
+        val blockMeUserIds = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
+            .map{ it.userId }.toSet() // 나를 차단한 유저
 
         val activeBottles = groupByStatus[PingPongStatus.ACTIVE]
             ?.map { toPingPongBottleDto(it, user) }
-            ?.filter { it.userId !in blockedUserIds }
+            ?.filter { it.userId !in reportUserIds }
+            ?.filter { it.userId !in blockUserIds}
+            ?.filter { it.userId !in blockMeUserIds }
             ?: emptyList()
         val doneBottles =
             (groupByStatus[PingPongStatus.STOPPED]
@@ -187,7 +202,9 @@ class BottleFacade(
              groupByStatus[PingPongStatus.MATCHED].orEmpty()
             )
                 .map { toPingPongBottleDto(it, user) }
-                .filter { it.userId !in blockedUserIds }
+                .filter { it.userId !in reportUserIds }
+                .filter { it.userId !in blockUserIds}
+                .filter { it.userId !in blockMeUserIds }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
