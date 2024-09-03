@@ -203,8 +203,8 @@ class BottleFacade(
             )
                 .map { toPingPongBottleDto(it, user) }
                 .filter { it.userId !in reportUserIds }
-                .filter { it.userId !in blockedContacts}
-                .filter { it.userId !in blockedContacts }
+                .filter { it.userId !in blockUserIds}
+                .filter { it.userId !in blockMeUserIds }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
 
