@@ -12,9 +12,8 @@ class BottleHistoryService(
 
     @Transactional
     fun saveMatchingHistory(sourceUserId: Long, targetUserId: Long) {
-        val sourceUserBottleHistory = BottleHistory(userId = sourceUserId, matchedUserId = targetUserId)
         val targetUserBottleHistory = BottleHistory(userId = targetUserId, matchedUserId = sourceUserId)
-        bottleHistoryRepository.saveAll(listOf(sourceUserBottleHistory, targetUserBottleHistory))
+        bottleHistoryRepository.save(targetUserBottleHistory)
     }
 
     @Transactional
