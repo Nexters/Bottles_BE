@@ -139,7 +139,7 @@ CREATE TABLE user_report
     INDEX                      idx_reporter_user_id (reporter_user_id)
 );
 
-CREATE TABLE block_contact_list
+CREATE TABLE block_contact
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id      BIGINT       NOT NULL COMMENT '차단등록한 userId',

@@ -91,10 +91,10 @@ vm options: `-Duser.timezone=Asia/Seoul`
 </tr>
 <tr>
   <td align="center">
-    <p align="center"><a href="https://github.com/ham2174">injoon2019</a></p>
+    <p align="center"><a href="https://github.com/injoon2019">injoon2019</a></p>
   </td>
   <td align="center">
-    <p align="center"><a href="https://github.com/injoon2019">miseongk</a></p>
+    <p align="center"><a href="https://github.com/miseongk">miseongk</a></p>
   </td>
 </tr>
 </table>
