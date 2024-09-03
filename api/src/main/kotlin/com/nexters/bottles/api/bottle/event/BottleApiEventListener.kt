@@ -28,7 +28,7 @@ class BottleApiEventListener(
     private val userService: UserService,
 ) {
 
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
 
     @Async
     @EventListener
@@ -57,22 +57,25 @@ class BottleApiEventListener(
                     fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
                     log.info { "[BottleAcceptEventDto] 호감 보냄 bottleId: ${bottle.id} targetUserId: ${bottle.targetUser.id} sourceUserId: ${bottle.sourceUser.id} sourceUserToken: ${it.token}" }
                 }
+
+                bottleHistoryService.saveMatchingHistory(bottle.sourceUser.id, bottle.targetUser.id)
             }
 
             bottle.isActive() -> {
-                fcmTokenService.findAllByUserIdsAndTokenNotBlank(listOf(bottle.sourceUser.id, bottle.targetUser.id)).forEach {
-                    val fcmNotification = FcmNotification(
-                        title = "${findOtherUserName(it.userId, bottle)}님과의 문답이 시작됐어요! 💌",
-                        body = "어떤 질문이 기다리고 있을까요?\n지금부터 서로를 더 깊게 알아보세요!"
-                    )
-                    fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
-                    log.info { "[BottleAcceptEventDto] 문답 시작 bottleId: ${bottle.id} userId: ${it.userId} token: ${it.token}" }
-                }
+                fcmTokenService.findAllByUserIdsAndTokenNotBlank(listOf(bottle.sourceUser.id, bottle.targetUser.id))
+                    .forEach {
+                        val fcmNotification = FcmNotification(
+                            title = "${findOtherUserName(it.userId, bottle)}님과의 문답이 시작됐어요! 💌",
+                            body = "어떤 질문이 기다리고 있을까요?\n지금부터 서로를 더 깊게 알아보세요!"
+                        )
+                        fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
+                        log.info { "[BottleAcceptEventDto] 문답 시작 bottleId: ${bottle.id} userId: ${it.userId} token: ${it.token}" }
+                    }
             }
         }
     }
 
-    private fun findOtherUserName(userId: Long, bottle: Bottle): String? {
+    private fun findOtherUserName(userId: Long, bottle: Bottle): String {
         return if (userId == bottle.sourceUser.id) bottle.targetUser.getMaskedName() else bottle.sourceUser.getMaskedName()
     }
 
