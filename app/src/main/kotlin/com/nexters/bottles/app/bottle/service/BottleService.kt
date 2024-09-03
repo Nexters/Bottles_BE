@@ -163,7 +163,7 @@ class BottleService(
 
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
             .filter { it.willMatchUserId !in blockUserIds }
-            .filter { it.willMatchUserId !in blockUserIds }
+            .filter { it.willMatchUserId !in blockedMeUserIds }
 
         if (usersCanBeMatched.isEmpty()) return null
 

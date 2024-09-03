@@ -182,18 +182,18 @@ class BottleFacade(
         val user = userService.findByIdAndNotDeleted(userId)
         val pingPongBottles = bottleCachingService.getPingPongBottles(userId)
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
-        val blockedUserIds = userReportService.getReportRespondentList(userId)
+        val reportUserIds = userReportService.getReportRespondentList(userId)
             .map { it.respondentUserId }
             .toSet()
-        val blockContacts = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet() // 내가 차단한 유저
-        val blockedContacts = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
+        val blockUserIds = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet() // 내가 차단한 유저
+        val blockMeUserIds = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
             .map{ it.userId }.toSet() // 나를 차단한 유저
 
         val activeBottles = groupByStatus[PingPongStatus.ACTIVE]
             ?.map { toPingPongBottleDto(it, user) }
-            ?.filter { it.userId !in blockedUserIds }
-            ?.filter { it.userId !in blockedContacts}
-            ?.filter { it.userId !in blockedContacts }
+            ?.filter { it.userId !in reportUserIds }
+            ?.filter { it.userId !in blockUserIds}
+            ?.filter { it.userId !in blockMeUserIds }
             ?: emptyList()
         val doneBottles =
             (groupByStatus[PingPongStatus.STOPPED]
@@ -202,7 +202,7 @@ class BottleFacade(
              groupByStatus[PingPongStatus.MATCHED].orEmpty()
             )
                 .map { toPingPongBottleDto(it, user) }
-                .filter { it.userId !in blockedUserIds }
+                .filter { it.userId !in reportUserIds }
                 .filter { it.userId !in blockedContacts}
                 .filter { it.userId !in blockedContacts }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
