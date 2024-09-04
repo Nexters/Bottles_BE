@@ -41,7 +41,7 @@ jobs:
 
       - name: Docker build & push
         env:
-          DOCKER_TAG: ${{ env.DATETIME_TAG }}
+          DOCKER_TAG: ${{ github.sha }}
         run: |
           cd ./api
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
