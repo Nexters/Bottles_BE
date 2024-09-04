@@ -94,4 +94,12 @@ class AuthController(
     fun insertFcmToken(@AuthUserId userId: Long, @RequestBody fcmUpdateRequest: FcmUpdateRequest) {
         authFacade.updateFcmToken(userId, fcmUpdateRequest.fcmToken)
     }
+
+    @ApiOperation("")
+    @PostMapping("/app-version")
+    fun getUpdateAppVersion(): UpdateAppVersionResponse {
+        return UpdateAppVersionResponse(
+
+        )
+    }
 }
