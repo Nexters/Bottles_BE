@@ -95,7 +95,7 @@ class AuthController(
         authFacade.updateFcmToken(userId, fcmUpdateRequest.fcmToken)
     }
 
-    @ApiOperation("")
+    @ApiOperation("업데이트 해야하는 앱 버전 조회")
     @PostMapping("/app-version")
     fun getUpdateAppVersion(): UpdateAppVersionResponse {
         return UpdateAppVersionResponse(
