@@ -41,7 +41,7 @@ jobs:
 
       - name: Docker build & push
         env:
-          DOCKER_TAG: ${{ env.DATETIME_TAG }}
+          DOCKER_TAG: ${{ github.sha }}
         run: |
           cd ./api
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -93,7 +93,7 @@ jobs:
             echo "export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             
             echo "export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
-            echo "export DOCKER_TAG=${{ env.DATETIME_TAG }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export DOCKER_TAG=${{ github.sha }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             
             echo "export DB_DATABASE=${{ secrets.DB_DATABASE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export DB_USER_NAME=${{ secrets.DB_USER_NAME }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
