@@ -125,6 +125,9 @@ jobs:
             echo "export APPLE_KEY_ID_PATH=${{ secrets.APPLE_KEY_ID_PATH }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
+            echo "export LOGSTASH_HOST=${{ secrets.LOGSTASH_HOST }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export LOGSTASH_PORT=${{ secrets.LOGSTASH_PORT }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
 
