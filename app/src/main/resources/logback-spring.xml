@@ -5,7 +5,20 @@
         </encoder>
     </appender>
 
+    <springProfile name="dev">
+        <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <destination>${LOGSTASH_HOST}:${LOGSTASH_PORT}</destination>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeMdc>true</includeMdc>
+            </encoder>
+        </appender>
+    </springProfile>
+
     <root level="INFO">
-        <appender-ref ref="console" />
+        <appender-ref ref="console"/>
+
+        <springProfile name="dev">
+            <appender-ref ref="logstash"/>
+        </springProfile>
     </root>
 </configuration>
