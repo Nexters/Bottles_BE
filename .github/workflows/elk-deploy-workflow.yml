@@ -57,11 +57,11 @@ jobs:
           SERVER_USER_NAME: ${{ secrets.ELK_SERVER_USER_NAME }}
           SERVER_PRIVATE_KEY: ${{ secrets.ELK_SERVER_PRIVATE_KEY }}
         run: |
-          echo "$ELK_SERVER_PRIVATE_KEY" > private_key.pem
+          echo "$SERVER_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/docker-compose.yml $ELK_SERVER_USER_NAME@$ELK_SERVER_HOST:/home/$ELK_SERVER_USER_NAME/docker
-          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/kibana/kibana.yml $ELK_SERVER_USER_NAME@$ELK_SERVER_HOST:/home/$ELK_SERVER_USER_NAME/elk/kibana
-          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/logstash/pipeline/logstash.conf $ELK_SERVER_USER_NAME@$ELK_SERVER_HOST:/home/$ELK_SERVER_USER_NAME/elk/logstash
+          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/docker-compose.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/docker
+          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/kibana/kibana.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/kibana
+          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/logstash/pipeline/logstash.conf $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/logstash
           rm private_key.pem
 
       - name: Deploy to server
@@ -80,7 +80,7 @@ jobs:
             echo "export LOGSTASH_PORT=${{ secrets.LOGSTASH_PORT }}" >> /home/${{ secrets.ELK_SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export KIBANA_PORT=${{ secrets.KIBANA_PORT }}" >> /home/${{ secrets.ELK_SERVER_USER_NAME }}/deploy/env_vars.sh
             
-            sed 's/^export //' /home/${ELK_SERVER_USER_NAME}/deploy/env_vars.sh > /home/${ELK_SERVER_USER_NAME}/docker/.env
+            sed 's/^export //' /home/${{ secrets.ELK_SERVER_USER_NAME }}/deploy/env_vars.sh > /home/${{ secrets.ELK_SERVER_USER_NAME }}/docker/.env
 
       - name: Remove Github Actions IP From Security Group
         run: |
