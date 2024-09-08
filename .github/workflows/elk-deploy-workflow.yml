@@ -57,11 +57,11 @@ jobs:
           SERVER_USER_NAME: ${{ secrets.ELK_SERVER_USER_NAME }}
           SERVER_PRIVATE_KEY: ${{ secrets.ELK_SERVER_PRIVATE_KEY }}
         run: |
-          echo "$SERVER_PRIVATE_KEY" > private_key.pem
+          printf "%s" "$SERVER_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/docker-compose.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/docker
-          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/kibana/kibana.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/kibana
-          scp -o StrictHostKeyChecking=no -i private_key.pem ./elk/logstash/pipeline/logstash.conf $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/logstash
+          scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/docker-compose.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/docker
+          scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/kibana/kibana.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/kibana
+          scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/logstash/pipeline/logstash.conf $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/logstash
           rm private_key.pem
 
       - name: Deploy to server
