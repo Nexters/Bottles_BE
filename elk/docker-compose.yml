@@ -1,0 +1,46 @@
+networks:
+  elk:
+    driver: bridge
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.17.16
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ../elk/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: true
+      xpack.security.transport.ssl.enabled: true
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+    networks:
+      - elk
+
+  logstash:
+    container_name: logstash
+    image: logstash:7.17.16
+    ports:
+      - "${LOGSTASH_PORT}:5000"
+      - "9600:9600"
+    volumes:
+      - ../elk/logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  kibana:
+    container_name: kibana
+    image: kibana:7.17.16
+    ports:
+      - "${KIBANA_PORT}:5601"
+    volumes:
+      - ../elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
