@@ -8,7 +8,7 @@ data class SignUpProfileRequestV2(
     val birthYear: Int? = LocalDate.now().year,
     val birthMonth: Int? = LocalDate.now().monthValue,
     val birthDay: Int? = LocalDate.now().dayOfMonth,
-    val gender: Gender? = Gender.FEMALE,
+    val gender: Gender? = Gender.MALE,
 ) {
 
     fun convertBirthDateToLocalDate(): LocalDate {
