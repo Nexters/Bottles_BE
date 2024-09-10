@@ -99,7 +99,7 @@ class AuthController(
     @GetMapping("/app-version")
     fun getUpdateAppVersion(): UpdateAppVersionResponse {
         return UpdateAppVersionResponse(
-            minimumAndroidVersion = "10008",
+            minimumAndroidVersion = 10008L
         )
     }
 }
