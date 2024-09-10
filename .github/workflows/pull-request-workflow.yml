@@ -42,22 +42,44 @@ jobs:
         env:
           DATA: |
             {
-              "content": "<@&${{ secrets.DISCORD_ROLE_ID }}>",
-              "embeds": [
+              "blocks": [
                 {
-                  "author": {
-                    "name": ${{ toJson(github.event.sender.login) }},
-                    "url": "https://github.com/${{ github.event.sender.login }}",
-                    "icon_url": ${{ toJson(github.event.sender.avatar_url) }}
-                  },
-                  "title": ${{ toJson(github.event.pull_request.title) }},
-                  "description": ${{ toJson(github.event.pull_request.body) }},
-                  "url": ${{ toJson(github.event.pull_request.html_url) }},
-                  "color": 65280
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*서버 PR* :bell: <@U07L8AX9B4N><@U07L87A3WKY>"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author:*\n<https://github.com/${{ github.event.sender.login }}|${{ github.event.sender.login }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Title:*\n${{ github.event.pull_request.title }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Description:*\n${{ github.event.pull_request.body }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Pull Request URL:*\n<${{ github.event.pull_request.html_url }}|View PR>"
+                  }
                 }
               ]
             }
         run: |
           curl -X POST -H 'Content-type: application/json' \
           -d "$DATA" \
-          ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ${{ secrets.SLACK_WEBHOOK_URL }}
