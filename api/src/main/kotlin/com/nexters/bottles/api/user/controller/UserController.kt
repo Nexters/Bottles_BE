@@ -3,9 +3,12 @@ package com.nexters.bottles.api.user.controller
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserFacade
+import com.nexters.bottles.api.user.facade.dto.AlimyOnOffRequest
+import com.nexters.bottles.api.user.facade.dto.AlimyResponse
 import com.nexters.bottles.api.user.facade.dto.BlockContactListRequest
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
 import io.swagger.annotations.ApiOperation
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -29,5 +32,19 @@ class UserController(
     @AuthRequired
     fun blockContactList(@AuthUserId userId: Long, @RequestBody blockContactListRequest: BlockContactListRequest) {
         userFacade.blockContactList(userId, blockContactListRequest.blockContacts)
+    }
+
+    @ApiOperation("알림 설정")
+    @PostMapping("/alimy")
+    @AuthRequired
+    fun turnOnOffAlimy(@AuthUserId userId: Long, @RequestBody alimyOnOffRequest: AlimyOnOffRequest) {
+        userFacade.turnOnOffAlimy(userId, alimyOnOffRequest)
+    }
+
+    @ApiOperation("알림 설정 조회")
+    @GetMapping("/alimy")
+    @AuthRequired
+    fun turnOnOffAlimy(@AuthUserId userId: Long): List<AlimyResponse> {
+        return userFacade.getAlimy(userId)
     }
 }

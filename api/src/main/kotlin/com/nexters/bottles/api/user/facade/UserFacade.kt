@@ -1,9 +1,13 @@
 package com.nexters.bottles.api.user.facade
 
+import com.nexters.bottles.api.user.facade.dto.AlimyOnOffRequest
+import com.nexters.bottles.api.user.facade.dto.AlimyResponse
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
 import com.nexters.bottles.app.user.domain.BlockContact
+import com.nexters.bottles.app.user.domain.UserAlimy
 import com.nexters.bottles.app.user.domain.UserReport
 import com.nexters.bottles.app.user.service.BlockContactListService
+import com.nexters.bottles.app.user.service.UserAlimyService
 import com.nexters.bottles.app.user.service.UserReportService
 import org.springframework.stereotype.Component
 
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Component
 class UserFacade(
     private val userReportService: UserReportService,
     private val blockContactListService: BlockContactListService,
+    private val alimyService: UserAlimyService,
 ) {
 
 
@@ -32,5 +37,14 @@ class UserFacade(
 
         blockContactListService.saveAll(newBlockContacts)
         blockContactListService.deleteAll(deletedBlockContacts)
+    }
+
+    fun turnOnOffAlimy(userId: Long, alimyOnOffRequest: AlimyOnOffRequest) {
+        alimyService.turnOnOffAlimy(userId, alimyOnOffRequest.alimyType, alimyOnOffRequest.enabled)
+    }
+
+    fun getAlimy(userId: Long): List<AlimyResponse> {
+        return alimyService.findAlimies(userId)
+            .map { AlimyResponse(it.alimyType, it.enabled) }
     }
 }

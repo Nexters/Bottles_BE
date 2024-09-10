@@ -151,3 +151,15 @@ CREATE TABLE block_contact
     INDEX        idx_created_at (created_at),
     INDEX        idx_updated_at (updated_at)
 );
+
+CREATE TABLE user_alimy
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    user_id    INT          NOT NULL,
+    alimy_type VARCHAR(100) NOT NULL comment 'DAILY_RANDOM, RECEIVE_LIKE, PINGPONG, MARKETING',
+    enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+    UNIQUE KEY unique_user_alimy (user_id, alimy_type)
+);
