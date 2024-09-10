@@ -96,10 +96,10 @@ class AuthController(
     }
 
     @ApiOperation("업데이트 해야하는 앱 버전 조회")
-    @PostMapping("/app-version")
+    @GetMapping("/app-version")
     fun getUpdateAppVersion(): UpdateAppVersionResponse {
         return UpdateAppVersionResponse(
-
+            minimumAndroidVersion = "10008",
         )
     }
 }
