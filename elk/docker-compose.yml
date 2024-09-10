@@ -14,7 +14,7 @@ services:
     environment:
       discovery.type: single-node
       xpack.security.enabled: true
-      xpack.security.transport.ssl.enabled: true
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
       ELASTIC_USERNAME: ${ELASTIC_USERNAME}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
     networks:
@@ -27,7 +27,12 @@ services:
       - "${LOGSTASH_PORT}:5000"
       - "9600:9600"
     volumes:
-      - ../elk/logstash/pipeline:/usr/share/logstash/pipeline
+      - ../elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ../elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+    environment:
+      LOGSTASH_PORT: ${LOGSTASH_PORT}
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
     depends_on:
       - elasticsearch
     networks:
@@ -40,6 +45,9 @@ services:
       - "${KIBANA_PORT}:5601"
     volumes:
       - ../elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
     depends_on:
       - elasticsearch
     networks:

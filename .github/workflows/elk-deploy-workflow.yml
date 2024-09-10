@@ -62,6 +62,7 @@ jobs:
           scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/docker-compose.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/docker
           scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/kibana/kibana.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/kibana
           scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/logstash/pipeline/logstash.conf $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/logstash
+          scp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o StrictHostKeyChecking=no -i private_key.pem ./elk/logstash/logstash.yml $SERVER_USER_NAME@$SERVER_HOST:/home/$SERVER_USER_NAME/elk/logstash
           rm private_key.pem
 
       - name: Deploy to server
