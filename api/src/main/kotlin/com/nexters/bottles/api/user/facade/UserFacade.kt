@@ -45,6 +45,6 @@ class UserFacade(
 
     fun getAlimy(userId: Long): List<AlimyResponse> {
         return alimyService.findAlimies(userId)
-            .map { AlimyResponse(it.userId, it.alimyType, it.enabled) }
+            .map { AlimyResponse(it.alimyType, it.enabled) }
     }
 }
