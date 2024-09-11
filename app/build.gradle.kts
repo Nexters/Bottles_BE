@@ -19,7 +19,9 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 
     implementation("com.google.firebase:firebase-admin:9.2.0")
-    
+
+    implementation("com.github.maricn:logback-slack-appender:1.3.0")
+
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 

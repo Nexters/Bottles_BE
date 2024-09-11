@@ -37,6 +37,7 @@ services:
       APPLE_TEAM_ID: ${APPLE_TEAM_ID}
       LOGSTASH_HOST: ${LOGSTASH_HOST}
       LOGSTASH_PORT: ${LOGSTASH_PORT}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     ports:
       - "8080"
     volumes:
@@ -73,6 +74,7 @@ services:
       APPLE_TEAM_ID: ${APPLE_TEAM_ID}
       LOGSTASH_HOST: ${LOGSTASH_HOST}
       LOGSTASH_PORT: ${LOGSTASH_PORT}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     ports:
       - "8080"
     volumes:
