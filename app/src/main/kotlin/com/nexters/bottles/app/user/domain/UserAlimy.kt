@@ -17,6 +17,6 @@ data class UserAlimy(
     @Enumerated(EnumType.STRING)
     val alimyType: AlimyType,
 
-    val enabled: Boolean = true,
+    var enabled: Boolean = true,
 ): BaseEntity() {
 }
