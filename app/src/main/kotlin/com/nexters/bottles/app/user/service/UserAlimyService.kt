@@ -13,9 +13,7 @@ class UserAlimyService(
     @Transactional
     fun turnOnOffAlimy(userId: Long, alimyType: AlimyType, enabled: Boolean) {
         userAlimyRepository.findByUserIdAndAlimyType(userId, alimyType)?.let {
-            userAlimyRepository.save(
-                UserAlimy(userId = userId, alimyType = alimyType, enabled = enabled)
-            )
+            it.enabled = enabled
         } ?: run {
             userAlimyRepository.save(
                 UserAlimy(userId = userId, alimyType = alimyType, enabled = enabled)
