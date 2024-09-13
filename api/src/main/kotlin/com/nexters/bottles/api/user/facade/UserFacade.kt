@@ -18,7 +18,6 @@ class UserFacade(
     private val alimyService: UserAlimyService,
 ) {
 
-
     fun reportUser(userId: Long, reportUserRequest: ReportUserRequest) {
         userReportService.saveReport(
             UserReport(
