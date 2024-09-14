@@ -166,4 +166,9 @@ class UserService(
             user.isMatchActivated = activate
         } ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
     }
+
+    @Transactional(readOnly = true)
+    fun findAllByPhoneNumber(phoneNumber: String): List<User> {
+        return userRepository.findAllByPhoneNumberOrderById(phoneNumber)
+    }
 }
