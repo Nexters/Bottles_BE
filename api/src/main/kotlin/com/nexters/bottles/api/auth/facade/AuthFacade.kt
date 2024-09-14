@@ -1,27 +1,9 @@
 package com.nexters.bottles.api.auth.facade
 
-import com.nexters.bottles.api.auth.component.AppleAuthClientSecretKeyGenerator
-import com.nexters.bottles.api.auth.component.ApplePublicKeyGenerator
-import com.nexters.bottles.api.auth.component.AuthCodeGenerator
-import com.nexters.bottles.api.auth.component.JwtTokenProvider
-import com.nexters.bottles.api.auth.component.NaverSmsEncoder
+import com.nexters.bottles.api.auth.component.*
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
 import com.nexters.bottles.api.auth.event.dto.SignUpEventDto
-import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
-import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
-import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
-import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
-import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
-import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
-import com.nexters.bottles.api.auth.facade.dto.MessageDto
-import com.nexters.bottles.api.auth.facade.dto.ReissueTokenRequest
-import com.nexters.bottles.api.auth.facade.dto.ReissueTokenResponse
-import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
-import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
-import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
-import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
-import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
+import com.nexters.bottles.api.auth.facade.dto.*
 import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
@@ -39,6 +21,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Duration;
 
 
 @Component
@@ -67,6 +50,7 @@ class AuthFacade(
 
     fun kakaoSignInUp(kakaoSignInUpRequest: KakaoSignInUpRequest): KakaoSignInUpResponse {
         val userInfoResponse = webClientAdapter.sendKakaoAuthRequest(kakaoSignInUpRequest.code).convert()
+        validateNotAbusing(userInfoResponse.kakao_account.phone_number)
         val signInUpDto = userService.findKakaoUserOrSignUp(userInfoResponse)
         val userProfile = userProfileService.findUserProfile(signInUpDto.userId)
         kakaoSignInUpRequest.fcmDeviceToken?.let {
@@ -90,6 +74,16 @@ class AuthFacade(
                         userName = signInUpDto.userName
                     )
                 )
+            }
+        }
+    }
+
+    private fun validateNotAbusing(phoneNumber: String?) {
+        if (phoneNumber != null) {
+            val lastAccount = userService.findAllByPhoneNumber(phoneNumber).last()
+            val duration: Duration = Duration.between(lastAccount.deletedAt, LocalDateTime.now())
+            if (duration.toHours() < 48) {
+                throw IllegalStateException("탈퇴 후 48시간이 지나야 재가입이 가능해요.")
             }
         }
     }
