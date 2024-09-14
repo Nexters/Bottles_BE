@@ -26,7 +26,6 @@ class UserService(
     @Transactional
     fun findKakaoUserOrSignUp(userInfoResponse: KakaoUserInfoResponse): SignInUpDto {
         userRepository.findByPhoneNumberAndDeletedFalse(userInfoResponse.kakao_account.phone_number)?.let { user ->
-            if (user.deleted)
             log.info { "전화번호 ${userInfoResponse.kakao_account.phone_number} 유저 존재하여 조회 후 반환" }
             return SignInUpDto(userId = user.id, isSignUp = false)
         } ?: run {
