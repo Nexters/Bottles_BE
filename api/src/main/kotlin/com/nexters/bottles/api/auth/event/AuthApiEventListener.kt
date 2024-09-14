@@ -4,6 +4,8 @@ import com.nexters.bottles.api.auth.event.dto.SignUpEventDto
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.service.FcmTokenService
+import com.nexters.bottles.app.user.domain.enum.AlimyType
+import com.nexters.bottles.app.user.service.UserAlimyService
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class AuthApiEventListener(
     private val fcmTokenService: FcmTokenService,
+    private val alimyService: UserAlimyService,
     private val fcmClient: FcmClient,
 ) {
 
@@ -29,6 +32,11 @@ class AuthApiEventListener(
         fcmTokenService.findAllByUserIdAndTokenNotBlank(userId = event.userId).forEach {
             fcmClient.sendNotificationTo(userToken = it.token, fcmNotification = fcmNotification)
             log.info { "[SignUpEventDto] 회원 가입 후 자기소개 작성 부스팅 token: ${it.token}" }
+        }
+
+        // 알림 설정 자동 ON
+        AlimyType.values().forEach { it ->
+            alimyService.turnOnOffAlimy(event.userId, it, enabled = true)
         }
     }
 }
