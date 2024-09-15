@@ -80,10 +80,13 @@ class AuthFacade(
 
     private fun validateNotAbusing(phoneNumber: String?) {
         if (phoneNumber != null) {
-            val lastAccount = userService.findAllByPhoneNumber(phoneNumber).last()
-            val duration: Duration = Duration.between(lastAccount.deletedAt, LocalDateTime.now())
-            if (duration.toHours() < 48) {
-                throw IllegalStateException("탈퇴 후 48시간이 지나야 재가입이 가능해요.")
+            val allAccounts =  userService.findAllByPhoneNumber(phoneNumber)
+            if (allAccounts.isNotEmpty()) {
+                val lastAccount = allAccounts.last()
+                val duration: Duration = Duration.between(lastAccount.deletedAt, LocalDateTime.now())
+                require(duration.toHours() < 48) {
+                    throw IllegalStateException("탈퇴 후 48시간이 지나야 재가입이 가능해요.")
+                }
             }
         }
     }
