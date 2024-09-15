@@ -1,9 +1,27 @@
 package com.nexters.bottles.api.auth.facade
 
-import com.nexters.bottles.api.auth.component.*
+import com.nexters.bottles.api.auth.component.AppleAuthClientSecretKeyGenerator
+import com.nexters.bottles.api.auth.component.ApplePublicKeyGenerator
+import com.nexters.bottles.api.auth.component.AuthCodeGenerator
+import com.nexters.bottles.api.auth.component.JwtTokenProvider
+import com.nexters.bottles.api.auth.component.NaverSmsEncoder
 import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
 import com.nexters.bottles.api.auth.event.dto.SignUpEventDto
-import com.nexters.bottles.api.auth.facade.dto.*
+import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse
+import com.nexters.bottles.api.auth.facade.dto.AuthSmsRequest
+import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpRequest
+import com.nexters.bottles.api.auth.facade.dto.KakaoSignInUpResponse
+import com.nexters.bottles.api.auth.facade.dto.LogoutRequest
+import com.nexters.bottles.api.auth.facade.dto.MessageDto
+import com.nexters.bottles.api.auth.facade.dto.ReissueTokenRequest
+import com.nexters.bottles.api.auth.facade.dto.ReissueTokenResponse
+import com.nexters.bottles.api.auth.facade.dto.SendSmsResponse
+import com.nexters.bottles.api.auth.facade.dto.SignUpResponse
+import com.nexters.bottles.api.auth.facade.dto.SignUpResponseV2
+import com.nexters.bottles.api.auth.facade.dto.SmsSignInRequest
+import com.nexters.bottles.api.auth.facade.dto.SmsSignInResponse
 import com.nexters.bottles.api.infra.WebClientAdapter
 import com.nexters.bottles.app.auth.service.AuthSmsService
 import com.nexters.bottles.app.auth.service.BlackListService
@@ -19,9 +37,9 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Duration;
 
 
 @Component
@@ -80,9 +98,10 @@ class AuthFacade(
 
     private fun validateNotAbusing(phoneNumber: String?) {
         if (phoneNumber != null) {
-            val allAccounts =  userService.findAllByPhoneNumber(phoneNumber)
+            val allAccounts = userService.findAllByPhoneNumber(phoneNumber)
             if (allAccounts.isNotEmpty()) {
                 val lastAccount = allAccounts.last()
+                if (lastAccount.isNotDeleted()) return
                 val duration: Duration = Duration.between(lastAccount.deletedAt, LocalDateTime.now())
                 require(duration.toHours() < 48) {
                     throw IllegalStateException("탈퇴 후 48시간이 지나야 재가입이 가능해요.")
