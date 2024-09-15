@@ -25,4 +25,16 @@ class UserAlimyService(
     fun findAlimies(userId: Long): List<UserAlimy> {
         return userAlimyRepository.findAllByUserId(userId)
     }
+
+    @Transactional(readOnly = true)
+    fun findAllowedUserAlimyByUserIdsAndAlimyType(userIds: Set<Long>, alimyType: AlimyType): List<UserAlimy> {
+        return userAlimyRepository.findAllByUserIds(userIds)
+            .filter { it.alimyType == alimyType }
+            .filter { it.enabled }
+    }
+
+    @Transactional(readOnly = true)
+    fun isTurnedOn(id: Long, alimyType: AlimyType): Boolean {
+        return userAlimyRepository.findByUserIdAndAlimyType(id, alimyType)?.enabled ?: false
+    }
 }

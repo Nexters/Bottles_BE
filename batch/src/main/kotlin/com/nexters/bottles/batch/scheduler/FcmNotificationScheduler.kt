@@ -3,6 +3,8 @@ package com.nexters.bottles.batch.scheduler
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.service.FcmTokenService
+import com.nexters.bottles.app.user.domain.enum.AlimyType
+import com.nexters.bottles.app.user.service.UserAlimyService
 import com.nexters.bottles.app.user.service.UserService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -11,13 +13,17 @@ import org.springframework.stereotype.Component
 class FcmNotificationScheduler(
     private val fcmClient: FcmClient,
     private val fcmTokenService: FcmTokenService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val userAlimyService: UserAlimyService,
 ) {
 
     @Scheduled(cron = "0 0 18 * * *")
     fun notifyMatching() {
         val userIds = userService.findAllByDeletedFalseAndMatchActivatedTrue().map { it.id }
-        val fcmTokens = fcmTokenService.findAllByUserIdsAndTokenNotBlank(userIds)
+        val alimyAllowUserIds = userAlimyService.findAllowedUserAlimyByUserIdsAndAlimyType(userIds.toSet(), AlimyType.DAILY_RANDOM)
+            .map { it.userId }
+
+        val fcmTokens = fcmTokenService.findAllByUserIdsAndTokenNotBlank(alimyAllowUserIds)
         val tokens = fcmTokens.map { it.token }
 
         val fcmNotification = FcmNotification(
