@@ -29,7 +29,7 @@ class UserAlimyService(
     @Transactional(readOnly = true)
     fun findAllowedUserAlimyByUserIdsAndAlimyType(userIds: Set<Long>, alimyType: AlimyType): List<UserAlimy> {
         return userAlimyRepository.findAllByUserIds(userIds)
-            .filter { it.alimyType == AlimyType.DAILY_RANDOM }
+            .filter { it.alimyType == alimyType }
             .filter { it.enabled }
     }
 
