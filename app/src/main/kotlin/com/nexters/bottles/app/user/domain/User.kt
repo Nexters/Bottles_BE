@@ -90,4 +90,8 @@ class User(
     fun updateLastRandomMatchedAt(basedAt: LocalDateTime) {
         this.lastRandomMatchedAt = basedAt
     }
+
+    fun isNotDeleted(): Boolean {
+        return !deleted;
+    }
 }
