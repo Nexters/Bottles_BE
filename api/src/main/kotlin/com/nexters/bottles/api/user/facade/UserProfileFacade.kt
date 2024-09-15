@@ -78,6 +78,7 @@ class UserProfileFacade(
         return UserProfileResponse(
             userName = user.name,
             age = user.getKoreanAge(),
+            kakaoId = user.kakaoId,
             imageUrl = userProfile?.imageUrl,
             introduction = userProfile?.introduction ?: emptyList(),
             profileSelect = userProfile?.profileSelect,
