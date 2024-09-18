@@ -10,5 +10,5 @@ interface UserAlimyRepository: JpaRepository<UserAlimy, Long> {
 
     fun findAllByUserId(userId: Long): List<UserAlimy>
 
-    fun findAllByUserIds(userIds: Set<Long>): List<UserAlimy>
+    fun findAllByUserIdIn(userIds: Set<Long>): List<UserAlimy>
 }

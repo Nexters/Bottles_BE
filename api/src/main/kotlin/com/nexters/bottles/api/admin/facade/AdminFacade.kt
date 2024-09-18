@@ -162,20 +162,22 @@ class AdminFacade(
         }
     }
 
-//    fun makeBlurImage() {
-//        userProfileService.findAllWithImage().forEach {
-//            val imageFile = amazonS3FileService.download(it.imageUrl!!, System.getProperty("java.io.tmpdir"))
-//            val blurImage = imageProcessor.blurImage(imageFile)
-//            val key = makePathWithUserId(imageFile, it.user.id)
-//            amazonS3FileService.upload(blurImage, key)
-//        }
-//    }
+    fun makeBlurImage() {
+        userProfileService.findAllWithImage().forEach {
+            val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!)
+            val path = makePathWithUserId(imageFile, it.user.id)
+            val blurredImageUrl = imageUploader.uploadWithBlur(imageFile, path);
+
+            userProfileService.addBlurImageUrl(it.id, blurredImageUrl.toString())
+        }
+    }
 
     fun makePathWithUserId(
         file: MultipartFile,
         userId: Long
     ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
+
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"

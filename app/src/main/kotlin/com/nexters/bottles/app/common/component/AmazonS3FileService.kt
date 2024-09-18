@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
+import java.io.*
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -53,14 +53,46 @@ class AmazonS3FileService(
         return amazonS3.getUrl(bucket, key)
     }
 
-    fun download(key: String, downloadFilePath: String): File {
+    fun downloadAsMultipartFile(key: String): MultipartFile {
+        // S3에서 파일 가져오기
         val s3Object = amazonS3.getObject(GetObjectRequest(bucket, key))
         val inputStream = s3Object.objectContent
 
-        val filePath = Paths.get(downloadFilePath)
-        Files.copy(inputStream, filePath)
-        inputStream.close()
+        // 바이트 배열로 변환
+        val outputStream = ByteArrayOutputStream()
+        inputStream.use { input ->
+            outputStream.use { output ->
+                input.copyTo(output)
+            }
+        }
 
-        return filePath.toFile()
+        // S3 파일 이름 및 MIME 타입 설정
+        val fileName = key.substringAfterLast("/")
+        val contentType = Files.probeContentType(Paths.get(fileName)) ?: "application/octet-stream"
+
+        // CustomMultipartFile로 변환
+        return CustomMultipartFile(
+            outputStream.toByteArray(),
+            fileName,
+            contentType
+        )
+    }
+}
+
+class CustomMultipartFile(
+    private val content: ByteArray,
+    private val fileName: String,
+    private val contentType: String
+) : MultipartFile {
+
+    override fun getName(): String = fileName
+    override fun getOriginalFilename(): String = fileName
+    override fun getContentType(): String = contentType
+    override fun isEmpty(): Boolean = content.isEmpty()
+    override fun getSize(): Long = content.size.toLong()
+    override fun getBytes(): ByteArray = content
+    override fun getInputStream(): InputStream = ByteArrayInputStream(content)
+    override fun transferTo(dest: File) {
+        FileOutputStream(dest).use { it.write(content) }
     }
 }

@@ -81,6 +81,13 @@ class UserProfileService(
 
     @Transactional(readOnly = true)
     fun findAllWithImage(): List<UserProfile> {
-        return profileRepository.findAll().filter { it.imageUrl != null }
+        return profileRepository.findAllWithUser().filter { it.imageUrl != null }
+    }
+
+    @Transactional
+    fun addBlurImageUrl(id: Long, blurredImageUrl: String) {
+        profileRepository.findByIdOrNull(id)?.let {
+            it.blurredImageUrl = blurredImageUrl
+        }
     }
 }
