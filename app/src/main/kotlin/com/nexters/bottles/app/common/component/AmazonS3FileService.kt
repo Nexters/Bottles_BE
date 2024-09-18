@@ -55,6 +55,7 @@ class AmazonS3FileService(
 
     fun downloadAsMultipartFile(key: String): MultipartFile {
         // S3에서 파일 가져오기
+        println("key: $key")
         val s3Object = amazonS3.getObject(GetObjectRequest(bucket, key))
         val inputStream = s3Object.objectContent
 

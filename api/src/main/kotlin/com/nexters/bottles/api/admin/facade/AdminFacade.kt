@@ -163,8 +163,10 @@ class AdminFacade(
     }
 
     fun makeBlurImage() {
-        userProfileService.findAllWithImage().forEach {
-            val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!)
+        userProfileService.findAllWithImage()
+            .filter { it.user.id > 150 }
+            .forEach {
+            val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
             val path = makePathWithUserId(imageFile, it.user.id)
             val blurredImageUrl = imageUploader.uploadWithBlur(imageFile, path);
 
