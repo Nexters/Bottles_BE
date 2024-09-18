@@ -65,9 +65,10 @@ class UserProfileService(
     }
 
     @Transactional
-    fun uploadImageUrl(user: User, imageUrl: String) {
+    fun uploadImageUrl(user: User, imageUrl: String, blurredImageUrl: String) {
         profileRepository.findByUserId(user.id)?.let {
             it.imageUrl = imageUrl
+            it.blurredImageUrl = blurredImageUrl
         } ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
 
