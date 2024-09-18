@@ -1,6 +1,7 @@
 package com.nexters.bottles.app.common.component
 
 import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.GetObjectRequest
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import org.springframework.beans.factory.annotation.Value
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.net.URL
 import java.nio.file.Files
+import java.nio.file.Paths
 
 @Component
 class AmazonS3FileService(
@@ -49,5 +51,16 @@ class AmazonS3FileService(
         )
         amazonS3.putObject(putObjectRequest)
         return amazonS3.getUrl(bucket, key)
+    }
+
+    fun download(key: String, downloadFilePath: String): File {
+        val s3Object = amazonS3.getObject(GetObjectRequest(bucket, key))
+        val inputStream = s3Object.objectContent
+
+        val filePath = Paths.get(downloadFilePath)
+        Files.copy(inputStream, filePath)
+        inputStream.close()
+
+        return filePath.toFile()
     }
 }

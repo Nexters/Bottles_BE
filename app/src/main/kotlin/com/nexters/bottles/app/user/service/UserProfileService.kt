@@ -78,4 +78,9 @@ class UserProfileService(
             profileRepository.deleteById(profile.id)
         }
     }
+
+    @Transactional(readOnly = true)
+    fun findAllWithImage(): List<UserProfile> {
+        return profileRepository.findAll().filter { it.imageUrl != null }
+    }
 }

@@ -130,7 +130,7 @@ class UserProfileFacade(
         profileService.uploadImageUrl(me, originalImageUrl.toString(), blurredImageUrl.toString())
     }
 
-    private fun makePathWithUserId(
+    fun makePathWithUserId(
         file: MultipartFile,
         userId: Long
     ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()

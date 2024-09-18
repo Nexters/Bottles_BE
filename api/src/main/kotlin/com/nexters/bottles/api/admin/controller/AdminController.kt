@@ -79,4 +79,10 @@ class AdminController(
     fun sendPushMessages(@RequestBody pushMessagesRequest: PushMessageRequest) {
         adminFacade.sendPushMessages(pushMessagesRequest)
     }
+
+    @ApiOperation("블러 이미지 생성")
+    @PostMapping("/blur-i,age")
+    fun makeBlurImage() {
+        adminFacade.makeBlurImage()
+    }
 }
