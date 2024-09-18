@@ -81,7 +81,7 @@ class AdminController(
     }
 
     @ApiOperation("블러 이미지 생성")
-    @PostMapping("/blur-i,age")
+    @PostMapping("/blur-image")
     fun makeBlurImage() {
         adminFacade.makeBlurImage()
     }
