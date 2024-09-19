@@ -29,6 +29,8 @@ class UserProfile(
     var introduction: List<QuestionAndAnswer> = arrayListOf(),
 
     var imageUrl: String? = null,
+
+    var blurredImageUrl: String? = null,
 ) : BaseEntity() {
 
     fun hasCompleteIntroduction(): Boolean {

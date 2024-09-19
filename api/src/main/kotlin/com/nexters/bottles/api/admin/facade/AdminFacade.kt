@@ -7,6 +7,9 @@ import com.nexters.bottles.api.user.facade.dto.InterestDto
 import com.nexters.bottles.api.user.facade.dto.RegionDto
 import com.nexters.bottles.app.admin.service.AdminService
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.app.common.component.AmazonS3FileService
+import com.nexters.bottles.app.common.component.ImageProcessor
+import com.nexters.bottles.app.common.component.ImageUploader
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
@@ -17,11 +20,16 @@ import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.domain.enum.SignUpType
+import com.nexters.bottles.app.user.service.UserProfileService
+import com.nexters.bottles.app.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
 import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class AdminFacade(
@@ -30,6 +38,11 @@ class AdminFacade(
     private val testJwtTokenProvider: TestJwtTokenProvider,
     private val fcmClient: FcmClient,
     private val fcmTokenService: FcmTokenService,
+    private val userService: UserService,
+    private val userProfileService: UserProfileService,
+    private val imageProcessor: ImageProcessor,
+    private val imageUploader: ImageUploader,
+    private val amazonS3FileService: AmazonS3FileService,
 ) {
 
     private val log = KotlinLogging.logger {  }
@@ -149,7 +162,27 @@ class AdminFacade(
         }
     }
 
+    fun makeBlurImage() {
+        userProfileService.findAllWithImage()
+            .filter { it.user.id > 150 }
+            .forEach {
+            val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
+            val path = makePathWithUserId(imageFile, it.user.id)
+            val blurredImageUrl = imageUploader.uploadWithBlur(imageFile, path);
+
+            userProfileService.addBlurImageUrl(it.id, blurredImageUrl.toString())
+        }
+    }
+
+    fun makePathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
+        .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
+
+
     companion object {
+        private const val FILE_NAME_DELIMITER = "_"
         private const val mockMaleUserId = 1L
         private const val mockFemaleUserId1 = 2L
         private const val mockFemaleUserId2 = 9L

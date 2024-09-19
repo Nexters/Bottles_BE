@@ -65,9 +65,10 @@ class UserProfileService(
     }
 
     @Transactional
-    fun uploadImageUrl(user: User, imageUrl: String) {
+    fun uploadImageUrl(user: User, imageUrl: String, blurredImageUrl: String) {
         profileRepository.findByUserId(user.id)?.let {
             it.imageUrl = imageUrl
+            it.blurredImageUrl = blurredImageUrl
         } ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
 
@@ -75,6 +76,18 @@ class UserProfileService(
     fun deleteUserProfile(userId: Long) {
         profileRepository.findByUserId(userId)?.let { profile ->
             profileRepository.deleteById(profile.id)
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun findAllWithImage(): List<UserProfile> {
+        return profileRepository.findAllWithUser().filter { it.imageUrl != null }
+    }
+
+    @Transactional
+    fun addBlurImageUrl(id: Long, blurredImageUrl: String) {
+        profileRepository.findByIdOrNull(id)?.let {
+            it.blurredImageUrl = blurredImageUrl
         }
     }
 }
