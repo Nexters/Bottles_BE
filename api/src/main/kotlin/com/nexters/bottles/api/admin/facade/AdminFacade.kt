@@ -162,9 +162,9 @@ class AdminFacade(
         }
     }
 
-    fun makeBlurImage() {
+    fun makeBlurImage(userId: Long) {
         userProfileService.findAllWithImage()
-            .filter { it.user.id > 150 }
+            .filter { it.user.id > userId }
             .forEach {
             val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
             val path = makePathWithUserId(imageFile, it.user.id)

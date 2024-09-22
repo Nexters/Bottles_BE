@@ -5,6 +5,7 @@ import com.nexters.bottles.api.admin.facade.dto.*
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -81,8 +82,8 @@ class AdminController(
     }
 
     @ApiOperation("블러 이미지 생성")
-    @PostMapping("/blur-image")
-    fun makeBlurImage() {
-        adminFacade.makeBlurImage()
+    @PostMapping("/blur-image/{userId}")
+    fun makeBlurImage(@PathVariable userId: Long) {
+        adminFacade.makeBlurImage(userId)
     }
 }
