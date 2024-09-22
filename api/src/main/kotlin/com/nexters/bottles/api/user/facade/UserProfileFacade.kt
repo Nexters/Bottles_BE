@@ -14,6 +14,7 @@ import com.nexters.bottles.app.common.component.ImageUploader
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
 import com.nexters.bottles.app.user.domain.UserProfileSelect
+import com.nexters.bottles.app.user.service.BlockContactListService
 import com.nexters.bottles.app.user.service.UserProfileService
 import com.nexters.bottles.app.user.service.UserService
 import com.nexters.bottles.app.user.service.dto.SignInUpStep
@@ -32,6 +33,7 @@ class UserProfileFacade(
     private val userService: UserService,
     private val fileService: FileService,
     private val imageUploader: ImageUploader,
+    private val blockContactListService: BlockContactListService,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -77,6 +79,7 @@ class UserProfileFacade(
     fun getMyProfile(userId: Long): UserProfileResponse {
         val userProfile = profileService.findUserProfile(userId)
         val user = userProfile?.user ?: userService.findByIdAndNotDeleted(userId)
+        val blockContactList = blockContactListService.findAllByUserId(user.id)
         return UserProfileResponse(
             userName = user.name,
             age = user.getKoreanAge(),
@@ -84,7 +87,8 @@ class UserProfileFacade(
             imageUrl = userProfile?.imageUrl,
             introduction = userProfile?.introduction ?: emptyList(),
             profileSelect = userProfile?.profileSelect,
-            isMatchActivated = user.isMatchActivated
+            isMatchActivated = user.isMatchActivated,
+            blockedUserCount = blockContactList.size
         )
     }
 

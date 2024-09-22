@@ -10,6 +10,7 @@ data class UserProfileResponse(
     val imageUrl: String? = null,
     val introduction: List<QuestionAndAnswer>,
     val profileSelect: UserProfileSelect? = null,
-    val isMatchActivated: Boolean? = true
+    val isMatchActivated: Boolean? = true,
+    val blockedUserCount: Int = 0,
 ) {
 }
