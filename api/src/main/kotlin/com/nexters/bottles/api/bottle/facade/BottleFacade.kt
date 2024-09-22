@@ -21,6 +21,7 @@ import com.nexters.bottles.api.bottle.facade.dto.PingPongLetter
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponse
 import com.nexters.bottles.api.bottle.facade.dto.PingPongUserProfile
 import com.nexters.bottles.api.bottle.facade.dto.RegisterLetterRequest
+import com.nexters.bottles.api.bottle.util.getLastActivatedAtInKorean
 import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
@@ -125,9 +126,9 @@ class BottleFacade(
             age = bottle.sourceUser.getKoreanAge(),
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
-            userImageUrl = bottle.sourceUser.userProfile?.imageUrl,
+            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
             expiredAt = bottle.expiredAt,
-            //lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
+            lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
         )
     }
 
@@ -145,7 +146,7 @@ class BottleFacade(
             introduction = bottle.sourceUser.userProfile?.introduction,
             profileSelect = bottle.sourceUser.userProfile?.profileSelect,
             likeMessage = bottle.likeMessage,
-            userImageUrl = bottle.sourceUser.userProfile?.imageUrl
+            userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl
         )
     }
 
@@ -220,8 +221,8 @@ class BottleFacade(
             age = otherUser.getKoreanAge(),
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
-            userImageUrl = otherUser.userProfile?.imageUrl,
-            //lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now()),
+            userImageUrl = otherUser.userProfile?.blurredImageUrl,
+            lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now()),
         )
     }
 
@@ -279,7 +280,7 @@ class BottleFacade(
                 userName = otherUser.getMaskedName(),
                 age = otherUser.getKoreanAge(),
                 profileSelect = otherUser.userProfile?.profileSelect,
-                userImageUrl = otherUser.userProfile?.imageUrl
+                userImageUrl = otherUser.userProfile?.blurredImageUrl
             ),
             introduction = otherUser.userProfile?.introduction,
             letters = getPingPongLetters(myLetter = myLetter, otherLetter = otherLetter),
