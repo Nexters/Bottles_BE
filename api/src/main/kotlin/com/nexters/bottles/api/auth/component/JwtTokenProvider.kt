@@ -85,7 +85,7 @@ class JwtTokenProvider(
     fun validateToken(token: String, isAccessToken: Boolean): Boolean {
         var expiredAccessToken: BlackList? = null
         if (isAccessToken) {
-            expiredAccessToken = blackListService.findByExpiredToken(token)
+            expiredAccessToken = blackListService.findLastExpiredToken(token)
         }
         val claims = getClaimsFromToken(token, isAccessToken)
         val now = Date()

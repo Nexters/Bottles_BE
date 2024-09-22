@@ -17,7 +17,12 @@ class BlackListService(
     }
 
     @Transactional(readOnly = true)
-    fun findByExpiredToken(token: String): BlackList? {
-        return blackListRepository.findByExpiredAccessToken(token)
+    fun findLastExpiredToken(token: String): BlackList? {
+        val blackLists = blackListRepository.findAllByExpiredAccessToken(token)
+        return if (blackLists.isEmpty()) {
+            null
+        } else {
+            blackLists.last()
+        }
     }
 }

@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface BlackListRepository : JpaRepository<BlackList, Long> {
 
-    fun findByExpiredAccessToken(token: String): BlackList?
+    fun findAllByExpiredAccessToken(token: String): List<BlackList>
 }
