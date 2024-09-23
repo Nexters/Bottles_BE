@@ -1,5 +1,8 @@
 <configuration>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{userId}] %-5level %logger{36} - %msg %n"/>
+    <property name="ERROR_LOG_PATTERN"
+              value="&lt;@U07L8AX9B4N&gt; &lt;@U07L87A3WKY&gt;\n%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{userId}] %-5level %logger{36} - %msg %n"/>
+
     <timestamp key="DateFormat" datePattern="yyyy-MM-dd"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -47,7 +50,7 @@
             <webhookUri>${SLACK_WEBHOOK_URL}</webhookUri>
             <channel>C07LHK2S0MV</channel>
             <layout class="ch.qos.logback.classic.PatternLayout">
-                <pattern>${LOG_PATTERN}</pattern>
+                <pattern>${ERROR_LOG_PATTERN}</pattern>
             </layout>
             <username>Server-Error</username>
             <iconEmoji>:rotating_light:</iconEmoji>
