@@ -16,9 +16,9 @@
             <encoder>
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
-            <file>./logs/${DateFormat}/bottles-api.log</file>
+            <file>${LOG_PATH}/${DateFormat}/bottles-api.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>./logs/%d{yyyy-MM-dd}/bottles-api-%i.log</fileNamePattern>
+                <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}/bottles-api-%i.log</fileNamePattern>
                 <maxFileSize>10MB</maxFileSize>
                 <maxHistory>10</maxHistory>
                 <totalSizeCap>30MB</totalSizeCap>
