@@ -130,6 +130,8 @@ jobs:
             echo "export LOGSTASH_PORT=${{ secrets.LOGSTASH_PORT }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             
             echo "export SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            
+            echo "export LOG_PATH=${{ secrets.LOG_PATH }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
 
             export SERVER_USER_NAME=${{ secrets.SERVER_USER_NAME }}
 

@@ -1,11 +1,37 @@
 <configuration>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{userId}] %-5level %logger{36} - %msg %n"/>
+    <property name="ERROR_LOG_PATTERN"
+              value="&lt;@U07L8AX9B4N&gt; &lt;@U07L87A3WKY&gt;\n%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{userId}] %-5level %logger{36} - %msg %n"/>
+
+    <timestamp key="DateFormat" datePattern="yyyy-MM-dd"/>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{userId}] %-5level %logger{36} - %msg %n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
     <springProfile name="dev">
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <file>${LOG_PATH}/${DateFormat}/bottles-api.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}/bottles-api-%i.log</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>10</maxHistory>
+                <totalSizeCap>30MB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+
+        <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="FILE"/>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </appender>
+
         <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
             <destination>${LOGSTASH_HOST}:${LOGSTASH_PORT}</destination>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -13,11 +39,18 @@
             </encoder>
         </appender>
 
+        <appender name="ASYNC_LOGSTASH" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="LOGSTASH"/>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </appender>
+
         <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
             <webhookUri>${SLACK_WEBHOOK_URL}</webhookUri>
             <channel>C07LHK2S0MV</channel>
             <layout class="ch.qos.logback.classic.PatternLayout">
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{userId}] %-5level %logger{36} - %msg %n</pattern>
+                <pattern>${ERROR_LOG_PATTERN}</pattern>
             </layout>
             <username>Server-Error</username>
             <iconEmoji>:rotating_light:</iconEmoji>
@@ -35,7 +68,8 @@
         <appender-ref ref="CONSOLE"/>
 
         <springProfile name="dev">
-            <appender-ref ref="LOGSTASH"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_LOGSTASH"/>
             <appender-ref ref="ASYNC_SLACK"/>
         </springProfile>
     </root>
