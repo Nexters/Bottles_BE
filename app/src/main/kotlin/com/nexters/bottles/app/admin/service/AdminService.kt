@@ -1,6 +1,7 @@
 package com.nexters.bottles.app.admin.service
 
 import com.nexters.bottles.app.auth.domain.BlackList
+import com.nexters.bottles.app.auth.domain.enum.TokenType
 import com.nexters.bottles.app.auth.repository.BlackListRepository
 import com.nexters.bottles.app.auth.repository.RefreshTokenRepository
 import com.nexters.bottles.app.bottle.domain.Bottle
@@ -48,8 +49,12 @@ class AdminService(
     @TestOnly
     @Transactional
     fun expireRefreshToken(token: String, userId: Long) {
-        refreshTokenRepository.findAllByUserId(userId)
-            .forEach { refreshTokenRepository.deleteById(it.id) }
+        blackListRepository.save(
+            BlackList(
+                expiredAccessToken = token,
+                tokenType = TokenType.REFRESH_TOKEN
+            )
+        )
     }
 
     @TestOnly

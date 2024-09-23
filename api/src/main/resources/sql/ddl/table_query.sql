@@ -114,8 +114,9 @@ CREATE TABLE black_list
 (
     id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
     expired_access_token VARCHAR(512)                       NOT NULL,
+    token_type           VARCHAR(50)                        NOT NULL DEFAULT 'ACCESS_TOKEN' comment 'ACCESS_TOKEN, REFRESH_TOKEN',
     created_at           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    updated_at           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 CREATE INDEX idx_expired_access_token ON black_list (expired_access_token);
 
