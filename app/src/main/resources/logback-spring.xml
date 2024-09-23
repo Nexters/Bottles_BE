@@ -10,9 +10,6 @@
 
     <springProfile name="dev">
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>WARN</level>
-            </filter>
             <encoder>
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
@@ -25,11 +22,25 @@
             </rollingPolicy>
         </appender>
 
+        <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="FILE"/>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </appender>
+
         <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
             <destination>${LOGSTASH_HOST}:${LOGSTASH_PORT}</destination>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <includeMdc>true</includeMdc>
             </encoder>
+        </appender>
+
+        <appender name="ASYNC_LOGSTASH" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="LOGSTASH"/>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
         </appender>
 
         <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
@@ -54,8 +65,8 @@
         <appender-ref ref="CONSOLE"/>
 
         <springProfile name="dev">
-            <appender-ref ref="FILE"/>
-            <appender-ref ref="LOGSTASH"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_LOGSTASH"/>
             <appender-ref ref="ASYNC_SLACK"/>
         </springProfile>
     </root>
