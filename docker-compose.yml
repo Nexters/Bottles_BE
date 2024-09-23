@@ -38,11 +38,13 @@ services:
       LOGSTASH_HOST: ${LOGSTASH_HOST}
       LOGSTASH_PORT: ${LOGSTASH_PORT}
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+      LOG_PATH: /app/logs
     ports:
       - "8080"
     volumes:
       - ${FCM_ADMIN_KEY_PATH}:/app/config/bottles-firebase-adminsdk.json
       - ${APPLE_KEY_ID_PATH}:/api/config/apple-auth-key.p8
+      - ${LOG_PATH}:/app/logs
     depends_on:
       - db
 
@@ -75,11 +77,13 @@ services:
       LOGSTASH_HOST: ${LOGSTASH_HOST}
       LOGSTASH_PORT: ${LOGSTASH_PORT}
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+      LOG_PATH: /app/logs
     ports:
       - "8080"
     volumes:
       - ${FCM_ADMIN_KEY_PATH}:/app/config/bottles-firebase-adminsdk.json
       - ${APPLE_KEY_ID_PATH}:/api/config/apple-auth-key.p8
+      - ${LOG_PATH}:/app/logs
     depends_on:
       - db
 
