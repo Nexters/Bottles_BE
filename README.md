@@ -4,9 +4,7 @@
 
 
 [<img height=50px src=https://user-images.githubusercontent.com/42789819/115149387-d42e1980-a09e-11eb-88e3-94ca9b5b604b.png>](https://url.kr/cps1z2)
-[<img height=50px src=https://www.fcsok.org/wp-content/uploads/2020/04/get-it-on-google-play-badge.png>]()
-
-> Android: 베타 테스트 중
+[<img height=50px src=https://www.fcsok.org/wp-content/uploads/2020/04/get-it-on-google-play-badge.png>](https://play.google.com/store/apps/details?id=com.team.bottles&hl=ko)
 
 ## Tech Stacks
 
