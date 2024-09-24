@@ -1,6 +1,7 @@
 package com.nexters.bottles.app.bottle.repository
 
 import com.nexters.bottles.app.bottle.domain.Bottle
+import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.user.domain.User
 import org.springframework.data.jpa.repository.JpaRepository
@@ -19,6 +20,17 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
     fun findAllByTargetUserAndStatusAndNotExpiredAndDeletedFalse(
         @Param("targetUser") targetUser: User,
         @Param("pingPongStatus") pingPongStatus: PingPongStatus,
+        @Param("currentDateTime") currentDateTime: LocalDateTime
+    ): List<Bottle>
+
+    @Query(
+        value = "SELECT b FROM Bottle b " +
+                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.bottleStatus IN :bottleStatus " +
+                "AND b.deleted = false AND b.targetUser.deleted = false AND b.sourceUser.deleted = false "
+    )
+    fun findAllByTargetUserAndBottleStatusAndNotExpiredAndDeletedFalse(
+        @Param("targetUser") targetUser: User,
+        @Param("bottleStatus") bottleStatus: Set<BottleStatus>,
         @Param("currentDateTime") currentDateTime: LocalDateTime
     ): List<Bottle>
 

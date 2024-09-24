@@ -61,9 +61,10 @@ class BottleFacade(
 
     fun getNewBottles(userId: Long): BottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
-        val blockUserIds = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet() // 내가 차단한 유저
-        val blockedMeUserIds = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
-            .map{ it.userId }.toSet() // 나를 차단한 유저
+        val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
+        val blockedMeUserIds = blockContactListService.findAllByPhoneNumber(
+            user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요")
+        ).map { it.userId }.toSet() // 나를 차단한 유저
 
         if (isActiveMatching) {
             val matchingHour = 18
@@ -98,7 +99,6 @@ class BottleFacade(
             randomBottles = randomBottles,
             sentBottles = sentBottles,
             nextBottleLeftHours = getNextBottleLeftHours(LocalDateTime.now())
-
         ).also {
             applicationEventPublisher.publishEvent(
                 UserApplicationEventDto(
@@ -128,7 +128,10 @@ class BottleFacade(
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
             userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
             expiredAt = bottle.expiredAt,
-            lastActivatedAt = getLastActivatedAtInKorean(basedAt = bottle.sourceUser.lastActivatedAt, now = LocalDateTime.now())
+            lastActivatedAt = getLastActivatedAtInKorean(
+                basedAt = bottle.sourceUser.lastActivatedAt,
+                now = LocalDateTime.now()
+            )
         )
     }
 
@@ -186,25 +189,26 @@ class BottleFacade(
         val reportUserIds = userReportService.getReportRespondentList(userId)
             .map { it.respondentUserId }
             .toSet()
-        val blockUserIds = blockContactListService.findAllByUserId(userId).map{ it.userId }.toSet() // 내가 차단한 유저
-        val blockMeUserIds = blockContactListService.findAllByPhoneNumber(user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요"))
-            .map{ it.userId }.toSet() // 나를 차단한 유저
+        val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
+        val blockMeUserIds = blockContactListService.findAllByPhoneNumber(
+            user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요")
+        ).map { it.userId }.toSet() // 나를 차단한 유저
 
         val activeBottles = groupByStatus[PingPongStatus.ACTIVE]
             ?.map { toPingPongBottleDto(it, user) }
             ?.filter { it.userId !in reportUserIds }
-            ?.filter { it.userId !in blockUserIds}
+            ?.filter { it.userId !in blockUserIds }
             ?.filter { it.userId !in blockMeUserIds }
             ?: emptyList()
         val doneBottles =
             (groupByStatus[PingPongStatus.STOPPED]
                 .orEmpty()
                 .filter { it.isNotExpiredAfterStopped(LocalDateTime.now()) } +
-             groupByStatus[PingPongStatus.MATCHED].orEmpty()
-            )
+                    groupByStatus[PingPongStatus.MATCHED].orEmpty()
+                    )
                 .map { toPingPongBottleDto(it, user) }
                 .filter { it.userId !in reportUserIds }
-                .filter { it.userId !in blockUserIds}
+                .filter { it.userId !in blockUserIds }
                 .filter { it.userId !in blockMeUserIds }
         return PingPongListResponse(activeBottles = activeBottles, doneBottles = doneBottles)
     }
@@ -222,7 +226,10 @@ class BottleFacade(
             mbti = otherUser.userProfile?.profileSelect?.mbti,
             keyword = otherUser.userProfile?.profileSelect?.keyword,
             userImageUrl = otherUser.userProfile?.blurredImageUrl,
-            lastActivatedAt = getLastActivatedAtInKorean(basedAt = otherUser.lastActivatedAt, now = LocalDateTime.now()),
+            lastActivatedAt = getLastActivatedAtInKorean(
+                basedAt = otherUser.lastActivatedAt,
+                now = LocalDateTime.now()
+            ),
         )
     }
 
@@ -299,7 +306,12 @@ class BottleFacade(
                 meetingPlaceImageUrl = null,
             )
         ).also {
-            applicationEventPublisher.publishEvent(UserApplicationEventDto(userId = userId, basedAt = LocalDateTime.now()))
+            applicationEventPublisher.publishEvent(
+                UserApplicationEventDto(
+                    userId = userId,
+                    basedAt = LocalDateTime.now()
+                )
+            )
         }
     }
 

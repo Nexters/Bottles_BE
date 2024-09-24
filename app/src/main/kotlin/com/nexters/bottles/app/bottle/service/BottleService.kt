@@ -27,13 +27,20 @@ class BottleService(
     private val bottleMatchingRepository: BottleMatchingRepository,
 ) {
 
-    private val log = KotlinLogging.logger {}
-
     @Transactional(readOnly = true)
     fun getNewBottles(user: User): List<Bottle> {
         return bottleRepository.findAllByTargetUserAndStatusAndNotExpiredAndDeletedFalse(
             user,
             PingPongStatus.NONE,
+            LocalDateTime.now()
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun getNewBottlesByBottleStatus(user: User, statusSet: Set<BottleStatus>): List<Bottle> {
+        return bottleRepository.findAllByTargetUserAndBottleStatusAndNotExpiredAndDeletedFalse(
+            user,
+            statusSet,
             LocalDateTime.now()
         )
     }
@@ -154,7 +161,12 @@ class BottleService(
     }
 
     @Transactional
-    fun matchRandomBottle(user: User, matchingHour: Int, blockUserIds: Set<Long>, blockedMeUserIds: Set<Long>): Bottle? {
+    fun matchRandomBottle(
+        user: User,
+        matchingHour: Int,
+        blockUserIds: Set<Long>,
+        blockedMeUserIds: Set<Long>
+    ): Bottle? {
         if (user.isNotRegisterProfile()) return null
         if (user.isMatchInactive()) return null
 
