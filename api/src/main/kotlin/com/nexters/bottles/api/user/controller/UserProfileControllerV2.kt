@@ -33,8 +33,8 @@ class UserProfileControllerV2(
     @AuthRequired
     fun upsertIntroductionAndImages(
         @AuthUserId userId: Long,
-        @RequestBody registerIntroductionRequest: RegisterIntroductionRequest,
-        @RequestPart files: List<MultipartFile>
+        @RequestPart("files") files: List<MultipartFile>,
+        @RequestPart("introduction") registerIntroductionRequest: RegisterIntroductionRequest,
     ) {
         profileFacadeV2.upsertIntroductionAndImages(userId, registerIntroductionRequest, files)
     }
