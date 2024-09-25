@@ -26,6 +26,7 @@ CREATE TABLE user_profile
     profile_select JSON,
     introduction   JSON,
     image_url      VARCHAR(2048),
+    images         JSON,
     blurred_image_url VARCHAR(2048),
     created_at     DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL

@@ -30,6 +30,9 @@ class UserProfile(
 
     var imageUrl: String? = null,
 
+    @Convert(converter = QuestionAndAnswerConverter::class)
+    var imageUrls: List<String> = arrayListOf(),
+
     var blurredImageUrl: String? = null,
 ) : BaseEntity() {
 
