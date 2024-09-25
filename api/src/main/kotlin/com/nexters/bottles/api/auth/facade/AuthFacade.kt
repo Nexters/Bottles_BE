@@ -103,8 +103,8 @@ class AuthFacade(
                 val lastAccount = allAccounts.last()
                 if (lastAccount.isNotDeleted()) return
                 val duration: Duration = Duration.between(lastAccount.deletedAt, LocalDateTime.now())
-                require(duration.toHours() > 48) {
-                    throw IllegalStateException("탈퇴 후 48시간이 지나야 재가입이 가능해요.")
+                require(duration.toHours() >= 48) {
+                    "탈퇴 후 48시간이 지나야 재가입이 가능해요."
                 }
             }
         }
