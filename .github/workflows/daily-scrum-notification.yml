@@ -14,12 +14,20 @@ jobs:
           DATA: |
             {
               "channel": "C07LHAWLVNG", 
-              "text": "<@U07L8AX9B4N><@U07L87A3WKY><@U07LC3Q1MEH><@U07LHEEU2BW><@U07LESGBQEP><@U07LMP4PY0L><@U07LHAXGYBE><@U07L87GGHJS>
-            **:calendar: 보틀즈 데일리 스크럼 :calendar:**\n\n
-            :one: - 완료된 작업 내용\n\n
-            :two: - 오늘 해야 할 작업\n\n
-            :three: - 겪고 있는 문제나 도움이 필요한 사항\n\n
-            오늘의 TMI나 아무말도 좋아:blob_aww: \n\n",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<@U07L8AX9B4N><@U07L87A3WKY><@U07LC3Q1MEH><@U07LHEEU2BW><@U07LESGBQEP><@U07LMP4PY0L><@U07LHAXGYBE><@U07L87GGHJS>\n\n
+                            *:calendar: 보틀즈 데일리 스크럼 :calendar:*\n\n
+                            :one: - 완료된 작업 내용\n\n
+                            :two: - 오늘 해야 할 작업\n\n
+                            :three: - 겪고 있는 문제나 도움이 필요한 사항\n\n
+                            오늘의 TMI나 아무말도 좋아 :blob_aww: \n\n"
+                  }
+                }
+              ]
             }
         run: |
           curl -X POST -H "Content-Type: application/json" \
