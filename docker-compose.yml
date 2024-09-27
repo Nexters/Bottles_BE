@@ -31,6 +31,7 @@ services:
       FCM_ADMIN_KEY_PATH: /app/config/bottles-firebase-adminsdk.json
       SUPER_USER_NUMBER: ${SUPER_USER_NUMBER}
       SUPER_USER_NUMBER_V2: ${SUPER_USER_NUMBER_V2}
+      BOTTLES_NUMBER: ${BOTTLES_NUMBER}
       APPLE_KEY_ID: ${APPLE_KEY_ID}
       APPLE_KEY_ID_PATH: /api/config/apple-auth-key.p8
       APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
@@ -70,6 +71,7 @@ services:
       FCM_ADMIN_KEY_PATH: /app/config/bottles-firebase-adminsdk.json
       SUPER_USER_NUMBER: ${SUPER_USER_NUMBER}
       SUPER_USER_NUMBER_V2: ${SUPER_USER_NUMBER_V2}
+      BOTTLES_NUMBER: ${BOTTLES_NUMBER}
       APPLE_KEY_ID: ${APPLE_KEY_ID}
       APPLE_KEY_ID_PATH: /api/config/apple-auth-key.p8
       APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
