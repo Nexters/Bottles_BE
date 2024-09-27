@@ -62,6 +62,8 @@ class AuthFacade(
     private val superUserNumber: String,
     @Value("\${super-user-number-v2}")
     private val superUserNumberV2: String,
+    @Value("\${bottles-number}")
+    private val bottlesNumber: String,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -98,6 +100,7 @@ class AuthFacade(
 
     private fun validateNotAbusing(phoneNumber: String?) {
         if (phoneNumber != null) {
+            if (isBottlesMember(phoneNumber)) return
             val allAccounts = userService.findAllByPhoneNumber(phoneNumber)
             if (allAccounts.isNotEmpty()) {
                 val lastAccount = allAccounts.last()
@@ -108,6 +111,11 @@ class AuthFacade(
                 }
             }
         }
+    }
+
+    private fun isBottlesMember(phoneNumber: String): Boolean {
+        return bottlesNumber.split(",")
+            .contains(phoneNumber)
     }
 
     fun appleSignInUp(appleSignInUpRequest: AppleSignInUpRequest): AppleSignInUpResponse {

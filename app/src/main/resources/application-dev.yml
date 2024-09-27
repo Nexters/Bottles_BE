@@ -63,6 +63,7 @@ firebase:
 
 super-user-number: ${SUPER_USER_NUMBER}
 super-user-number-v2: ${SUPER_USER_NUMBER_V2}
+bottles-number: ${BOTTLES_NUMBER}
 
 apple-auth:
   apple-url: https://appleid.apple.com

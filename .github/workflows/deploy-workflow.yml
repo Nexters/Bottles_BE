@@ -120,6 +120,7 @@ jobs:
             echo "export IS_MATCHING_ACTIVE=${{ secrets.IS_MATCHING_ACTIVE }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export SUPER_USER_NUMBER=${{ secrets.SUPER_USER_NUMBER }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export SUPER_USER_NUMBER_V2=${{ secrets.SUPER_USER_NUMBER_V2 }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export BOTTLES_NUMBER=${{ secrets.BOTTLES_NUMBER }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             
             echo "export APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export APPLE_KEY_ID_PATH=${{ secrets.APPLE_KEY_ID_PATH }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
