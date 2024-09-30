@@ -6,6 +6,7 @@ import com.nexters.bottles.app.auth.repository.BlackListRepository
 import com.nexters.bottles.app.auth.repository.RefreshTokenRepository
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.app.bottle.domain.vo.LikeMessage
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.user.domain.User
@@ -84,7 +85,7 @@ class AdminService(
                 targetUser = mockMaleUser,
                 sourceUser = mockFemaleUser,
                 bottleStatus = bottleStatus,
-                likeMessage = likeMessage,
+                likeMessage = LikeMessage(likeMessage!!),
             )
         )
     }

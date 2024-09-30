@@ -2,10 +2,12 @@ package com.nexters.bottles.app.bottle.domain
 
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
+import com.nexters.bottles.app.bottle.domain.vo.LikeMessage
 import com.nexters.bottles.app.common.BaseEntity
 import com.nexters.bottles.app.user.domain.User
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -30,7 +32,8 @@ class Bottle(
     @JoinColumn(name = "source_user_id")
     var sourceUser: User,
 
-    var likeMessage: String? = null,
+    @Embedded
+    var likeMessage: LikeMessage? = null,
 
     var expiredAt: LocalDateTime = LocalDateTime.now().plusDays(1),
 
@@ -58,7 +61,7 @@ class Bottle(
     fun sendLikeMessage(from: User, to: User, likeMessage: String, now: LocalDateTime) {
         this.targetUser = to
         this.sourceUser = from
-        this.likeMessage = likeMessage
+        this.likeMessage = LikeMessage(likeMessage)
         this.bottleStatus = BottleStatus.SENT
         this.expiredAt = now.plusDays(1)
     }

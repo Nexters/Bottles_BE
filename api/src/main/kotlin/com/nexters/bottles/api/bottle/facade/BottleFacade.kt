@@ -148,7 +148,7 @@ class BottleFacade(
             age = bottle.sourceUser.getKoreanAge(),
             introduction = bottle.sourceUser.userProfile?.introduction,
             profileSelect = bottle.sourceUser.userProfile?.profileSelect,
-            likeMessage = bottle.likeMessage,
+            likeMessage = bottle.likeMessage?.value,
             userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl
         )
     }
