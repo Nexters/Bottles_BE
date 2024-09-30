@@ -1,6 +1,7 @@
 package com.nexters.bottles.app.user.domain
 
 import com.nexters.bottles.app.common.BaseEntity
+import com.nexters.bottles.app.user.repository.converter.ImagesConverter
 import com.nexters.bottles.app.user.repository.converter.QuestionAndAnswerConverter
 import com.nexters.bottles.app.user.repository.converter.UserProfileSelectConverter
 import javax.persistence.Convert
@@ -29,6 +30,9 @@ class UserProfile(
     var introduction: List<QuestionAndAnswer> = arrayListOf(),
 
     var imageUrl: String? = null,
+
+    @Convert(converter = ImagesConverter::class)
+    var imageUrls: List<String> = arrayListOf(),
 
     var blurredImageUrl: String? = null,
 ) : BaseEntity() {

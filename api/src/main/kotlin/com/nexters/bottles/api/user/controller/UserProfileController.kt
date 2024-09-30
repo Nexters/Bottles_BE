@@ -27,8 +27,6 @@ class UserProfileController(
     private val profileFacade: UserProfileFacade,
 ) {
 
-    private val log = KotlinLogging.logger {}
-
     @ApiOperation("온보딩 프로필 등록하기")
     @PostMapping("/choice")
     @AuthRequired
@@ -49,7 +47,6 @@ class UserProfileController(
         @AuthUserId userId: Long,
         @RequestBody registerIntroductionRequest: RegisterIntroductionRequest
     ) {
-        log.info { "자기 소개 등록하기 호출" }
         profileFacade.upsertIntroduction(userId, registerIntroductionRequest)
     }
 
@@ -64,7 +61,6 @@ class UserProfileController(
     @PostMapping("/images")
     @AuthRequired
     fun uploadImage(@AuthUserId userId: Long, @RequestPart file: MultipartFile) {
-        log.info { "사진 등록하기 호출" }
         profileFacade.uploadImage(userId, file)
     }
 
