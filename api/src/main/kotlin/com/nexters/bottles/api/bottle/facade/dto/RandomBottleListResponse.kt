@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.bottle.facade.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import java.time.LocalDateTime
 
 data class RandomBottleListResponse(
@@ -13,6 +14,7 @@ data class RandomBottleDto(
     val userId: Long,
     val userName: String?,
     val age: Int,
+    val introduction: List<QuestionAndAnswer>? = null,
     val mbti: String?,
     val keyword: List<String>?,
     val userImageUrl: String?,

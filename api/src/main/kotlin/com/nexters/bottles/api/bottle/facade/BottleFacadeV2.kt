@@ -71,6 +71,7 @@ class BottleFacadeV2(
             userId = bottle.findOtherUserId(userId = userId),
             userName = bottle.sourceUser.getMaskedName(),
             age = bottle.sourceUser.getKoreanAge(),
+            introduction = bottle.sourceUser.userProfile?.introduction,
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
             userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
@@ -120,8 +121,10 @@ class BottleFacadeV2(
             userId = bottle.findOtherUserId(userId = userId),
             userName = bottle.sourceUser.getMaskedName(),
             age = bottle.sourceUser.getKoreanAge(),
+            introduction = bottle.sourceUser.userProfile?.introduction,
             mbti = bottle.sourceUser.userProfile?.profileSelect?.mbti,
             keyword = bottle.sourceUser.userProfile?.profileSelect?.keyword,
+            likeEmoji = bottle.likeMessage?.getLikeEmoji(),
             userImageUrl = bottle.sourceUser.userProfile?.blurredImageUrl,
             expiredAt = bottle.expiredAt,
             lastActivatedAt = getLastActivatedAtInKorean(
