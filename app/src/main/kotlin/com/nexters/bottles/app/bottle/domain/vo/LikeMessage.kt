@@ -9,15 +9,18 @@ class LikeMessage(
 ) {
 
     fun getLikeEmoji(): String {
-        val emojiPattern = Pattern.compile(
-            "[\\p{So}\\p{Cn}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]",
-            Pattern.UNICODE_CHARACTER_CLASS
-        )
-        val matcher = emojiPattern.matcher(this.value)
+        val matcher = EMOJI_PATTERN.matcher(this.value)
 
         return matcher.results()
             .map { it.group() }
             .toList()
             .lastOrNull() ?: throw IllegalStateException("이모지를 찾을 수 없습니다.")
+    }
+
+    companion object {
+        private val EMOJI_PATTERN = Pattern.compile(
+            "[\\p{So}\\p{Cn}\\p{Sc}\\p{Sk}\\p{Sm}\\p{Zs}]",
+            Pattern.UNICODE_CHARACTER_CLASS
+        )
     }
 }
