@@ -1,10 +1,13 @@
 package com.nexters.bottles.app.bottle.domain.vo
 
 import java.util.regex.Pattern
+import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
 class LikeMessage(
+
+    @Column(name = "like_message")
     val value: String
 ) {
 
