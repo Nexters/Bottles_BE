@@ -1,5 +1,6 @@
 package com.nexters.bottles.app.notification.component
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
@@ -73,14 +74,16 @@ class StatisticsScheduler(
             )
         )
 
-        val response = webClient.post()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block()
+        log.info { "Sending request to Slack: ${ObjectMapper().writeValueAsString(request)}" }
 
-        log.info { "response: $response" }
+//        val response = webClient.post()
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .body(BodyInserters.fromValue(request))
+//            .retrieve()
+//            .bodyToMono(String::class.java)
+//            .block()
+//
+//        log.info { "response: $response" }
     }
 
     @Scheduled(cron = "* * 10 * * 1")
@@ -118,11 +121,11 @@ class StatisticsScheduler(
             )
         )
 
-        val response = webClient.post()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block()
+//        val response = webClient.post()
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .body(BodyInserters.fromValue(request))
+//            .retrieve()
+//            .bodyToMono(String::class.java)
+//            .block()
     }
 }
