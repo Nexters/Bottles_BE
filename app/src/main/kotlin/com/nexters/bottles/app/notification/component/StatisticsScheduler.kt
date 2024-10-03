@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
+import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
@@ -53,6 +54,15 @@ class StatisticsScheduler(
             )
             .filter { it.pingPongStatus == PingPongStatus.MATCHED }
 
+        val currentMaleUsers = allUsers.filter { it.gender == Gender.MALE }
+        val currentFemaleUsers = allUsers.filter { it.gender == Gender.FEMALE }
+
+        val currentIntroductionDoneMaleuser =
+            userProfileRepository.findAllByUserIdIn(currentMaleUsers.map { it.id }).filter { it.introduction.isNotEmpty() }
+
+        val currentIntroductionDoneFemaleuser =
+            userProfileRepository.findAllByUserIdIn(currentFemaleUsers.map { it.id }).filter { it.introduction.isNotEmpty() }
+
         val request = mapOf(
             "channel" to slackChannel,
             "blocks" to listOf(
@@ -63,6 +73,8 @@ class StatisticsScheduler(
                         "text" to """
                     지표 물어다주는 새 :bird: 
                     전체 유저: ${currentUser.count()} 명 
+                    자기소개 작성 남성 유저: ${currentIntroductionDoneMaleuser.count()} 명 
+                    자기소개 작성 여성 유저: ${currentIntroductionDoneFemaleuser.count()} 명 
                     어제 가입 유저: ${yesterdayRegisterUser.count()} 명 
                     어제 탈퇴 유저: ${yesterdayLeaveUser.count()} 명 
                     어제 핑퐁 시작 유저: ${yesterdayStartPingpong.count()} 명 
