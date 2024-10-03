@@ -85,7 +85,7 @@ class AdminService(
                 targetUser = mockMaleUser,
                 sourceUser = mockFemaleUser,
                 bottleStatus = bottleStatus,
-                likeMessage = LikeMessage(likeMessage!!),
+                likeMessage = if (likeMessage == null) null else LikeMessage(likeMessage),
             )
         )
     }
