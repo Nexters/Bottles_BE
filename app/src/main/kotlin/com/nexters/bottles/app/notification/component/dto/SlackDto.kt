@@ -1,4 +1,4 @@
-package com.nexters.bottles.batch.scheduler.dto
+package com.nexters.bottles.app.notification.component.dto
 
 data class SlackMessage(
     val channel: String,
