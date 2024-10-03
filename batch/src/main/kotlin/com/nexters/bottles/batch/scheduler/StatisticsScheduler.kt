@@ -8,6 +8,7 @@ import com.nexters.bottles.app.user.repository.UserRepository
 import com.nexters.bottles.batch.scheduler.dto.Block
 import com.nexters.bottles.batch.scheduler.dto.SlackMessage
 import com.nexters.bottles.batch.scheduler.dto.Text
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -32,12 +33,16 @@ class StatisticsScheduler(
     private val slackChannel: String,
 ) {
 
-    val webClient = WebClient.builder()
+    private val log = KotlinLogging.logger {}
+
+    private val webClient = WebClient.builder()
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 0 13 * * *")
-    fun sendStatistics() {
+    @Scheduled(cron = "0 0/5 * * * *")
+    fun sendDailyStatistics() {
+        log.info { "데일리 지표 스케줄러 돌기 시작" }
+        log.info { "slackUrl=$slackUrl" }
         val yesterday = LocalDate.now().minusDays(1)
 
         val allUsers = userRepository.findAll()
@@ -48,9 +53,43 @@ class StatisticsScheduler(
             .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(LocalDateTime.of(yesterday, LocalTime.MIN), LocalDateTime.of(yesterday, LocalTime.MAX))
             .filter { it.pingPongStatus == PingPongStatus.MATCHED }
 
-        val yesterdayUserProfile = userProfileRepository
-            .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(LocalDateTime.of(yesterday, LocalTime.MIN), LocalDateTime.of(yesterday, LocalTime.MAX))
+        val request = SlackMessage(
+            channel = slackChannel,
+            blocks = listOf(
+                Block(
+                    type = "section",
+                    text = Text(
+                        type = "mrkdwn",
+                        text = """
+                            지표 물어다주는 새 :bird:\n\n
+                            전체 유저: ${currentUser} 명 \n\n
+                            어제 가입 유저: ${yesterdayRegisterUser} 명 \n\n
+                            어제 탈퇴 유저: ${yesterdayLeaveUser} 명 \n\n
+                            어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 \n\n
+                        """.trimIndent()
+                    )
+                )
+            )
+        )
 
+        val response = webClient.post()
+            .uri(slackUrl)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .bodyToMono(Void::class.java)
+            .block()
+
+        log.info { "response: $response" }
+    }
+
+    @Scheduled(cron = "* * 10 * * 1")
+    fun sendWeeklyStatistics() {
+        log.info { "위클리 지표 스케줄러 돌기 시작" }
+        val lastWeekMonday = LocalDate.now().minusDays(7)
+        val lastWeekSunday = LocalDate.now().minusDays(1)
+
+        val yesterdayUserProfile = userProfileRepository
+            .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(LocalDateTime.of(lastWeekMonday, LocalTime.MIN), LocalDateTime.of(lastWeekSunday, LocalTime.MAX))
 
         val yesterdayIntroductionDone = yesterdayUserProfile.filter { it.introduction.isNotEmpty() }.count()
         val yesterdayIntroductionRatio = (yesterdayIntroductionDone / yesterdayUserProfile.count()) * 100
@@ -65,12 +104,10 @@ class StatisticsScheduler(
                     text = Text(
                         type = "mrkdwn",
                         text = """
-                            지표 물어다주는 새 :bird:*\n\n
-                            전체 유저: ${currentUser} 명 *\n\n
-                            어제 가입 유저: ${yesterdayRegisterUser} 명 *\n\n
-                            어제 탈퇴 유저: ${yesterdayLeaveUser} 명 *\n\n
-                            어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 *\n\n
-                            어제 자기소개 작성 비율: ${formattedRatio}% *\n\n
+                            지표 물어다주는 새 :bird:\n\n
+                            저번주 프로필   생성 수: ${yesterdayUserProfile.count()} \n\n
+                            저번주 자기소개 작성 수: $yesterdayIntroductionDone \n\n
+                            저번주 자기소개 작성 비율: ${formattedRatio}% \n\n
                         """.trimIndent()
                     )
                 )
