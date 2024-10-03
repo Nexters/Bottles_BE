@@ -13,4 +13,6 @@ interface UserProfileRepository : JpaRepository<UserProfile, Long> {
     fun findAllWithUser(): List<UserProfile>
 
     fun findAllByCreatedAtGreaterThanAndCreatedAtLessThan(from: LocalDateTime, end: LocalDateTime): List<UserProfile>
+
+    fun findAllByUserIdIn(userIds: List<Long>): List<UserProfile>
 }

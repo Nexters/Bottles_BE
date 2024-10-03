@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
+import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
@@ -38,14 +39,12 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0 10 * * *")
     fun sendDailyStatistics() {
-        log.info { "데일리 지표 스케줄러 돌기 시작" }
-        log.info { "slackUrl=$slackUrl" }
         val yesterday = LocalDate.now().minusDays(1)
 
         val allUsers = userRepository.findAll()
-        val currentUser = allUsers.filterNot { it.deleted }
+        val currentUser = allUsers.filterNot { it.deleted }.filter { it.id > 151 }
         val yesterdayRegisterUser = allUsers.filter { it.createdAt.toLocalDate() == yesterday }
         val yesterdayLeaveUser = allUsers.filter { it.deletedAt?.toLocalDate() == yesterday }
         val yesterdayStartPingpong = bottleRepository
@@ -54,6 +53,15 @@ class StatisticsScheduler(
                 LocalDateTime.of(yesterday, LocalTime.MAX)
             )
             .filter { it.pingPongStatus == PingPongStatus.MATCHED }
+
+        val currentMaleUsers = allUsers.filter { it.gender == Gender.MALE }
+        val currentFemaleUsers = allUsers.filter { it.gender == Gender.FEMALE }
+
+        val currentIntroductionDoneMaleuser =
+            userProfileRepository.findAllByUserIdIn(currentMaleUsers.map { it.id }).filter { it.introduction.isNotEmpty() }
+
+        val currentIntroductionDoneFemaleuser =
+            userProfileRepository.findAllByUserIdIn(currentFemaleUsers.map { it.id }).filter { it.introduction.isNotEmpty() }
 
         val request = mapOf(
             "channel" to slackChannel,
@@ -65,6 +73,8 @@ class StatisticsScheduler(
                         "text" to """
                     지표 물어다주는 새 :bird: 
                     전체 유저: ${currentUser.count()} 명 
+                    자기소개 작성 남성 유저: ${currentIntroductionDoneMaleuser.count()} 명 
+                    자기소개 작성 여성 유저: ${currentIntroductionDoneFemaleuser.count()} 명 
                     어제 가입 유저: ${yesterdayRegisterUser.count()} 명 
                     어제 탈퇴 유저: ${yesterdayLeaveUser.count()} 명 
                     어제 핑퐁 시작 유저: ${yesterdayStartPingpong.count()} 명 
@@ -74,21 +84,16 @@ class StatisticsScheduler(
             )
         )
 
-        log.info { "Sending request to Slack: ${ObjectMapper().writeValueAsString(request)}" }
-
         val response = webClient.post()
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .bodyToMono(String::class.java)
             .block()
-
-        log.info { "response: $response" }
     }
 
     @Scheduled(cron = "* * 10 * * 1")
     fun sendWeeklyStatistics() {
-        log.info { "위클리 지표 스케줄러 돌기 시작" }
         val lastWeekMonday = LocalDate.now().minusDays(7)
         val lastWeekSunday = LocalDate.now().minusDays(1)
 
