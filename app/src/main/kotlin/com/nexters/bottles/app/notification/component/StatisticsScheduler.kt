@@ -64,10 +64,10 @@ class StatisticsScheduler(
                         "type" to "mrkdwn",
                         "text" to """
                     지표 물어다주는 새 :bird: 
-                    전체 유저: ${currentUser} 명 
-                    어제 가입 유저: ${yesterdayRegisterUser} 명 
-                    어제 탈퇴 유저: ${yesterdayLeaveUser} 명 
-                    어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 
+                    전체 유저: ${currentUser.count()} 명 
+                    어제 가입 유저: ${yesterdayRegisterUser.count()} 명 
+                    어제 탈퇴 유저: ${yesterdayLeaveUser.count()} 명 
+                    어제 핑퐁 시작 유저: ${yesterdayStartPingpong.count()} 명 
                 """.trimIndent()
                     )
                 )
@@ -76,14 +76,14 @@ class StatisticsScheduler(
 
         log.info { "Sending request to Slack: ${ObjectMapper().writeValueAsString(request)}" }
 
-//        val response = webClient.post()
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .body(BodyInserters.fromValue(request))
-//            .retrieve()
-//            .bodyToMono(String::class.java)
-//            .block()
-//
-//        log.info { "response: $response" }
+        val response = webClient.post()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+
+        log.info { "response: $response" }
     }
 
     @Scheduled(cron = "* * 10 * * 1")
@@ -121,11 +121,11 @@ class StatisticsScheduler(
             )
         )
 
-//        val response = webClient.post()
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .body(BodyInserters.fromValue(request))
-//            .retrieve()
-//            .bodyToMono(String::class.java)
-//            .block()
+        val response = webClient.post()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
     }
 }
