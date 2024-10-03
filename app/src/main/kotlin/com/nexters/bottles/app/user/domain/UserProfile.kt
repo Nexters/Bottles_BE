@@ -52,9 +52,9 @@ data class UserProfileSelect(
     val interest: Interest,
     val job: String,
     val height: Int,
-    val smoking: String,
-    val alcohol: String,
-    val religion: String,
+    val smoking: String? = null,
+    val alcohol: String? = null,
+    val religion: String? = null,
     val region: Region,
 )
 

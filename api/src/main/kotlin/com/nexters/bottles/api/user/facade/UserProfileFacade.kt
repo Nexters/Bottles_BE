@@ -122,6 +122,9 @@ class UserProfileFacade(
             "때에 따라 적당히 즐겨요" -> profileDto.alcohol = "술은 적당히"
             "자주 찾는 편이에요" -> profileDto.alcohol = "술을 즐겨요"
         }
+        when (profileDto.job) {
+            "취준생 · 무직" -> profileDto.job = "취준생"
+        }
         return profileDto
     }
 
