@@ -10,6 +10,7 @@ import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
@@ -39,7 +40,7 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 20 16 * * *")
+    @Scheduled(cron = "0 50 16 * * *")
     fun sendDailyStatistics() {
         log.info { "데일리 지표 스케줄러 돌기 시작" }
         log.info { "slackUrl=$slackUrl" }
@@ -53,20 +54,20 @@ class StatisticsScheduler(
             .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(LocalDateTime.of(yesterday, LocalTime.MIN), LocalDateTime.of(yesterday, LocalTime.MAX))
             .filter { it.pingPongStatus == PingPongStatus.MATCHED }
 
-        val request = SlackMessage(
-            channel = slackChannel,
-            blocks = listOf(
-                Block(
-                    type = "section",
-                    text = Text(
-                        type = "mrkdwn",
-                        text = """
-                            지표 물어다주는 새 :bird:\n\n
-                            전체 유저: ${currentUser} 명 \n\n
-                            어제 가입 유저: ${yesterdayRegisterUser} 명 \n\n
-                            어제 탈퇴 유저: ${yesterdayLeaveUser} 명 \n\n
-                            어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 \n\n
-                        """.trimIndent()
+        val request = mapOf(
+            "channel" to slackChannel,
+            "blocks" to listOf(
+                mapOf(
+                    "type" to "section",
+                    "text" to mapOf(
+                        "type" to "mrkdwn",
+                        "text" to """
+                    지표 물어다주는 새 :bird:\n\n
+                    전체 유저: ${currentUser} 명 \n\n
+                    어제 가입 유저: ${yesterdayRegisterUser} 명 \n\n
+                    어제 탈퇴 유저: ${yesterdayLeaveUser} 명 \n\n
+                    어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 \n\n
+                """.trimIndent()
                     )
                 )
             )
@@ -74,6 +75,7 @@ class StatisticsScheduler(
 
         val response = webClient.post()
             .uri(slackUrl)
+            .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .bodyToMono(Void::class.java)
@@ -96,19 +98,19 @@ class StatisticsScheduler(
         val decimalFormat = DecimalFormat("#.##")
         val formattedRatio = decimalFormat.format(yesterdayIntroductionRatio)
 
-        val request = SlackMessage(
-            channel = slackChannel,
-            blocks = listOf(
-                Block(
-                    type = "section",
-                    text = Text(
-                        type = "mrkdwn",
-                        text = """
+        val request = mapOf(
+            "channel" to slackChannel,
+            "blocks" to listOf(
+                mapOf(
+                    "type" to "section",
+                    "text" to mapOf(
+                        "type" to "mrkdwn",
+                        "text" to """
                             지표 물어다주는 새 :bird:\n\n
                             저번주 프로필   생성 수: ${yesterdayUserProfile.count()} \n\n
                             저번주 자기소개 작성 수: $yesterdayIntroductionDone \n\n
                             저번주 자기소개 작성 비율: ${formattedRatio}% \n\n
-                        """.trimIndent()
+                """.trimIndent()
                     )
                 )
             )
@@ -116,6 +118,7 @@ class StatisticsScheduler(
 
         val response = webClient.post()
             .uri(slackUrl)
+            .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .bodyToMono(Void::class.java)
