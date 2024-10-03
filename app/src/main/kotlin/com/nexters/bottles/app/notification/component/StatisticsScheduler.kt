@@ -3,9 +3,6 @@ package com.nexters.bottles.app.notification.component
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
-import com.nexters.bottles.app.notification.component.dto.Block
-import com.nexters.bottles.app.notification.component.dto.SlackMessage
-import com.nexters.bottles.app.notification.component.dto.Text
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
 import mu.KotlinLogging
@@ -40,6 +37,7 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
+    @Scheduled(cron = "0 0/5 * * * *")
     fun sendDailyStatistics() {
         log.info { "데일리 지표 스케줄러 돌기 시작" }
         log.info { "slackUrl=$slackUrl" }
@@ -76,7 +74,6 @@ class StatisticsScheduler(
         )
 
         val response = webClient.post()
-            .uri(slackUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
@@ -86,6 +83,7 @@ class StatisticsScheduler(
         log.info { "response: $response" }
     }
 
+    @Scheduled(cron = "* * 10 * * 1")
     fun sendWeeklyStatistics() {
         log.info { "위클리 지표 스케줄러 돌기 시작" }
         val lastWeekMonday = LocalDate.now().minusDays(7)
@@ -121,7 +119,6 @@ class StatisticsScheduler(
         )
 
         val response = webClient.post()
-            .uri(slackUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
