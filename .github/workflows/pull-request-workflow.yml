@@ -37,6 +37,16 @@ jobs:
         run: ./gradlew clean build
         shell: bash
 
+      - name: Auto-assign PR creator and add default label
+        uses: kentaro-m/auto-assign-action@v1.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          add-assignees: true
+          add-labels: true
+          labels: "feat 💡"  # 필요한 경우 라벨을 수정하세요
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Send Discord Notification
         if: github.event.action == 'opened' || github.event.action == 'reopened'
         env:
