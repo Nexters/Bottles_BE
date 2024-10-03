@@ -40,7 +40,7 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 40 16 * * *")
+    @Scheduled(cron = "0 50 16 * * *")
     fun sendDailyStatistics() {
         log.info { "데일리 지표 스케줄러 돌기 시작" }
         log.info { "slackUrl=$slackUrl" }
