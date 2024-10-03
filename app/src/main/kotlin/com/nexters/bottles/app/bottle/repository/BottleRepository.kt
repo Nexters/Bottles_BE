@@ -25,7 +25,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
 
     @Query(
         value = "SELECT b FROM Bottle b " +
-                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.bottleStatus IN :bottleStatus AND b.pingPongStatus IN :pingpPongStatus " +
+                "WHERE b.targetUser = :targetUser AND b.expiredAt > :currentDateTime AND b.bottleStatus IN :bottleStatus AND b.pingPongStatus IN :pingPongStatus " +
                 "AND b.deleted = false AND b.targetUser.deleted = false AND b.sourceUser.deleted = false " +
                 "ORDER BY b.createdAt desc "
     )
