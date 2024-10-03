@@ -45,7 +45,7 @@ class AdminFacade(
     private val amazonS3FileService: AmazonS3FileService,
 ) {
 
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
 
     fun createCustomValidityToken(
         userId: Long,
@@ -102,7 +102,7 @@ class AdminFacade(
             mockMaleUser = mockMaleUser,
             mockFemaleUser = mockFemaleUser2,
             bottleStatus = BottleStatus.SENT,
-            likeMessage = "이상형이에요 ☺"
+            likeMessage = "이상형이에요 🥰"
         )
     }
 
@@ -138,7 +138,7 @@ class AdminFacade(
         adminService.cleanUpMockUpData(mockFemaleUser2)
     }
 
-    fun testFcm(fcmToken: String,): String? {
+    fun testFcm(fcmToken: String): String? {
         val fcmNotification = FcmNotification(
             title = "좋은 하루 되세요",
             body = "테스트입니다"
@@ -167,12 +167,12 @@ class AdminFacade(
             .filter { it.user.id > userId }
             .filter { it.blurredImageUrl == null }
             .forEach {
-            val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
-            val path = makePathWithUserId(imageFile, it.user.id)
-            val blurredImageUrl = imageUploader.uploadWithBlur(imageFile, path);
+                val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
+                val path = makePathWithUserId(imageFile, it.user.id)
+                val blurredImageUrl = imageUploader.uploadWithBlur(imageFile, path);
 
-            userProfileService.addBlurImageUrl(it.id, blurredImageUrl.toString())
-        }
+                userProfileService.addBlurImageUrl(it.id, blurredImageUrl.toString())
+            }
     }
 
     fun makePathWithUserId(
