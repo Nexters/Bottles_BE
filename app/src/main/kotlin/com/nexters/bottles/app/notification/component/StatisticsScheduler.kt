@@ -44,7 +44,7 @@ class StatisticsScheduler(
         val yesterday = LocalDate.now().minusDays(1)
 
         val allUsers = userRepository.findAll()
-        val currentUser = allUsers.filterNot { it.deleted }
+        val currentUser = allUsers.filterNot { it.deleted }.filter { it.id > 151 }
         val yesterdayRegisterUser = allUsers.filter { it.createdAt.toLocalDate() == yesterday }
         val yesterdayLeaveUser = allUsers.filter { it.deletedAt?.toLocalDate() == yesterday }
         val yesterdayStartPingpong = bottleRepository
