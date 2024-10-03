@@ -38,11 +38,9 @@ jobs:
         shell: bash
 
       - name: Auto-assign PR creator and add default label
-        uses: kentaro-m/auto-assign-action@v1.2.0
+        uses: kentaro-m/auto-assign-action@v1.2.5
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          add-assignees: author
-          add-labels: "feat 💡"
+          configuration-path: '.github/auto_assign.yml'
 
       - name: Send Discord Notification
         if: github.event.action == 'opened' || github.event.action == 'reopened'
