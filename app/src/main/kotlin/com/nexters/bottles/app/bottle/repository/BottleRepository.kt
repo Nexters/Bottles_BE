@@ -89,4 +89,7 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
         @Param("stoppedAt") stoppedAt: LocalDateTime,
         @Param("deletedAt") deletedAt: LocalDateTime
     ): List<Bottle>
+
+
+    fun findAllByCreatedAtGreaterThanAndCreatedAtLessThan(yesterday: LocalDateTime, today: LocalDateTime): List<Bottle>
 }

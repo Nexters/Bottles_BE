@@ -11,6 +11,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-data-jpa")
     api("org.springframework.boot:spring-boot-starter-data-jdbc")
 
+    api("org.springframework.boot:spring-boot-starter-webflux")
     api("net.logstash.logback:logstash-logback-encoder:7.3")
 
     implementation("org.springframework.boot:spring-boot-starter-cache")
