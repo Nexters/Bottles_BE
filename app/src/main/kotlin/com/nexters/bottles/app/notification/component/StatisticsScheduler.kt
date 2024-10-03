@@ -1,13 +1,13 @@
-package com.nexters.bottles.batch.scheduler
+package com.nexters.bottles.app.notification.component
 
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
+import com.nexters.bottles.app.notification.component.dto.Block
+import com.nexters.bottles.app.notification.component.dto.SlackMessage
+import com.nexters.bottles.app.notification.component.dto.Text
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
-import com.nexters.bottles.batch.scheduler.dto.Block
-import com.nexters.bottles.batch.scheduler.dto.SlackMessage
-import com.nexters.bottles.batch.scheduler.dto.Text
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
@@ -39,7 +39,7 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 20 16 * * *")
     fun sendDailyStatistics() {
         log.info { "데일리 지표 스케줄러 돌기 시작" }
         log.info { "slackUrl=$slackUrl" }
