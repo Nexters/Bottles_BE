@@ -12,7 +12,6 @@ import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.repository.UserRepository
-import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -38,9 +37,10 @@ class BottleService(
 
     @Transactional(readOnly = true)
     fun getNewBottlesByBottleStatus(user: User, statusSet: Set<BottleStatus>): List<Bottle> {
-        return bottleRepository.findAllByTargetUserAndBottleStatusAndNotExpiredAndDeletedFalse(
+        return bottleRepository.findAllByTargetUserAndStatusesAndNotExpiredAndDeletedFalseOrderByCreatedDesc(
             user,
             statusSet,
+            setOf(PingPongStatus.NONE),
             LocalDateTime.now()
         )
     }
