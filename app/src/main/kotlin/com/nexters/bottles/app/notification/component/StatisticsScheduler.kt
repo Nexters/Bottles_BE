@@ -40,7 +40,7 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 50 16 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     fun sendDailyStatistics() {
         log.info { "데일리 지표 스케줄러 돌기 시작" }
         log.info { "slackUrl=$slackUrl" }
@@ -75,7 +75,7 @@ class StatisticsScheduler(
 
         val response = webClient.post()
             .uri(slackUrl)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.TEXT_PLAIN)
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .bodyToMono(Void::class.java)
@@ -118,7 +118,7 @@ class StatisticsScheduler(
 
         val response = webClient.post()
             .uri(slackUrl)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.TEXT_PLAIN)
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .bodyToMono(Void::class.java)
