@@ -51,7 +51,10 @@ class StatisticsScheduler(
         val yesterdayRegisterUser = allUsers.filter { it.createdAt.toLocalDate() == yesterday }
         val yesterdayLeaveUser = allUsers.filter { it.deletedAt?.toLocalDate() == yesterday }
         val yesterdayStartPingpong = bottleRepository
-            .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(LocalDateTime.of(yesterday, LocalTime.MIN), LocalDateTime.of(yesterday, LocalTime.MAX))
+            .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(
+                LocalDateTime.of(yesterday, LocalTime.MIN),
+                LocalDateTime.of(yesterday, LocalTime.MAX)
+            )
             .filter { it.pingPongStatus == PingPongStatus.MATCHED }
 
         val request = mapOf(
@@ -62,11 +65,11 @@ class StatisticsScheduler(
                     "text" to mapOf(
                         "type" to "mrkdwn",
                         "text" to """
-                    지표 물어다주는 새 :bird:\n\n
-                    전체 유저: ${currentUser} 명 \n\n
-                    어제 가입 유저: ${yesterdayRegisterUser} 명 \n\n
-                    어제 탈퇴 유저: ${yesterdayLeaveUser} 명 \n\n
-                    어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 \n\n
+                    지표 물어다주는 새 :bird: 
+                    전체 유저: ${currentUser} 명 
+                    어제 가입 유저: ${yesterdayRegisterUser} 명 
+                    어제 탈퇴 유저: ${yesterdayLeaveUser} 명 
+                    어제 핑퐁 시작 유저: ${yesterdayStartPingpong} 명 
                 """.trimIndent()
                     )
                 )
@@ -75,10 +78,10 @@ class StatisticsScheduler(
 
         val response = webClient.post()
             .uri(slackUrl)
-            .contentType(MediaType.TEXT_PLAIN)
+            .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
-            .bodyToMono(Void::class.java)
+            .bodyToMono(String::class.java)
             .block()
 
         log.info { "response: $response" }
@@ -91,7 +94,10 @@ class StatisticsScheduler(
         val lastWeekSunday = LocalDate.now().minusDays(1)
 
         val yesterdayUserProfile = userProfileRepository
-            .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(LocalDateTime.of(lastWeekMonday, LocalTime.MIN), LocalDateTime.of(lastWeekSunday, LocalTime.MAX))
+            .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(
+                LocalDateTime.of(lastWeekMonday, LocalTime.MIN),
+                LocalDateTime.of(lastWeekSunday, LocalTime.MAX)
+            )
 
         val yesterdayIntroductionDone = yesterdayUserProfile.filter { it.introduction.isNotEmpty() }.count()
         val yesterdayIntroductionRatio = (yesterdayIntroductionDone / yesterdayUserProfile.count()) * 100
@@ -118,10 +124,10 @@ class StatisticsScheduler(
 
         val response = webClient.post()
             .uri(slackUrl)
-            .contentType(MediaType.TEXT_PLAIN)
+            .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
-            .bodyToMono(Void::class.java)
+            .bodyToMono(String::class.java)
             .block()
     }
 }
