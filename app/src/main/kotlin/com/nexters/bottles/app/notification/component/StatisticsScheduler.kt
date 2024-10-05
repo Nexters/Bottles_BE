@@ -54,8 +54,8 @@ class StatisticsScheduler(
             )
             .filter { it.pingPongStatus == PingPongStatus.MATCHED }
 
-        val currentMaleUsers = allUsers.filter { it.gender == Gender.MALE }
-        val currentFemaleUsers = allUsers.filter { it.gender == Gender.FEMALE }
+        val currentMaleUsers = currentUser.filter { it.gender == Gender.MALE }
+        val currentFemaleUsers = currentUser.filter { it.gender == Gender.FEMALE }
 
         val currentIntroductionDoneMaleuser =
             userProfileRepository.findAllByUserIdIn(currentMaleUsers.map { it.id }).filter { it.introduction.isNotEmpty() }
