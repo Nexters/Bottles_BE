@@ -3,6 +3,7 @@ package com.nexters.bottles.app.notification.component
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
+import com.nexters.bottles.app.common.annotation.LiveOnly
 import com.nexters.bottles.app.user.domain.enum.Gender
 import com.nexters.bottles.app.user.repository.UserProfileRepository
 import com.nexters.bottles.app.user.repository.UserRepository
@@ -38,7 +39,8 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 30 10 * * *")
+    @LiveOnly
+    @Scheduled(cron = "0 0 10 * * *")
     fun sendDailyStatistics() {
         val yesterday = LocalDate.now().minusDays(1)
 
@@ -91,6 +93,7 @@ class StatisticsScheduler(
             .block()
     }
 
+    @LiveOnly
     @Scheduled(cron = "0 30 10 * * 1")
     fun sendWeeklyStatistics() {
         val lastWeekMonday = LocalDate.now().minusDays(7)
