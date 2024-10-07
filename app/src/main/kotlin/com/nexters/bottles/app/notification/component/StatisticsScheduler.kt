@@ -117,7 +117,7 @@ class StatisticsScheduler(
                         "text" to """
                             지표 물어다주는 새 :bird:\n\n
                             저번주 프로필   생성 수: ${lastWeekUserProfile.count()}
-                            저번주 자기소개 작성 수: $lastWeekIntroductionDone
+                            저번주 자기소개 작성 수: ${lastWeekIntroductionDone.count()}
                             저번주 자기소개 작성 비율: ${formattedRatio}%
                 """.trimIndent()
                     )
