@@ -91,7 +91,7 @@ class StatisticsScheduler(
             .block()
     }
 
-    @Scheduled(cron = "30 10 * * 1")
+    @Scheduled(cron = "0 30 10 * * 1")
     fun sendWeeklyStatistics() {
         val lastWeekMonday = LocalDate.now().minusDays(7)
         val lastWeekSunday = LocalDate.now().minusDays(1)
