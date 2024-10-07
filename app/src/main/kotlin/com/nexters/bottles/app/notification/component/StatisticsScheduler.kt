@@ -1,6 +1,5 @@
 package com.nexters.bottles.app.notification.component
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
@@ -39,7 +38,7 @@ class StatisticsScheduler(
         .baseUrl(slackUrl)
         .build()
 
-    @Scheduled(cron = "0 0 10 * * *")
+    @Scheduled(cron = "0 30 10 * * *")
     fun sendDailyStatistics() {
         val yesterday = LocalDate.now().minusDays(1)
 
@@ -92,21 +91,21 @@ class StatisticsScheduler(
             .block()
     }
 
-    @Scheduled(cron = "* * 10 * * 1")
+    @Scheduled(cron = "30 10 * * 1")
     fun sendWeeklyStatistics() {
         val lastWeekMonday = LocalDate.now().minusDays(7)
         val lastWeekSunday = LocalDate.now().minusDays(1)
 
-        val yesterdayUserProfile = userProfileRepository
+        val lastWeekUserProfile = userProfileRepository
             .findAllByCreatedAtGreaterThanAndCreatedAtLessThan(
                 LocalDateTime.of(lastWeekMonday, LocalTime.MIN),
                 LocalDateTime.of(lastWeekSunday, LocalTime.MAX)
             )
 
-        val yesterdayIntroductionDone = yesterdayUserProfile.filter { it.introduction.isNotEmpty() }.count()
-        val yesterdayIntroductionRatio = (yesterdayIntroductionDone / yesterdayUserProfile.count()) * 100
+        val lastWeekIntroductionDone = lastWeekUserProfile.filter { it.introduction.isNotEmpty() }
+        val lastWeekIntroductionRatio = (lastWeekIntroductionDone.count() / lastWeekUserProfile.count()) * 100
         val decimalFormat = DecimalFormat("#.##")
-        val formattedRatio = decimalFormat.format(yesterdayIntroductionRatio)
+        val formattedRatio = decimalFormat.format(lastWeekIntroductionRatio)
 
         val request = mapOf(
             "channel" to slackChannel,
@@ -117,9 +116,9 @@ class StatisticsScheduler(
                         "type" to "mrkdwn",
                         "text" to """
                             지표 물어다주는 새 :bird:\n\n
-                            저번주 프로필   생성 수: ${yesterdayUserProfile.count()} \n\n
-                            저번주 자기소개 작성 수: $yesterdayIntroductionDone \n\n
-                            저번주 자기소개 작성 비율: ${formattedRatio}% \n\n
+                            저번주 프로필   생성 수: ${lastWeekUserProfile.count()}
+                            저번주 자기소개 작성 수: $lastWeekIntroductionDone
+                            저번주 자기소개 작성 비율: ${formattedRatio}%
                 """.trimIndent()
                     )
                 )
