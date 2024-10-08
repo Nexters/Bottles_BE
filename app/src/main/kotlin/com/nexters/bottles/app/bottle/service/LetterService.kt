@@ -2,6 +2,7 @@ package com.nexters.bottles.app.bottle.service
 
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.Letter
+import com.nexters.bottles.app.bottle.domain.enum.LetterLastStatus
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.user.domain.User
@@ -59,5 +60,25 @@ class LetterService(
         } else {
             letter.finishIfAllShare()
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun findLastStatus(bottle: Bottle, user: User, otherUser: User): LetterLastStatus {
+        val myLetter =
+            letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        val otherLetter =
+            letterRepository.findByBottleAndUser(bottle, otherUser) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+
+        return myLetter.findLastStatusWithOtherLetter(otherLetter);
+    }
+
+    @Transactional(readOnly = true)
+    fun findLastUpdated(bottle: Bottle, user: User, otherUser: User): LocalDateTime {
+        val myLetter =
+            letterRepository.findByBottleAndUser(bottle, user) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        val otherLetter =
+            letterRepository.findByBottleAndUser(bottle, otherUser) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+
+        return myLetter.findLastUpdatedWithOtherLetter(otherLetter);
     }
 }

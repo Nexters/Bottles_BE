@@ -23,6 +23,11 @@ class BottleCachingService(
         return bottleService.getPingPongBottles(userId)
     }
 
+    @Cacheable(PING_PONG_BOTTLE_LIST, key = "#userId + '-v2'")
+    fun getPingPongBottlesV2(userId: Long): List<Bottle> {
+        return bottleService.getPingPongBottles(userId)
+    }
+
     @Caching(
         evict = [
             CacheEvict(PING_PONG_BOTTLE_LIST, key = "#sourceUserId"),
