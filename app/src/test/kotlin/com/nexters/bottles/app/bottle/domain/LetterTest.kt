@@ -18,16 +18,8 @@ class LetterTest {
             targetUser = TARGET_USER, sourceUser = SOURCE_USER, likeMessage = LikeMessage("hi"),
             bottleStatus = BottleStatus.SENT, pingPongStatus = PingPongStatus.ACTIVE
         );
-        private val MY_LETTERS = listOf(
-            LetterQuestionAndAnswer(question = "question1"),
-            LetterQuestionAndAnswer(question = "question2"),
-            LetterQuestionAndAnswer(question = "question3")
-        )
-        private val OTHER_LETTERS = listOf(
-            LetterQuestionAndAnswer(question = "question1"),
-            LetterQuestionAndAnswer(question = "question2"),
-            LetterQuestionAndAnswer(question = "question3")
-        )
+        private val MY_LETTERS = listOf(LetterQuestionAndAnswer(question = "question1"))
+        private val OTHER_LETTERS = listOf(LetterQuestionAndAnswer(question = "question1"))
     }
 
     @Nested
@@ -45,8 +37,20 @@ class LetterTest {
 
         @Test
         fun `내가 문답을 작성했을 경우`() {
-            val myLetter = Letter(bottle = PING_PONG_BOTTLE, user = TARGET_USER, letters = MY_LETTERS)
-            val otherLetter = Letter(bottle = PING_PONG_BOTTLE, user = SOURCE_USER, letters = OTHER_LETTERS)
+            val myLetter = Letter(
+                bottle = PING_PONG_BOTTLE, user = TARGET_USER, letters = listOf(
+                    LetterQuestionAndAnswer(question = "question1"),
+                    LetterQuestionAndAnswer(question = "question2"),
+                    LetterQuestionAndAnswer(question = "question3")
+                )
+            )
+            val otherLetter = Letter(
+                bottle = PING_PONG_BOTTLE, user = SOURCE_USER, letters = listOf(
+                    LetterQuestionAndAnswer(question = "question1"),
+                    LetterQuestionAndAnswer(question = "question2"),
+                    LetterQuestionAndAnswer(question = "question3")
+                )
+            )
             myLetter.registerAnswer(1, "답변")
 
             val lastStatus = myLetter.findLastStatusWithOtherLetter(otherLetter)
@@ -56,8 +60,20 @@ class LetterTest {
 
         @Test
         fun `상대방이 문답을 작성했을 경우`() {
-            val myLetter = Letter(bottle = PING_PONG_BOTTLE, user = TARGET_USER, letters = MY_LETTERS)
-            val otherLetter = Letter(bottle = PING_PONG_BOTTLE, user = SOURCE_USER, letters = OTHER_LETTERS)
+            val myLetter = Letter(
+                bottle = PING_PONG_BOTTLE, user = TARGET_USER, letters = listOf(
+                    LetterQuestionAndAnswer(question = "question1"),
+                    LetterQuestionAndAnswer(question = "question2"),
+                    LetterQuestionAndAnswer(question = "question3")
+                )
+            )
+            val otherLetter = Letter(
+                bottle = PING_PONG_BOTTLE, user = SOURCE_USER, letters = listOf(
+                    LetterQuestionAndAnswer(question = "question1"),
+                    LetterQuestionAndAnswer(question = "question2"),
+                    LetterQuestionAndAnswer(question = "question3")
+                )
+            )
             otherLetter.registerAnswer(1, "답변")
 
             val lastStatus = myLetter.findLastStatusWithOtherLetter(otherLetter)

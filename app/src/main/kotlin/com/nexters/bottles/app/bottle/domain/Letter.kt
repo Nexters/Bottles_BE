@@ -89,7 +89,7 @@ class Letter(
             otherLetter.isShareContact != null -> LetterLastStatus.CONTACT_SHARED_BY_OTHER
             this.isShareImage != null && otherLetter.isShareImage == null -> LetterLastStatus.PHOTO_SHARED_BY_ME_ONLY
             otherLetter.isShareImage != null -> LetterLastStatus.PHOTO_SHARED_BY_OTHER
-            this.letters.isEmpty() && otherLetter.letters.isEmpty() -> LetterLastStatus.NO_ANSWER_FROM_BOTH
+            this.findAnsweredSize() == 0 && otherLetter.findAnsweredSize() == 0 -> LetterLastStatus.NO_ANSWER_FROM_BOTH
             this.findAnsweredSize() > otherLetter.findAnsweredSize() -> LetterLastStatus.ANSWER_FROM_ME_ONLY
             otherLetter.findAnsweredSize() >= this.findAnsweredSize() -> LetterLastStatus.ANSWER_FROM_OTHER
             else -> LetterLastStatus.NO_ANSWER_FROM_BOTH
