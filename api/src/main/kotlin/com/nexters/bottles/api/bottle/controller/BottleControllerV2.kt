@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.bottle.controller
 
 import com.nexters.bottles.api.bottle.facade.BottleFacadeV2
+import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponseV2
 import com.nexters.bottles.api.bottle.facade.dto.RandomBottleListResponse
 import com.nexters.bottles.api.bottle.facade.dto.SentBottleListResponse
 import com.nexters.bottles.api.global.interceptor.AuthRequired
@@ -28,5 +29,12 @@ class BottleControllerV2(
     @AuthRequired
     fun getSentBottlesList(@AuthUserId userId: Long): SentBottleListResponse {
         return bottleFacadeV2.getSentBottles(userId)
+    }
+
+    @ApiOperation("문답 - 핑퐁중인 보틀 목록 조회하기")
+    @GetMapping("/ping-pong")
+    @AuthRequired
+    fun getPingPongList(@AuthUserId userId: Long): PingPongListResponseV2 {
+        return bottleFacadeV2.getPingPongBottles(userId)
     }
 }

@@ -138,7 +138,7 @@ class BottleService(
     @Transactional(readOnly = true)
     fun getPingPongBottles(userId: Long): List<Bottle> {
         val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
-        return bottleRepository.findAllByNotDeletedUserAndStatusAndDeletedFalse(
+        return bottleRepository.findAllByNotDeletedUserAndStatusAndDeletedFalseOrderByUpdatedAtDesc(
             user,
             setOf(
                 PingPongStatus.ACTIVE,

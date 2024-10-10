@@ -1,11 +1,12 @@
 package com.nexters.bottles.api.bottle.facade.dto
 
-data class PingPongListResponse(
-    val activeBottles: List<PingPongBottleDto>,
-    val doneBottles: List<PingPongBottleDto>
+import com.nexters.bottles.app.bottle.domain.enum.LetterLastStatus
+
+data class PingPongListResponseV2(
+    val pingPongBottles: List<PingPongBottleDtoV2>,
 )
 
-data class PingPongBottleDto(
+data class PingPongBottleDtoV2(
     val id: Long,
     val isRead: Boolean,
     val userName: String?,
@@ -15,4 +16,5 @@ data class PingPongBottleDto(
     val keyword: List<String>?,
     val userImageUrl: String?,
     val lastActivatedAt: String?,
+    val lastStatus: LetterLastStatus
 )

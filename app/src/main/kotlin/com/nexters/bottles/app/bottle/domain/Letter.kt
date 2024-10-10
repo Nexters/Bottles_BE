@@ -1,5 +1,6 @@
 package com.nexters.bottles.app.bottle.domain
 
+import com.nexters.bottles.app.bottle.domain.enum.LetterLastStatus
 import com.nexters.bottles.app.bottle.repository.converter.LetterQuestionAndAnswerConverter
 import com.nexters.bottles.app.common.BaseEntity
 import com.nexters.bottles.app.user.domain.User
@@ -79,6 +80,33 @@ class Letter(
 
     fun notFinishedLastAnswer(): Boolean {
         return letters.last().answer == null
+    }
+
+    fun findLastStatusWithOtherLetter(otherLetter: Letter): LetterLastStatus {
+        return when {
+            bottle.isStopped() -> LetterLastStatus.CONVERSATION_STOPPED
+            this.isShareContact != null && otherLetter.isShareContact == null -> LetterLastStatus.CONTACT_SHARED_BY_ME_ONLY
+            otherLetter.isShareContact != null -> LetterLastStatus.CONTACT_SHARED_BY_OTHER
+            this.isShareImage != null && otherLetter.isShareImage == null -> LetterLastStatus.PHOTO_SHARED_BY_ME_ONLY
+            otherLetter.isShareImage != null -> LetterLastStatus.PHOTO_SHARED_BY_OTHER
+            this.findAnsweredSize() == 0 && otherLetter.findAnsweredSize() == 0 -> LetterLastStatus.NO_ANSWER_FROM_BOTH
+            this.findAnsweredSize() > otherLetter.findAnsweredSize() -> LetterLastStatus.ANSWER_FROM_ME_ONLY
+            otherLetter.findAnsweredSize() >= this.findAnsweredSize() -> LetterLastStatus.ANSWER_FROM_OTHER
+            else -> LetterLastStatus.NO_ANSWER_FROM_BOTH
+        }
+    }
+
+    fun findAnsweredSize(): Int {
+        return this.letters.count {
+            it.answer != null
+        }
+    }
+
+    fun findLastUpdatedWithOtherLetter(otherLetter: Letter): LocalDateTime {
+        return when {
+            this.updatedAt > otherLetter.updatedAt -> this.updatedAt
+            else -> otherLetter.updatedAt
+        }
     }
 }
 

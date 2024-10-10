@@ -53,9 +53,10 @@ interface BottleRepository : JpaRepository<Bottle, Long> {
                 "AND b.targetUser.deleted = false " +
                 "AND b.sourceUser.deleted = false " +
                 "AND b.pingPongStatus IN :pingPongStatus " +
-                "AND b.deleted = false "
+                "AND b.deleted = false " +
+                "ORDER BY b.updatedAt desc "
     )
-    fun findAllByNotDeletedUserAndStatusAndDeletedFalse(
+    fun findAllByNotDeletedUserAndStatusAndDeletedFalseOrderByUpdatedAtDesc(
         @Param("user") user: User,
         @Param("pingPongStatus") pingPongStatus: Set<PingPongStatus>
     ): List<Bottle>
