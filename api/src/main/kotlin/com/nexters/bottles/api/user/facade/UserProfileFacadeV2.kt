@@ -29,14 +29,18 @@ class UserProfileFacadeV2(
     }
 
     fun registerImageUrls(userId: Long, registerImageUrlsRequest: RegisterImageUrlsRequest) {
-        profileService.upsertImageUrls(userId, registerImageUrlsRequest.imageUrls)
+        profileService.upsertImageUrls(
+            userId,
+            registerImageUrlsRequest.imageUrls,
+            registerImageUrlsRequest.imageUrls[0].replace(PREFIX_ORIGINAL_IMAGE_MAIN, PREFIX_BLURRED_IMAGE)
+        )
     }
 
     private fun makeFirstPathWithUserId(
         fileName: String,
         userId: Long
     ): String {
-        val filePath = "original/main/${userId}${FILE_NAME_DELIMITER}${
+        val filePath = "${PREFIX_ORIGINAL_IMAGE_MAIN}${userId}${FILE_NAME_DELIMITER}${
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
         }${FILE_NAME_DELIMITER}${fileName}"
 
@@ -47,7 +51,7 @@ class UserProfileFacadeV2(
         fileName: String,
         userId: Long
     ): String {
-        val filePath = "original/${userId}${FILE_NAME_DELIMITER}${
+        val filePath = "${PREFIX_ORIGINAL_IMAGE}${userId}${FILE_NAME_DELIMITER}${
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
         }${FILE_NAME_DELIMITER}${fileName}"
 
@@ -56,5 +60,8 @@ class UserProfileFacadeV2(
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"
+        private const val PREFIX_ORIGINAL_IMAGE_MAIN = "original/main/"
+        private const val PREFIX_ORIGINAL_IMAGE = "original/"
+        private const val PREFIX_BLURRED_IMAGE = "blur/"
     }
 }

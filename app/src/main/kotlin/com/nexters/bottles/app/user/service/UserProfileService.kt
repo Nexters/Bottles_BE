@@ -75,13 +75,14 @@ class UserProfileService(
     }
 
     @Transactional
-    fun upsertImageUrls(userId: Long, imageUrls: List<String>) {
+    fun upsertImageUrls(userId: Long, imageUrls: List<String>, blurredImageUrl: String) {
         profileRepository.findByUserId(userId)?.let {
             val uploadImageEventDto = UploadImageEventDto(
                 prevImageUrls = it.imageUrls,
                 prevBlurredImageUrl = it.blurredImageUrl
             )
             it.imageUrls = imageUrls
+            it.blurredImageUrl = blurredImageUrl
             applicationEventPublisher.publishEvent(uploadImageEventDto)
         } ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
