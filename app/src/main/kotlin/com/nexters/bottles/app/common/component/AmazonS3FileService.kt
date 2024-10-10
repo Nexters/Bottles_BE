@@ -1,16 +1,24 @@
 package com.nexters.bottles.app.common.component
 
 import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.DeleteObjectRequest
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest
 import com.amazonaws.services.s3.model.GetObjectRequest
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.Date
 
 @Component
 class AmazonS3FileService(
@@ -18,6 +26,9 @@ class AmazonS3FileService(
 
     @Value("\${cloud.aws.s3.bucket}")
     private val bucket: String,
+
+    @Value("\${cloud.aws.s3.presigned-url.validity}")
+    private val presignedUrlValidity: Long,
 ) : FileService {
 
     override fun upload(file: MultipartFile, key: String): URL {
@@ -51,6 +62,24 @@ class AmazonS3FileService(
         )
         amazonS3.putObject(putObjectRequest)
         return amazonS3.getUrl(bucket, key)
+    }
+
+    override fun getPresignedUrl(filePath: String, httpMethod: HttpMethod): URL {
+        val generatePresignedUrlRequest =
+            GeneratePresignedUrlRequest(bucket, filePath)
+                .withMethod(com.amazonaws.HttpMethod.valueOf(httpMethod.name))
+                .withExpiration(createExpiration(presignedUrlValidity))
+        return amazonS3.generatePresignedUrl(generatePresignedUrlRequest)
+    }
+
+    private fun createExpiration(validity: Long): Date {
+        val now = Date().time
+        return Date(now + validity)
+    }
+
+    override fun remove(fileUrl: String) {
+        val key = fileUrl.split("/").last()
+        amazonS3.deleteObject(DeleteObjectRequest(bucket, key))
     }
 
     fun downloadAsMultipartFile(key: String): MultipartFile {

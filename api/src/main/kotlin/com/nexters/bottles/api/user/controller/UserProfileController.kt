@@ -12,7 +12,6 @@ import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatusResponse
 import io.swagger.annotations.ApiOperation
-import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
