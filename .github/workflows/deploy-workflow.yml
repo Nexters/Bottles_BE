@@ -106,6 +106,7 @@ jobs:
             echo "export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export S3_BUCKET=${{ secrets.S3_BUCKET }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export S3_REGION=${{ secrets.S3_REGION }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
+            echo "export S3_PRESIGNED_URL_VALIDITY=${{ secrets.S3_PRESIGNED_URL_VALIDITY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             
             echo "export ACCESS_TOKEN_SECRET_KEY=${{ secrets.ACCESS_TOKEN_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh
             echo "export REFRESH_TOKEN_SECRET_KEY=${{ secrets.REFRESH_TOKEN_SECRET_KEY }}" >> /home/${{ secrets.SERVER_USER_NAME }}/deploy/env_vars.sh

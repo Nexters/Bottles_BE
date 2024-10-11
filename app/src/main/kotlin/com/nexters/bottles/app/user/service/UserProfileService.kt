@@ -1,6 +1,7 @@
 package com.nexters.bottles.app.user.service
 
 import com.nexters.bottles.app.user.component.event.dto.IntroductionSaveEventDto
+import com.nexters.bottles.app.user.component.event.dto.UploadImageEventDto
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
 import com.nexters.bottles.app.user.domain.UserProfile
@@ -74,10 +75,15 @@ class UserProfileService(
     }
 
     @Transactional
-    fun uploadImageUrls(userId: Long, imageUrls: List<String>, blurredImageUrl: String) {
+    fun upsertImageUrls(userId: Long, imageUrls: List<String>, blurredImageUrl: String) {
         profileRepository.findByUserId(userId)?.let {
+            val uploadImageEventDto = UploadImageEventDto(
+                prevImageUrls = it.imageUrls,
+                prevBlurredImageUrl = it.blurredImageUrl
+            )
             it.imageUrls = imageUrls
             it.blurredImageUrl = blurredImageUrl
+            applicationEventPublisher.publishEvent(uploadImageEventDto)
         } ?: throw IllegalArgumentException("고객센터에 문의해주세요")
     }
 

@@ -21,15 +21,15 @@ CREATE TABLE user
 
 CREATE TABLE user_profile
 (
-    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id        BIGINT                             NOT NULL,
-    profile_select JSON,
-    introduction   JSON,
-    image_url      VARCHAR(2048),
-    images         JSON,
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id           BIGINT                             NOT NULL,
+    profile_select    JSON,
+    introduction      JSON,
+    image_url         VARCHAR(2048),
+    image_urls        JSON,
     blurred_image_url VARCHAR(2048),
-    created_at     DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    created_at        DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_user_id ON user_profile (user_id);
 
@@ -162,7 +162,7 @@ CREATE TABLE user_alimy
     alimy_type VARCHAR(100) NOT NULL comment 'DAILY_RANDOM, RECEIVE_LIKE, PINGPONG, MARKETING',
     enabled    BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     UNIQUE KEY unique_user_alimy (user_id, alimy_type)
 );
