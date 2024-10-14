@@ -185,7 +185,7 @@ class AdminFacade(
                 val imageUrl = imageUploader.upload(imageFile, path).toString();
                 val blurredImageUrl = imageUrl.replace(PREFIX_ORIGINAL_IMAGE_MAIN, PREFIX_BLURRED_IMAGE)
 
-                userProfileService.upsertImageUrls(it.id, listOf(imageUrl), blurredImageUrl)
+                userProfileService.upsertImageUrls(it.user.id, listOf(imageUrl), blurredImageUrl)
             }
     }
 
