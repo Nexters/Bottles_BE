@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.admin.controller
 
 import com.nexters.bottles.api.admin.facade.AdminFacade
+import com.nexters.bottles.api.admin.facade.dto.AdminBlurImageRequest
 import com.nexters.bottles.api.admin.facade.dto.CreateCustomTokenRequest
 import com.nexters.bottles.api.admin.facade.dto.CustomTokenResponse
 import com.nexters.bottles.api.admin.facade.dto.ExpireTokenRequest
@@ -93,8 +94,8 @@ class AdminController(
     }
 
     @ApiOperation("블러 강도 높이기")
-    @PostMapping("/blur-image/more/{userId}")
-    fun makeMoreBlurImage(@PathVariable userId: Long) {
-        adminFacade.makeMoreBlurImage(userId)
+    @PostMapping("/blur-image/more")
+    fun makeMoreBlurImage(@RequestBody adminBlurImageRequest: AdminBlurImageRequest) {
+        adminFacade.makeMoreBlurImage(adminBlurImageRequest)
     }
 }
