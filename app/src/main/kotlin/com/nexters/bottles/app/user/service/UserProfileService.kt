@@ -81,6 +81,7 @@ class UserProfileService(
                 prevImageUrls = it.imageUrls,
                 prevBlurredImageUrl = it.blurredImageUrl
             )
+            it.imageUrl = imageUrls[0]
             it.imageUrls = imageUrls
             it.blurredImageUrl = blurredImageUrl
             applicationEventPublisher.publishEvent(uploadImageEventDto)

@@ -175,15 +175,42 @@ class AdminFacade(
             }
     }
 
+    fun makeMoreBlurImage(userId: Long) {
+        userProfileService.findAllWithImage()
+            .filter { it.user.id > userId }
+            .filter { it.imageUrl != null }
+            .forEach {
+                val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
+                val path = makeFirstPathWithUserId(imageFile, it.user.id)
+                val imageUrl = imageUploader.upload(imageFile, path).toString();
+                val blurredImageUrl = imageUrl.replace(PREFIX_ORIGINAL_IMAGE_MAIN, PREFIX_BLURRED_IMAGE)
+
+                userProfileService.upsertImageUrls(it.id, listOf(imageUrl), blurredImageUrl)
+            }
+    }
+
     fun makePathWithUserId(
         file: MultipartFile,
         userId: Long
     ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
 
+    private fun makeFirstPathWithUserId(
+        file: MultipartFile,
+        userId: Long
+    ): String {
+        val filePath = "$PREFIX_ORIGINAL_IMAGE_MAIN${userId}${FILE_NAME_DELIMITER}${
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+        }${FILE_NAME_DELIMITER}${file.originalFilename}"
+
+        return filePath
+    }
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"
+        private const val PREFIX_ORIGINAL_IMAGE_MAIN = "original/main/"
+        private const val PREFIX_ORIGINAL_IMAGE = "original/"
+        private const val PREFIX_BLURRED_IMAGE = "blur/"
         private const val mockMaleUserId = 1L
         private const val mockFemaleUserId1 = 2L
         private const val mockFemaleUserId2 = 9L
