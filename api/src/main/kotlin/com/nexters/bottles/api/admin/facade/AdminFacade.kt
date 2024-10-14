@@ -175,9 +175,9 @@ class AdminFacade(
             }
     }
 
-    fun makeMoreBlurImage(userId: Long) {
+    fun makeMoreBlurImage(adminBlurImageRequest: AdminBlurImageRequest) {
         userProfileService.findAllWithImage()
-            .filter { it.user.id > userId }
+            .filter { it.user.id >= adminBlurImageRequest.startUserId && it.user.id < adminBlurImageRequest.endUserId }
             .filter { it.imageUrl != null }
             .forEach {
                 val imageFile = amazonS3FileService.downloadAsMultipartFile(it.imageUrl!!.substringAfterLast("/"))
@@ -185,7 +185,7 @@ class AdminFacade(
                 val imageUrl = imageUploader.upload(imageFile, path).toString();
                 val blurredImageUrl = imageUrl.replace(PREFIX_ORIGINAL_IMAGE_MAIN, PREFIX_BLURRED_IMAGE)
 
-                userProfileService.upsertImageUrls(it.id, listOf(imageUrl), blurredImageUrl)
+                userProfileService.upsertImageUrls(it.user.id, listOf(imageUrl), blurredImageUrl)
             }
     }
 
