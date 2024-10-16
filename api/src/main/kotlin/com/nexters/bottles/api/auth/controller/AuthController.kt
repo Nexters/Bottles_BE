@@ -116,7 +116,7 @@ class AuthController(
         return UpdateAppVersionResponse(
             minimumIosVersion = null,
             minimumAndroidVersion = 10009L,
-            latestAndroidVersion = 10008L
+            latestAndroidVersion = 10010L
         )
     }
 }
