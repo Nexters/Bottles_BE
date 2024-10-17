@@ -130,6 +130,9 @@ class AdminFacade(
             CacheEvict(PING_PONG_BOTTLE_LIST, key = "1"),
             CacheEvict(PING_PONG_BOTTLE_LIST, key = "2"),
             CacheEvict(PING_PONG_BOTTLE_LIST, key = "9"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "1 + '-v2'"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "2 + '-v2'"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "9 + '-v2'"),
         ]
     )
     fun forceCleanUp() {
