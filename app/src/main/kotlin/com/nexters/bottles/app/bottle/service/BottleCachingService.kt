@@ -31,7 +31,9 @@ class BottleCachingService(
     @Caching(
         evict = [
             CacheEvict(PING_PONG_BOTTLE_LIST, key = "#sourceUserId"),
-            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#targetUserId")
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#targetUserId"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#sourceUserId + '-v2'"),
+            CacheEvict(PING_PONG_BOTTLE_LIST, key = "#targetUserId + '-v2'"),
         ]
     )
     fun evictPingPongList(sourceUserId: Long, targetUserId: Long) {
