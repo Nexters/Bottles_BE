@@ -353,6 +353,7 @@ class BottleFacade(
             photoStatus = getPhotoStatus(myLetter = myLetter, otherLetter = otherLetter),
             myImageUrl = myProfile.imageUrl,
             otherImageUrl = otherProfile.imageUrl,
+            otherImageUrls = otherProfile.imageUrls,
             shouldAnswer = myLetter.isShareImage == null,
             myAnswer = myLetter.isShareImage,
             otherAnswer = otherLetter.isShareImage,
