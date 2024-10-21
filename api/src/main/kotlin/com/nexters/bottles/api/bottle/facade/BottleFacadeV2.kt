@@ -34,6 +34,10 @@ class BottleFacadeV2(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
+    companion object {
+        private val BOTTLE_PUSH_TIME = LocalTime.of(21, 0)
+    }
+
     fun getRandomBottles(userId: Long): RandomBottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
         val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
@@ -41,8 +45,7 @@ class BottleFacadeV2(
             user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요")
         ).map { it.userId }.toSet() // 나를 차단한 유저
 
-        val matchingHour = 18
-        bottleService.matchRandomBottle(user, matchingHour, blockUserIds, blockedMeUserIds)
+        bottleService.matchRandomBottle(user, BOTTLE_PUSH_TIME.hour, blockUserIds, blockedMeUserIds)
             ?.also {
                 applicationEventPublisher.publishEvent(
                     BottleMatchEventDto(
@@ -64,10 +67,10 @@ class BottleFacadeV2(
     }
 
     private fun getNextBottleLeftHours(now: LocalDateTime): Int {
-        return if (now.toLocalTime() > LocalTime.of(18, 0)) {
-            18 + (LocalTime.MAX.hour - now.hour)
+        return if (now.toLocalTime() > BOTTLE_PUSH_TIME) {
+            BOTTLE_PUSH_TIME.hour + (LocalTime.MAX.hour - now.hour)
         } else {
-            LocalTime.of(18, 0).hour - now.hour
+            BOTTLE_PUSH_TIME.hour - now.hour
         }
     }
 

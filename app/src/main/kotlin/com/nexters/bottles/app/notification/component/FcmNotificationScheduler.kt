@@ -16,7 +16,7 @@ class FcmNotificationScheduler(
     private val userAlimyService: UserAlimyService,
 ) {
 
-    @Scheduled(cron = "0 0 18 * * *")
+    @Scheduled(cron = "0 0 21 * * *")
     fun notifyMatching() {
         val userIds = userService.findAllByDeletedFalseAndMatchActivatedTrue().map { it.id }
         val alimyAllowUserIds = userAlimyService.findAllowedUserAlimyByUserIdsAndAlimyType(userIds.toSet(), AlimyType.DAILY_RANDOM)
