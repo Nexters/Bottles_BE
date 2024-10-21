@@ -171,4 +171,11 @@ class UserService(
     fun findAllByPhoneNumber(phoneNumber: String): List<User> {
         return userRepository.findAllByPhoneNumberOrderById(phoneNumber)
     }
+
+    @Transactional
+    fun changeNotificationEnabled(userId: Long, turnedOn: Boolean) {
+        userRepository.findByIdOrNull(userId)?.let {
+            it.isNotificationEnabled = turnedOn
+        }
+    }
 }

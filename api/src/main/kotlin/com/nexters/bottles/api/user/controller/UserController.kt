@@ -3,10 +3,7 @@ package com.nexters.bottles.api.user.controller
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserFacade
-import com.nexters.bottles.api.user.facade.dto.AlimyOnOffRequest
-import com.nexters.bottles.api.user.facade.dto.AlimyResponse
-import com.nexters.bottles.api.user.facade.dto.BlockContactListRequest
-import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
+import com.nexters.bottles.api.user.facade.dto.*
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -46,5 +43,12 @@ class UserController(
     @AuthRequired
     fun turnOnOffAlimy(@AuthUserId userId: Long): List<AlimyResponse> {
         return userFacade.getAlimy(userId)
+    }
+
+    @ApiOperation("폰 알림 허용 유무 등록")
+    @PostMapping("/alimy/native")
+    @AuthRequired
+    fun registerNativeAlimy(@AuthUserId userId: Long, @RequestBody nativeAlimyRequest: NativeAlimyRequest) {
+        return userFacade.registerNativeAlimyStatus(userId, nativeAlimyRequest)
     }
 }
