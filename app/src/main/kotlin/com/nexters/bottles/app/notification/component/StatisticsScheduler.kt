@@ -106,7 +106,7 @@ class StatisticsScheduler(
             )
 
         val lastWeekIntroductionDone = lastWeekUserProfile.filter { it.introduction.isNotEmpty() }
-        val lastWeekIntroductionRatio = (lastWeekIntroductionDone.count() / lastWeekUserProfile.count()) * 100
+        val lastWeekIntroductionRatio = (lastWeekIntroductionDone.count().toDouble() / lastWeekUserProfile.count().toDouble()) * 100
         val decimalFormat = DecimalFormat("#.##")
         val formattedRatio = decimalFormat.format(lastWeekIntroductionRatio)
 
@@ -118,7 +118,7 @@ class StatisticsScheduler(
                     "text" to mapOf(
                         "type" to "mrkdwn",
                         "text" to """
-                            지표 물어다주는 새 :bird:\n\n
+                            지표 물어다주는 새 :bird:
                             저번주 프로필   생성 수: ${lastWeekUserProfile.count()}
                             저번주 자기소개 작성 수: ${lastWeekIntroductionDone.count()}
                             저번주 자기소개 작성 비율: ${formattedRatio}%
