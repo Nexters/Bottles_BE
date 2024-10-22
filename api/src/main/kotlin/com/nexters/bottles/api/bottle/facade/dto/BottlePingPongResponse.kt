@@ -36,6 +36,7 @@ data class Photo(
     val photoStatus: PhotoStatus = PhotoStatus.NONE,
     val myImageUrl: String? = null,
     val otherImageUrl: String? = null,
+    val otherImageUrls: List<String> = emptyList(),
     @Deprecated("iOS에서 status를 적용하면 삭제할 예정입니다")
     val shouldAnswer: Boolean,
     @Deprecated("iOS에서 status를 적용하면 삭제할 예정입니다")
