@@ -9,6 +9,9 @@ import com.nexters.bottles.app.user.service.UserService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
+/**
+ * 실질적으로 돌고 있지 않다.
+ */
 @Component
 class FcmNotificationScheduler(
     private val fcmClient: FcmClient,

@@ -59,6 +59,10 @@ class BottleFacade(
     private val isActiveMatching: Boolean,
 ) {
 
+    companion object {
+        private val BOTTLE_PUSH_TIME = LocalTime.of(21, 0)
+    }
+
     fun getNewBottles(userId: Long): BottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
         val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
@@ -67,7 +71,7 @@ class BottleFacade(
         ).map { it.userId }.toSet() // 나를 차단한 유저
 
         if (isActiveMatching) {
-            val matchingHour = 18
+            val matchingHour = BOTTLE_PUSH_TIME.hour
             bottleService.matchRandomBottle(user, matchingHour, blockUserIds, blockedMeUserIds)
                 ?.also {
                     applicationEventPublisher.publishEvent(
@@ -111,10 +115,10 @@ class BottleFacade(
 
     // TODO: 기획 및 테스트 코드 작성
     private fun getNextBottleLeftHours(now: LocalDateTime): Int {
-        return if (now.toLocalTime() > LocalTime.of(18, 0)) {
-            18 + (LocalTime.MAX.hour - now.hour)
+        return if (now.toLocalTime() > BOTTLE_PUSH_TIME) {
+            BOTTLE_PUSH_TIME.hour + (LocalTime.MAX.hour - now.hour)
         } else {
-            LocalTime.of(18, 0).hour - now.hour
+            BOTTLE_PUSH_TIME.hour - now.hour
         }
     }
 
