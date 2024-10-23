@@ -2,10 +2,9 @@ package com.nexters.bottles.api.user.facade
 
 import com.nexters.bottles.api.user.facade.dto.AlimyOnOffRequest
 import com.nexters.bottles.api.user.facade.dto.AlimyResponse
-import com.nexters.bottles.api.user.facade.dto.NativeAlimyRequest
+import com.nexters.bottles.api.user.facade.dto.NativeSettingRegisterRequest
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
 import com.nexters.bottles.app.user.domain.BlockContact
-import com.nexters.bottles.app.user.domain.UserAlimy
 import com.nexters.bottles.app.user.domain.UserReport
 import com.nexters.bottles.app.user.service.BlockContactListService
 import com.nexters.bottles.app.user.service.UserAlimyService
@@ -50,7 +49,12 @@ class UserFacade(
             .map { AlimyResponse(it.alimyType, it.enabled) }
     }
 
-    fun registerNativeAlimyStatus(userId: Long, nativeAlimyRequest: NativeAlimyRequest) {
-        userService.changeNotificationEnabled(userId, nativeAlimyRequest.turnedOn)
+    fun registerNativeSetting(userId: Long, nativeAlimyRequest: NativeSettingRegisterRequest) {
+        userService.changeNativeSetting(
+            userId = userId,
+            alimyTurnedOn = nativeAlimyRequest.alimyTurnedOn,
+            deviceName = nativeAlimyRequest.deviceName,
+            appVersion = nativeAlimyRequest.appVersion
+        )
     }
 }

@@ -45,10 +45,10 @@ class UserController(
         return userFacade.getAlimy(userId)
     }
 
-    @ApiOperation("폰 알림 허용 유무 등록")
-    @PostMapping("/alimy/native")
+    @ApiOperation("폰 알림 허용 유무/ 디바이스명 / 앱버전 등록")
+    @PostMapping("/native-setting")
     @AuthRequired
-    fun registerNativeAlimy(@AuthUserId userId: Long, @RequestBody nativeAlimyRequest: NativeAlimyRequest) {
-        return userFacade.registerNativeAlimyStatus(userId, nativeAlimyRequest)
+    fun registerNativeSetting(@AuthUserId userId: Long, @RequestBody nativeSettingRegisterRequest: NativeSettingRegisterRequest) {
+        return userFacade.registerNativeSetting(userId, nativeSettingRegisterRequest)
     }
 }
