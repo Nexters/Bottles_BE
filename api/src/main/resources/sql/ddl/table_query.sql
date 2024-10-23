@@ -15,6 +15,9 @@ CREATE TABLE user
     last_activated_at      DATETIME     DEFAULT CURRENT_TIMESTAMP comment '유저의 최근 활성 시간으로, 보틀 목록 조회하기 api 요청시 갱신',
     is_match_activated     BOOLEAN      DEFAULT TRUE              NOT NULL comment '매칭 활성화 여부',
     last_random_matched_at DATETIME     DEFAULT CURRENT_TIMESTAMP comment '유저의 최근 랜덤 매칭 시간으로, 랜덤 매칭시 갱신',
+    is_notification_enabled tinyint(1)  default 0                 not null comment '핸드폰 알림 허용 여부',
+    device_name             varchar(255)                          null,
+    app_version             varchar(255)                          null,
     created_at             DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at             DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 ) AUTO_INCREMENT = 10;

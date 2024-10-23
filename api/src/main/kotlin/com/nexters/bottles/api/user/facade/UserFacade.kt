@@ -2,13 +2,14 @@ package com.nexters.bottles.api.user.facade
 
 import com.nexters.bottles.api.user.facade.dto.AlimyOnOffRequest
 import com.nexters.bottles.api.user.facade.dto.AlimyResponse
+import com.nexters.bottles.api.user.facade.dto.NativeSettingRegisterRequest
 import com.nexters.bottles.api.user.facade.dto.ReportUserRequest
 import com.nexters.bottles.app.user.domain.BlockContact
-import com.nexters.bottles.app.user.domain.UserAlimy
 import com.nexters.bottles.app.user.domain.UserReport
 import com.nexters.bottles.app.user.service.BlockContactListService
 import com.nexters.bottles.app.user.service.UserAlimyService
 import com.nexters.bottles.app.user.service.UserReportService
+import com.nexters.bottles.app.user.service.UserService
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,6 +17,7 @@ class UserFacade(
     private val userReportService: UserReportService,
     private val blockContactListService: BlockContactListService,
     private val alimyService: UserAlimyService,
+    private val userService: UserService,
 ) {
 
     fun reportUser(userId: Long, reportUserRequest: ReportUserRequest) {
@@ -45,5 +47,14 @@ class UserFacade(
     fun getAlimy(userId: Long): List<AlimyResponse> {
         return alimyService.findAlimies(userId)
             .map { AlimyResponse(it.alimyType, it.enabled) }
+    }
+
+    fun registerNativeSetting(userId: Long, nativeAlimyRequest: NativeSettingRegisterRequest) {
+        userService.changeNativeSetting(
+            userId = userId,
+            alimyTurnedOn = nativeAlimyRequest.alimyTurnedOn,
+            deviceName = nativeAlimyRequest.deviceName,
+            appVersion = nativeAlimyRequest.appVersion
+        )
     }
 }

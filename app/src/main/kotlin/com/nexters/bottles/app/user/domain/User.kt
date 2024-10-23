@@ -52,6 +52,12 @@ class User(
     var isMatchActivated: Boolean = true,
 
     var lastRandomMatchedAt: LocalDateTime = LocalDateTime.now(),
+
+    var isNotificationEnabled: Boolean = false,
+
+    var deviceName: String? = null,
+
+    var appVersion: String? = null,
 ) : BaseEntity() {
 
     fun getKoreanAge(): Int {

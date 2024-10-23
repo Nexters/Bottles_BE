@@ -171,4 +171,13 @@ class UserService(
     fun findAllByPhoneNumber(phoneNumber: String): List<User> {
         return userRepository.findAllByPhoneNumberOrderById(phoneNumber)
     }
+
+    @Transactional
+    fun changeNativeSetting(userId: Long, alimyTurnedOn: Boolean, deviceName: String?, appVersion: String?) {
+        userRepository.findByIdOrNull(userId)?.let {
+            it.isNotificationEnabled = alimyTurnedOn
+            it.appVersion = appVersion
+            it.deviceName = deviceName
+        }
+    }
 }
