@@ -73,7 +73,7 @@ class UserProfileFacade(
     fun upsertIntroduction(userId: Long, registerIntroductionRequest: RegisterIntroductionRequest) {
         validateIntroduction(registerIntroductionRequest)
 
-        profileService.saveIntroduction(userId, registerIntroductionRequest.introduction)
+        profileService.saveIntroduction(userId, registerIntroductionRequest.introduction, FIRST_MATCHING_COUNT)
     }
 
     fun getMyProfile(userId: Long): UserProfileResponse {
@@ -191,5 +191,6 @@ class UserProfileFacade(
 
     companion object {
         private const val FILE_NAME_DELIMITER = "_"
+        private const val FIRST_MATCHING_COUNT = 3
     }
 }
