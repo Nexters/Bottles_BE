@@ -8,6 +8,7 @@ import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
 import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
 import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
+import com.nexters.bottles.api.user.facade.dto.UserImagesResponse
 import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatusResponse
@@ -61,6 +62,13 @@ class UserProfileController(
     @AuthRequired
     fun uploadImage(@AuthUserId userId: Long, @RequestPart file: MultipartFile) {
         profileFacade.uploadImage(userId, file)
+    }
+
+    @ApiOperation("마이페이지 사진 조회하기")
+    @GetMapping("/images")
+    @AuthRequired
+    fun getImages(@AuthUserId userId: Long): UserImagesResponse {
+        return profileFacade.getImages(userId)
     }
 
     @ApiOperation("자기소개 작성 여부 조회하기")
