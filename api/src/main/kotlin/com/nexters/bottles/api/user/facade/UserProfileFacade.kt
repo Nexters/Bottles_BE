@@ -5,6 +5,7 @@ import com.nexters.bottles.api.user.facade.dto.ExistIntroductionResponse
 import com.nexters.bottles.api.user.facade.dto.ProfileChoiceResponse
 import com.nexters.bottles.api.user.facade.dto.RegisterIntroductionRequest
 import com.nexters.bottles.api.user.facade.dto.RegisterProfileRequest
+import com.nexters.bottles.api.user.facade.dto.UserImagesResponse
 import com.nexters.bottles.api.user.facade.dto.UserInfoResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileResponse
 import com.nexters.bottles.api.user.facade.dto.UserProfileStatus
@@ -142,6 +143,11 @@ class UserProfileFacade(
         userId: Long
     ) = "" + userId + FILE_NAME_DELIMITER + LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + FILE_NAME_DELIMITER + file.originalFilename
+
+    fun getImages(userId: Long): UserImagesResponse {
+        val userProfile = profileService.findUserProfile(userId) ?: throw IllegalArgumentException("고객센터에 문의해주세요")
+        return UserImagesResponse(userImages = userProfile.imageUrls)
+    }
 
     fun existIntroduction(userId: Long): ExistIntroductionResponse {
         val userProfile = profileService.findUserProfile(userId)
