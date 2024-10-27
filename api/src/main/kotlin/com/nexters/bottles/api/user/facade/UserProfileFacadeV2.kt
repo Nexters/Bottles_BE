@@ -1,6 +1,5 @@
 package com.nexters.bottles.api.user.facade
 
-import com.nexters.bottles.api.user.facade.dto.PresignedUrlsRequest
 import com.nexters.bottles.api.user.facade.dto.PresignedUrlsResponse
 import com.nexters.bottles.api.user.facade.dto.RegisterImageUrlsRequest
 import com.nexters.bottles.app.common.component.FileService
@@ -16,16 +15,17 @@ class UserProfileFacadeV2(
     private val fileService: FileService,
 ) {
 
-    fun getS3PresignedUrls(userId: Long, presignedUrlsRequest: PresignedUrlsRequest): PresignedUrlsResponse {
-        return PresignedUrlsResponse(
-            presignedUrlsRequest.fileNames.mapIndexed { index, fileName ->
-                val filePath = when (index) {
-                    0 -> makeFirstPathWithUserId(fileName, userId)
-                    else -> makePathWithUserId(fileName, userId)
-                }
-                fileService.getPresignedUrl(filePath, HttpMethod.PUT).toString()
-            }.toList()
-        )
+    fun getS3PresignedUrls(userId: Long, imageCount: Int): PresignedUrlsResponse {
+        val presignedUrls = mutableListOf<String>()
+        for (index in 0 until imageCount) {
+            val filePath = when (index) {
+                0 -> makeFirstPathWithUserId(index, userId)
+                else -> makePathWithUserId(index, userId)
+            }
+            val presignedUrl = fileService.getPresignedUrl(filePath, HttpMethod.PUT).toString()
+            presignedUrls.add(presignedUrl)
+        }
+        return PresignedUrlsResponse(presignedUrls)
     }
 
     fun registerImageUrls(userId: Long, registerImageUrlsRequest: RegisterImageUrlsRequest) {
@@ -37,23 +37,23 @@ class UserProfileFacadeV2(
     }
 
     private fun makeFirstPathWithUserId(
-        fileName: String,
+        order: Int,
         userId: Long
     ): String {
         val filePath = "${PREFIX_ORIGINAL_IMAGE_MAIN}${userId}${FILE_NAME_DELIMITER}${
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
-        }${FILE_NAME_DELIMITER}${fileName}"
+        }${FILE_NAME_DELIMITER}${order}"
 
         return filePath
     }
 
     private fun makePathWithUserId(
-        fileName: String,
+        order: Int,
         userId: Long
     ): String {
         val filePath = "${PREFIX_ORIGINAL_IMAGE}${userId}${FILE_NAME_DELIMITER}${
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
-        }${FILE_NAME_DELIMITER}${fileName}"
+        }${FILE_NAME_DELIMITER}${order}"
 
         return filePath
     }
