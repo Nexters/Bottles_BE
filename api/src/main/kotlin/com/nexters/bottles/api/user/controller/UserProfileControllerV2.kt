@@ -3,7 +3,6 @@ package com.nexters.bottles.api.user.controller
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import com.nexters.bottles.api.user.facade.UserProfileFacadeV2
-import com.nexters.bottles.api.user.facade.dto.PresignedUrlsRequest
 import com.nexters.bottles.api.user.facade.dto.PresignedUrlsResponse
 import com.nexters.bottles.api.user.facade.dto.RegisterImageUrlsRequest
 import io.swagger.annotations.ApiOperation
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -22,10 +22,8 @@ class UserProfileControllerV2(
     @ApiOperation("사진 여러장 업로드 S3 Presigned Url 발급받기")
     @GetMapping("/images/presigned-url")
     @AuthRequired
-    fun getS3PresignedUrls(
-        @AuthUserId userId: Long, @RequestBody presignedUrlsRequest: PresignedUrlsRequest
-    ): PresignedUrlsResponse {
-        return profileFacadeV2.getS3PresignedUrls(userId, presignedUrlsRequest)
+    fun getS3PresignedUrls(@AuthUserId userId: Long, @RequestParam imageCount: Int): PresignedUrlsResponse {
+        return profileFacadeV2.getS3PresignedUrls(userId, imageCount)
     }
 
     @ApiOperation("사진 업로드 후 url 저장하기")
