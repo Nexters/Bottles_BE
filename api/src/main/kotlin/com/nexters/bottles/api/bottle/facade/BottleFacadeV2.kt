@@ -66,6 +66,24 @@ class BottleFacadeV2(
         }
     }
 
+    fun getAdditionalRandomBottle(userId: Long) {
+        val user = userService.findByIdAndNotDeleted(userId)
+        val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
+        val blockedMeUserIds = blockContactListService.findAllByPhoneNumber(
+            user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요")
+        ).map { it.userId }.toSet() // 나를 차단한 유저
+
+        bottleService.matchAdditionalRandomBottle(user, BOTTLE_PUSH_TIME.hour, blockUserIds, blockedMeUserIds)
+            ?.also {
+                applicationEventPublisher.publishEvent(
+                    BottleMatchEventDto(
+                        sourceUserId = it.sourceUser.id,
+                        targetUserId = it.targetUser.id,
+                    )
+                )
+            }
+    }
+
     private fun getNextBottleLeftHours(now: LocalDateTime): Int {
         return if (now.toLocalTime() > BOTTLE_PUSH_TIME) {
             BOTTLE_PUSH_TIME.hour + (LocalTime.MAX.hour - now.hour)

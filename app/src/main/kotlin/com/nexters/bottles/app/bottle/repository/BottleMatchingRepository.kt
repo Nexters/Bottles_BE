@@ -70,4 +70,36 @@ class BottleMatchingRepository(
             }
         )
     }
+
+    fun findAdditionalAllUserCanBeMatched(userId: Long, gender: Gender): List<UsersCanBeMatchedDto> {
+        val sql = """
+        SELECT u.id AS willMatchUserId, u.gender AS willMatchUserGender, u.city AS city 
+        FROM user u 
+        JOIN user_profile up ON up.user_id = u.id 
+            AND up.image_url IS NOT NULL 
+            AND up.introduction IS NOT NULL 
+            AND JSON_LENGTH(up.introduction) > 0 
+        WHERE u.id != :userId 
+          AND u.gender != :gender 
+          AND u.deleted = false 
+          AND u.is_match_activated = true;
+    """.trimIndent()
+
+        val namedParameters = mapOf(
+            "userId" to userId,
+            "gender" to gender.name
+        )
+
+        return namedParameterJdbcTemplate.query(
+            sql,
+            namedParameters,
+            { rs, _ ->
+                UsersCanBeMatchedDto(
+                    willMatchUserId = rs.getLong("willMatchUserId"),
+                    willMatchUserGender = rs.getString("willMatchUserGender"),
+                    willMatchCity = rs.getString("city")
+                )
+            }
+        )
+    }
 }

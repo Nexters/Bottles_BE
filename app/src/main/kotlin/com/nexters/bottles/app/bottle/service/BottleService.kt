@@ -191,6 +191,41 @@ class BottleService(
         return savedBottle
     }
 
+    @Transactional
+    fun matchAdditionalRandomBottle(
+        user: User,
+        matchingHour: Int,
+        blockUserIds: Set<Long>,
+        blockedMeUserIds: Set<Long>
+    ): Bottle? {
+        if (user.isNotRegisterProfile()) return null
+        if (user.isMatchInactive()) return null
+
+        var usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
+            .filter { it.willMatchUserId !in blockUserIds }
+            .filter { it.willMatchUserId !in blockedMeUserIds }
+
+        // 보틀 더받기 API는 매칭 상대가 없으면 이전에 매칭된 상대라도 보여준다
+        if (usersCanBeMatched.isEmpty()) {
+            usersCanBeMatched = bottleMatchingRepository.findAdditionalAllUserCanBeMatched(user.id, user.gender!!)
+                .filter { it.willMatchUserId !in blockUserIds }
+                .filter { it.willMatchUserId !in blockedMeUserIds }
+        }
+
+        if (usersCanBeMatched.isEmpty()) return null
+
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
+
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = LocalDateTime.now().plusDays(1))
+        val savedBottle = bottleRepository.save(bottle)
+
+        user.updateLastRandomMatchedAt(LocalDateTime.now())
+
+        return savedBottle
+    }
+
     private fun getMatchingTime(matchingHour: Int): LocalDateTime {
         val now = LocalDateTime.now()
         var matchingTime = now.with(LocalTime.of(matchingHour, 0))
