@@ -8,6 +8,7 @@ import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -40,7 +41,7 @@ class BottleControllerV2(
 
     // TODO: 따닥 방지
     @ApiOperation("마이페이지 - 추가로 보틀 받기")
-    @GetMapping("/additional-random")
+    @PostMapping("/additional-random")
     @AuthRequired
     fun getAdditionalRandomBottle(@AuthUserId userId: Long) {
         return bottleFacadeV2.getAdditionalRandomBottle(userId)
