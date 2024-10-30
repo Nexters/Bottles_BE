@@ -173,11 +173,12 @@ class UserService(
     }
 
     @Transactional
-    fun changeNativeSetting(userId: Long, alimyTurnedOn: Boolean, deviceName: String?, appVersion: String?) {
+    fun changeNativeSetting(userId: Long, alimyTurnedOn: Boolean, deviceName: String?, appVersion: String?, deviceId: String?) {
         userRepository.findByIdOrNull(userId)?.let {
             it.isNotificationEnabled = alimyTurnedOn
             it.appVersion = appVersion
             it.deviceName = deviceName
+            it.deviceId = deviceId
         }
     }
 }

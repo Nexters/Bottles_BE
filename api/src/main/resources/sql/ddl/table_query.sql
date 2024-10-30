@@ -18,6 +18,7 @@ CREATE TABLE user
     is_notification_enabled tinyint(1)  default 0                 not null comment '핸드폰 알림 허용 여부',
     device_name             varchar(255)                          null,
     app_version             varchar(255)                          null,
+    deviceId                varchar(255)                          null,
     created_at             DATETIME     DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at             DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 ) AUTO_INCREMENT = 10;

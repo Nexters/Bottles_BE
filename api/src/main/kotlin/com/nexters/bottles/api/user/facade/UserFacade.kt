@@ -54,7 +54,8 @@ class UserFacade(
             userId = userId,
             alimyTurnedOn = nativeAlimyRequest.alimyTurnedOn,
             deviceName = nativeAlimyRequest.deviceName,
-            appVersion = nativeAlimyRequest.appVersion
+            appVersion = nativeAlimyRequest.appVersion,
+            deviceId = nativeAlimyRequest.deviceId,
         )
     }
 }

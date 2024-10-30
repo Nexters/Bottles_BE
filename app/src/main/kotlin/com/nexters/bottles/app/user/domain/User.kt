@@ -57,6 +57,8 @@ class User(
 
     var deviceName: String? = null,
 
+    var deviceId: String? = null,
+
     var appVersion: String? = null,
 ) : BaseEntity() {
 

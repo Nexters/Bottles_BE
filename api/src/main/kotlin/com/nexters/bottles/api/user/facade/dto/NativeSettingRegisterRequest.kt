@@ -4,5 +4,6 @@ data class NativeSettingRegisterRequest(
     val alimyTurnedOn: Boolean = false,
     val deviceName: String? = null,
     val appVersion: String? = null,
+    val deviceId: String? = null,
 ) {
 }
