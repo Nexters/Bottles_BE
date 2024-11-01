@@ -295,4 +295,19 @@ class BottleService(
 
         return savedBottle
     }
+
+    @Transactional(readOnly = true)
+    fun isAllReadPingPongBottles(userId: Long): Boolean {
+        val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val userLetters = letterRepository.findAllByPingPongStatus(
+            setOf(
+                PingPongStatus.ACTIVE,
+                PingPongStatus.MATCHED,
+                PingPongStatus.STOPPED
+            )
+        )
+        val unreadLetters = userLetters.filter { it.user.id != user.id }
+            .filter { !it.isReadByOtherUser }
+        return unreadLetters.isEmpty()
+    }
 }

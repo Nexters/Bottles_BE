@@ -2,6 +2,7 @@ package com.nexters.bottles.api.bottle.facade
 
 import com.nexters.bottles.api.bottle.event.dto.BottleAcceptEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleReadEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRefuseEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRegisterLetterEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleShareContactEventDto
@@ -261,6 +262,13 @@ class BottleFacade(
         val me = userService.findByIdAndNotDeleted(userId)
         val otherUser = pingPongBottle.findOtherUser(me)
         letterService.markReadOtherUserLetter(pingPongBottle, otherUser)
+
+        applicationEventPublisher.publishEvent(
+            BottleReadEventDto(
+                bottleId = pingPongBottle.id,
+                userId = me.id
+            )
+        )
     }
 
     @CacheEvict(PING_PONG_BOTTLE, key = "#bottleId")
