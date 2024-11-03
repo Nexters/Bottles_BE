@@ -77,6 +77,7 @@ class BottleFacade(
                 ?.also {
                     applicationEventPublisher.publishEvent(
                         BottleMatchEventDto(
+                            bottleId = it.id,
                             sourceUserId = it.sourceUser.id,
                             targetUserId = it.targetUser.id,
                         )

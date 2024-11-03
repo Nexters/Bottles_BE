@@ -11,6 +11,7 @@ import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.enum.TabType
 import com.nexters.bottles.app.bottle.service.BottleHistoryService
+import com.nexters.bottles.app.bottle.service.BottleReadHistoryService
 import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.TabEventService
 import com.nexters.bottles.app.bottle.service.dto.TabEventDto
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component
 class BottleApiEventListener(
     private val bottleService: BottleService,
     private val bottleHistoryService: BottleHistoryService,
+    private val bottleReadHistoryService: BottleReadHistoryService,
     private val fcmTokenService: FcmTokenService,
     private val fcmClient: FcmClient,
     private val userService: UserService,
@@ -47,7 +49,9 @@ class BottleApiEventListener(
     @Async
     @EventListener
     fun handleCustomEvent(event: BottleMatchEventDto) {
-        bottleHistoryService.saveMatchingHistory(event.sourceUserId, event.targetUserId)
+        bottleHistoryService.saveMatchingHistory(sourceUserId = event.sourceUserId, targetUserId = event.targetUserId)
+        bottleReadHistoryService.saveBottleReadHistory(userId = event.sourceUserId, bottleId = event.bottleId)
+        bottleReadHistoryService.saveBottleReadHistory(userId = event.targetUserId, bottleId = event.bottleId)
         tabEventService.sendEventByTabType(
             event.targetUserId,
             TabEventDto(tabType = TabType.SANDBEACH, isNewBadgeVisible = true)
