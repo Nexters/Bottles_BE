@@ -7,6 +7,7 @@ import com.nexters.bottles.app.bottle.domain.Question
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.PingPongStatus
 import com.nexters.bottles.app.bottle.repository.BottleMatchingRepository
+import com.nexters.bottles.app.bottle.repository.BottleReadHistoryRepository
 import com.nexters.bottles.app.bottle.repository.BottleRepository
 import com.nexters.bottles.app.bottle.repository.LetterRepository
 import com.nexters.bottles.app.bottle.repository.dto.UsersCanBeMatchedDto
@@ -24,6 +25,7 @@ class BottleService(
     private val userRepository: UserRepository,
     private val letterRepository: LetterRepository,
     private val bottleMatchingRepository: BottleMatchingRepository,
+    private val bottleReadHistoryRepository: BottleReadHistoryRepository,
 ) {
 
     @Transactional(readOnly = true)
@@ -296,6 +298,7 @@ class BottleService(
         return savedBottle
     }
 
+    // TODO 클라이언트에서 문답 읽음 표시를 v2로 옮긴 후 변경 -> Letter의 isReadByOtherUser 제거 (이후 읽음 표시는 BottleReadHistory 한곳에서만 관리하도록 함)
     @Transactional(readOnly = true)
     fun isAllReadPingPongBottles(userId: Long): Boolean {
         val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
@@ -309,5 +312,13 @@ class BottleService(
         val unreadLetters = userLetters.filter { it.user.id != user.id }
             .filter { !it.isReadByOtherUser }
         return unreadLetters.isEmpty()
+    }
+
+    @Transactional(readOnly = true)
+    fun isAllReadByBottleStatus(userId: Long, bottleStatus: BottleStatus): Boolean {
+        val user = userRepository.findByIdAndDeletedFalse(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+        val bottleReadHistories = bottleReadHistoryRepository.findAllByUserAndBottleStatus(user, bottleStatus)
+        val unreadBottles = bottleReadHistories.filter { !it.isReadByUser }
+        return unreadBottles.isEmpty()
     }
 }

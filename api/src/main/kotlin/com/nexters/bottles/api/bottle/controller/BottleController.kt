@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 class BottleController(
     private val bottleFacade: BottleFacade
 ) {
-    
+
     @ApiOperation("홈 - 받은 보틀 목록 조회하기")
     @GetMapping
     @AuthRequired
@@ -75,6 +75,7 @@ class BottleController(
         bottleFacade.registerLetter(userId, bottleId, registerLetterRequest)
     }
 
+    // TODO 클라이언트에서 핑퐁중인 보틀 읽음 표시도 v2로 변경한 후 제거
     @ApiOperation("보틀 보관함 - 보틀 읽음 표시하기")
     @PostMapping("/ping-pong/{bottleId}/read")
     @AuthRequired

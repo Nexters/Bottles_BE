@@ -9,6 +9,7 @@ import com.nexters.bottles.api.bottle.event.dto.BottleShareContactEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleShareImageEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
+import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.domain.enum.TabType
 import com.nexters.bottles.app.bottle.service.BottleHistoryService
 import com.nexters.bottles.app.bottle.service.BottleReadHistoryService
@@ -49,9 +50,12 @@ class BottleApiEventListener(
     @Async
     @EventListener
     fun handleCustomEvent(event: BottleMatchEventDto) {
+        val bottle = bottleService.findBottleById(event.bottleId)
+
         bottleHistoryService.saveMatchingHistory(sourceUserId = event.sourceUserId, targetUserId = event.targetUserId)
-        bottleReadHistoryService.saveBottleReadHistory(userId = event.sourceUserId, bottleId = event.bottleId)
-        bottleReadHistoryService.saveBottleReadHistory(userId = event.targetUserId, bottleId = event.bottleId)
+        bottleReadHistoryService.saveBottleReadHistory(user = bottle.sourceUser, bottle = bottle)
+        bottleReadHistoryService.saveBottleReadHistory(user = bottle.targetUser, bottle = bottle)
+
         tabEventService.sendEventByTabType(
             event.targetUserId,
             TabEventDto(tabType = TabType.SANDBEACH, isNewBadgeVisible = true)
@@ -175,12 +179,28 @@ class BottleApiEventListener(
     @Async
     @EventListener
     fun handleCustomEvent(event: BottleReadEventDto) {
-        val isAllRead = bottleService.isAllReadPingPongBottles(event.userId)
+        val bottle = bottleService.findBottleById(event.bottleId)
 
-        tabEventService.sendEventByTabType(
-            event.userId,
-            TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = !isAllRead)
-        )
+        var tabEventDto = TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = false)
+
+        if (bottle.isNotStart()) {
+            when (bottle.bottleStatus) {
+                BottleStatus.RANDOM -> {
+                    val isAllRead = bottleService.isAllReadByBottleStatus(event.userId, BottleStatus.RANDOM)
+                    tabEventDto = TabEventDto(tabType = TabType.SANDBEACH, isNewBadgeVisible = !isAllRead)
+                }
+
+                BottleStatus.SENT -> {
+                    val isAllRead = bottleService.isAllReadByBottleStatus(event.userId, BottleStatus.SENT)
+                    tabEventDto = TabEventDto(tabType = TabType.LIKE, isNewBadgeVisible = !isAllRead)
+                }
+            }
+        } else {
+            val isAllRead = bottleService.isAllReadPingPongBottles(event.userId)
+            tabEventDto = TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = !isAllRead)
+        }
+
+        tabEventService.sendEventByTabType(event.userId, tabEventDto)
     }
 
     @Async
