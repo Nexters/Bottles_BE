@@ -42,7 +42,7 @@ class BottleControllerV2(
 
     // TODO: 따닥 방지
     @ApiOperation("마이페이지 - 추가로 보틀 받기")
-    @GetMapping("/additional-random")
+    @PostMapping("/additional-random")
     @AuthRequired
     fun getAdditionalRandomBottle(@AuthUserId userId: Long) {
         return bottleFacadeV2.getAdditionalRandomBottle(userId)
