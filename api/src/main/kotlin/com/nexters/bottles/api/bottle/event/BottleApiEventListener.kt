@@ -2,14 +2,20 @@ package com.nexters.bottles.api.bottle.event
 
 import com.nexters.bottles.api.bottle.event.dto.BottleAcceptEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleReadEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRefuseEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleRegisterLetterEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleShareContactEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleShareImageEventDto
 import com.nexters.bottles.api.bottle.event.dto.BottleStopEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
+import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
+import com.nexters.bottles.app.bottle.domain.enum.TabType
 import com.nexters.bottles.app.bottle.service.BottleHistoryService
+import com.nexters.bottles.app.bottle.service.BottleReadHistoryService
 import com.nexters.bottles.app.bottle.service.BottleService
+import com.nexters.bottles.app.bottle.service.TabEventService
+import com.nexters.bottles.app.bottle.service.dto.TabEventDto
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.service.FcmTokenService
@@ -25,10 +31,12 @@ import org.springframework.stereotype.Component
 class BottleApiEventListener(
     private val bottleService: BottleService,
     private val bottleHistoryService: BottleHistoryService,
+    private val bottleReadHistoryService: BottleReadHistoryService,
     private val fcmTokenService: FcmTokenService,
     private val fcmClient: FcmClient,
     private val userService: UserService,
     private val userAlimyService: UserAlimyService,
+    private val tabEventService: TabEventService
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -42,7 +50,16 @@ class BottleApiEventListener(
     @Async
     @EventListener
     fun handleCustomEvent(event: BottleMatchEventDto) {
-        bottleHistoryService.saveMatchingHistory(event.sourceUserId, event.targetUserId)
+        val bottle = bottleService.findBottleById(event.bottleId)
+
+        bottleHistoryService.saveMatchingHistory(sourceUserId = event.sourceUserId, targetUserId = event.targetUserId)
+        bottleReadHistoryService.saveBottleReadHistory(user = bottle.sourceUser, bottle = bottle)
+        bottleReadHistoryService.saveBottleReadHistory(user = bottle.targetUser, bottle = bottle)
+
+        tabEventService.sendEventByTabType(
+            event.targetUserId,
+            TabEventDto(tabType = TabType.SANDBEACH, isNewBadgeVisible = true)
+        )
     }
 
     @Async
@@ -51,6 +68,12 @@ class BottleApiEventListener(
         val bottle = bottleService.findBottleById(event.bottleId)
         when {
             bottle.isSentLikeMessageAndNotStart() -> {
+                bottleHistoryService.saveMatchingHistory(bottle.sourceUser.id, bottle.targetUser.id)
+                tabEventService.sendEventByTabType(
+                    bottle.targetUser.id,
+                    TabEventDto(tabType = TabType.LIKE, isNewBadgeVisible = true)
+                )
+
                 if (!userAlimyService.isTurnedOn(bottle.targetUser.id, AlimyType.RECEIVE_LIKE)) {
                     log.info { "userId: ${bottle.targetUser.id} alimyType: ${AlimyType.RECEIVE_LIKE} 켜져 있지 않아 발송하지 않음" }
                     return
@@ -66,10 +89,18 @@ class BottleApiEventListener(
                     log.info { "[BottleAcceptEventDto] 호감 보냄 bottleId: ${bottle.id} targetUserId: ${bottle.targetUser.id} sourceUserId: ${bottle.sourceUser.id} sourceUserToken: ${it.token}" }
                 }
 
-                bottleHistoryService.saveMatchingHistory(bottle.sourceUser.id, bottle.targetUser.id)
             }
 
             bottle.isActive() -> {
+                tabEventService.sendEventByTabType(
+                    bottle.targetUser.id,
+                    TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = true)
+                )
+                tabEventService.sendEventByTabType(
+                    bottle.sourceUser.id,
+                    TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = true)
+                )
+
                 fcmTokenService.findAllByUserIdsAndTokenNotBlank(listOf(bottle.sourceUser.id, bottle.targetUser.id))
                     .forEach {
                         if (!userAlimyService.isTurnedOn(it.userId, AlimyType.PINGPONG)) {
@@ -98,6 +129,11 @@ class BottleApiEventListener(
         val bottle = bottleService.findBottleById(event.bottleId)
         val otherUser = bottle.findOtherUser(bottle.stoppedUser!!)
 
+        tabEventService.sendEventByTabType(
+            otherUser.id,
+            TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = true)
+        )
+
         fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             if (!userAlimyService.isTurnedOn(otherUser.id, AlimyType.PINGPONG)) {
                 log.info { "userId: ${otherUser.id} alimyType: ${AlimyType.PINGPONG} 켜져 있지 않아 발송하지 않음" }
@@ -120,6 +156,11 @@ class BottleApiEventListener(
         val user = userService.findByIdAndNotDeleted(event.userId)
         val otherUser = bottle.findOtherUser(user)
 
+        tabEventService.sendEventByTabType(
+            otherUser.id,
+            TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = true)
+        )
+
         fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             if (!userAlimyService.isTurnedOn(otherUser.id, AlimyType.PINGPONG)) {
                 log.info { "userId: ${otherUser.id} alimyType: ${AlimyType.PINGPONG} 켜져 있지 않아 발송하지 않음" }
@@ -137,10 +178,42 @@ class BottleApiEventListener(
 
     @Async
     @EventListener
+    fun handleCustomEvent(event: BottleReadEventDto) {
+        val bottle = bottleService.findBottleById(event.bottleId)
+
+        var tabEventDto = TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = false)
+
+        if (bottle.isNotStart()) {
+            when (bottle.bottleStatus) {
+                BottleStatus.RANDOM -> {
+                    val isAllRead = bottleService.isAllReadByBottleStatus(event.userId, BottleStatus.RANDOM)
+                    tabEventDto = TabEventDto(tabType = TabType.SANDBEACH, isNewBadgeVisible = !isAllRead)
+                }
+
+                BottleStatus.SENT -> {
+                    val isAllRead = bottleService.isAllReadByBottleStatus(event.userId, BottleStatus.SENT)
+                    tabEventDto = TabEventDto(tabType = TabType.LIKE, isNewBadgeVisible = !isAllRead)
+                }
+            }
+        } else {
+            val isAllRead = bottleService.isAllReadPingPongBottles(event.userId)
+            tabEventDto = TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = !isAllRead)
+        }
+
+        tabEventService.sendEventByTabType(event.userId, tabEventDto)
+    }
+
+    @Async
+    @EventListener
     fun handleCustomEvent(event: BottleShareImageEventDto) {
         val bottle = bottleService.findBottleById(event.bottleId)
         val user = userService.findByIdAndNotDeleted(event.userId)
         val otherUser = bottle.findOtherUser(user)
+
+        tabEventService.sendEventByTabType(
+            otherUser.id,
+            TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = true)
+        )
 
         fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             if (!userAlimyService.isTurnedOn(otherUser.id, AlimyType.PINGPONG)) {
@@ -162,6 +235,11 @@ class BottleApiEventListener(
         val bottle = bottleService.findBottleById(event.bottleId)
         val user = userService.findByIdAndNotDeleted(event.userId)
         val otherUser = bottle.findOtherUser(user)
+
+        tabEventService.sendEventByTabType(
+            otherUser.id,
+            TabEventDto(tabType = TabType.PINGPONG, isNewBadgeVisible = true)
+        )
 
         fcmTokenService.findAllByUserIdAndTokenNotBlank(otherUser.id).forEach {
             if (!userAlimyService.isTurnedOn(otherUser.id, AlimyType.PINGPONG)) {

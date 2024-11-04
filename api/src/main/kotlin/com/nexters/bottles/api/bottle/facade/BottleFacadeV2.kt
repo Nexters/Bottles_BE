@@ -1,6 +1,7 @@
 package com.nexters.bottles.api.bottle.facade
 
 import com.nexters.bottles.api.bottle.event.dto.BottleMatchEventDto
+import com.nexters.bottles.api.bottle.event.dto.BottleReadEventDto
 import com.nexters.bottles.api.bottle.facade.dto.PingPongBottleDtoV2
 import com.nexters.bottles.api.bottle.facade.dto.PingPongListResponseV2
 import com.nexters.bottles.api.bottle.facade.dto.RandomBottleDto
@@ -12,6 +13,7 @@ import com.nexters.bottles.api.user.component.event.dto.UserApplicationEventDto
 import com.nexters.bottles.app.bottle.domain.Bottle
 import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.bottle.service.BottleCachingService
+import com.nexters.bottles.app.bottle.service.BottleReadHistoryService
 import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.bottle.service.LetterService
 import com.nexters.bottles.app.user.domain.User
@@ -30,6 +32,7 @@ class BottleFacadeV2(
     private val userReportService: UserReportService,
     private val blockContactListService: BlockContactListService,
     private val letterService: LetterService,
+    private val bottleReadHistoryService: BottleReadHistoryService,
     private val bottleCachingService: BottleCachingService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
@@ -49,6 +52,7 @@ class BottleFacadeV2(
             ?.also {
                 applicationEventPublisher.publishEvent(
                     BottleMatchEventDto(
+                        bottleId = it.id,
                         sourceUserId = it.sourceUser.id,
                         targetUserId = it.targetUser.id,
                     )
@@ -77,6 +81,7 @@ class BottleFacadeV2(
             ?.also {
                 applicationEventPublisher.publishEvent(
                     BottleMatchEventDto(
+                        bottleId = it.id,
                         sourceUserId = it.sourceUser.id,
                         targetUserId = it.targetUser.id,
                     )
@@ -209,6 +214,19 @@ class BottleFacadeV2(
                 now = LocalDateTime.now()
             ),
             lastStatus = lastStatus
+        )
+    }
+
+    fun readBottle(userId: Long, bottleId: Long) {
+        val bottle = bottleService.findBottleById(bottleId)
+        val me = userService.findByIdAndNotDeleted(userId)
+        bottleReadHistoryService.markReadUserBottle(bottle, me)
+
+        applicationEventPublisher.publishEvent(
+            BottleReadEventDto(
+                bottleId = bottle.id,
+                userId = me.id
+            )
         )
     }
 }

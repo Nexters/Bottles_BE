@@ -8,6 +8,7 @@ import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -45,5 +46,12 @@ class BottleControllerV2(
     @AuthRequired
     fun getAdditionalRandomBottle(@AuthUserId userId: Long) {
         return bottleFacadeV2.getAdditionalRandomBottle(userId)
+    }
+
+    @ApiOperation("보틀 읽음 표시하기")
+    @PostMapping("/bottle/{bottleId}/read")
+    @AuthRequired
+    fun readBottle(@AuthUserId userId: Long, @PathVariable bottleId: Long) {
+        bottleFacadeV2.readBottle(userId, bottleId)
     }
 }
