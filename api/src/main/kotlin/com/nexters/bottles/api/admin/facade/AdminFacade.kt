@@ -10,6 +10,7 @@ import com.nexters.bottles.app.bottle.domain.enum.BottleStatus
 import com.nexters.bottles.app.common.component.AmazonS3FileService
 import com.nexters.bottles.app.common.component.ImageProcessor
 import com.nexters.bottles.app.common.component.ImageUploader
+import com.nexters.bottles.app.common.component.RedisClient
 import com.nexters.bottles.app.config.CacheType.Name.PING_PONG_BOTTLE_LIST
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
@@ -25,6 +26,7 @@ import com.nexters.bottles.app.user.service.UserService
 import mu.KotlinLogging
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
@@ -43,6 +45,7 @@ class AdminFacade(
     private val imageProcessor: ImageProcessor,
     private val imageUploader: ImageUploader,
     private val amazonS3FileService: AmazonS3FileService,
+    private val redisClient: RedisClient,
 ) {
 
     private val log = KotlinLogging.logger { }
@@ -207,6 +210,11 @@ class AdminFacade(
         }${FILE_NAME_DELIMITER}${file.originalFilename}"
 
         return filePath
+    }
+
+    fun testRedis() {
+        val result = redisClient.incrementValue("test", 1)
+        log.info { "result: $result" }
     }
 
     companion object {

@@ -22,6 +22,16 @@ spring:
     multipart:
       max-file-size: 5MB
 
+  redis:
+    cluster:
+      nodes:
+        - ${REDIS_CLUSTER_NODE_1}
+        - ${REDIS_CLUSTER_NODE_2}
+        - ${REDIS_CLUSTER_NODE_3}
+        - ${REDIS_CLUSTER_NODE_4}
+        - ${REDIS_CLUSTER_NODE_5}
+        - ${REDIS_CLUSTER_NODE_6}
+
 webclient:
   kakao-auth-url: https://kapi.kakao.com
 

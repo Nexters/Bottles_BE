@@ -11,6 +11,7 @@ import com.nexters.bottles.api.admin.facade.dto.PushMessageRequest
 import com.nexters.bottles.api.global.interceptor.AuthRequired
 import com.nexters.bottles.api.global.resolver.AuthUserId
 import io.swagger.annotations.ApiOperation
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -97,5 +98,11 @@ class AdminController(
     @PostMapping("/blur-image/more")
     fun makeMoreBlurImage(@RequestBody adminBlurImageRequest: AdminBlurImageRequest) {
         adminFacade.makeMoreBlurImage(adminBlurImageRequest)
+    }
+
+    @ApiOperation("레디스 테스트")
+    @GetMapping("/test")
+    fun testRedis() {
+        adminFacade.testRedis()
     }
 }
