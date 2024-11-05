@@ -21,8 +21,7 @@ class UserProfileApplicationEventListener(
     @Async
     @TransactionalEventListener
     fun handleCustomEvent(event: IntroductionSaveEventDto) {
-        val user = userService.findByIdAndNotDeleted(event.userId)
-        bottleService.matchFirstRandomBottle(user)?.let {
+        bottleService.matchFirstRandomBottle(event.userId)?.let {
             bottleHistoryService.saveMatchingHistory(sourceUserId = it.sourceUser.id, targetUserId = it.targetUser.id)
         }
     }
