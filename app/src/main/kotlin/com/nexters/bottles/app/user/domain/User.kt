@@ -32,7 +32,7 @@ class User(
 
     var phoneNumber: String? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user", cascade = [CascadeType.ALL])
     var userProfile: UserProfile? = null,
 
     @Enumerated(EnumType.STRING)
