@@ -164,11 +164,13 @@ class BottleService(
 
     @Transactional
     fun matchRandomBottle(
-        user: User,
+        userId: Long,
         matchingHour: Int,
         blockUserIds: Set<Long>,
         blockedMeUserIds: Set<Long>
     ): Bottle? {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+
         if (user.isNotRegisterProfile()) return null
         if (user.isMatchInactive()) return null
 
@@ -195,11 +197,13 @@ class BottleService(
 
     @Transactional
     fun matchAdditionalRandomBottle(
-        user: User,
+        userId: Long,
         matchingHour: Int,
         blockUserIds: Set<Long>,
         blockedMeUserIds: Set<Long>
     ): Bottle? {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+
         if (user.isNotRegisterProfile()) return null
         if (user.isMatchInactive()) return null
 
@@ -281,7 +285,9 @@ class BottleService(
     }
 
     @Transactional
-    fun matchFirstRandomBottle(user: User): Bottle? {
+    fun matchFirstRandomBottle(userId: Long): Bottle? {
+        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
+
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
         if (usersCanBeMatched.isEmpty()) return null
 

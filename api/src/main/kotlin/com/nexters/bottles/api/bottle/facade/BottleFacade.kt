@@ -66,14 +66,14 @@ class BottleFacade(
 
     fun getNewBottles(userId: Long): BottleListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
-        val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
+        val blockUserIds = blockContactListService.findAllByUserId(user.id).map { it.userId }.toSet() // 내가 차단한 유저
         val blockedMeUserIds = blockContactListService.findAllByPhoneNumber(
             user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요")
         ).map { it.userId }.toSet() // 나를 차단한 유저
 
         if (isActiveMatching) {
             val matchingHour = BOTTLE_PUSH_TIME.hour
-            bottleService.matchRandomBottle(user, matchingHour, blockUserIds, blockedMeUserIds)
+            bottleService.matchRandomBottle(user.id, matchingHour, blockUserIds, blockedMeUserIds)
                 ?.also {
                     applicationEventPublisher.publishEvent(
                         BottleMatchEventDto(
@@ -86,16 +86,16 @@ class BottleFacade(
         }
         val bottles = bottleService.getNewBottles(user)
         val groupByStatus = bottles.groupBy { it.bottleStatus }
-        val reportUserIds = userReportService.getReportRespondentList(userId)
+        val reportUserIds = userReportService.getReportRespondentList(user.id)
             .map { it.respondentUserId }
             .toSet()
 
         val randomBottles = groupByStatus[BottleStatus.RANDOM]
-            ?.map { toBottleDto(it, userId) }
+            ?.map { toBottleDto(it, user.id) }
             ?: emptyList()
 
         val sentBottles = groupByStatus[BottleStatus.SENT]
-            ?.map { toBottleDto(it, userId) }
+            ?.map { toBottleDto(it, user.id) }
             ?.filter { it.userId !in reportUserIds }
             ?.filter { it.userId !in blockUserIds }
             ?.filter { it.userId !in blockedMeUserIds }
@@ -190,12 +190,12 @@ class BottleFacade(
 
     fun getPingPongBottles(userId: Long): PingPongListResponse {
         val user = userService.findByIdAndNotDeleted(userId)
-        val pingPongBottles = bottleCachingService.getPingPongBottles(userId)
+        val pingPongBottles = bottleCachingService.getPingPongBottles(user.id)
         val groupByStatus = pingPongBottles.groupBy { it.pingPongStatus }
-        val reportUserIds = userReportService.getReportRespondentList(userId)
+        val reportUserIds = userReportService.getReportRespondentList(user.id)
             .map { it.respondentUserId }
             .toSet()
-        val blockUserIds = blockContactListService.findAllByUserId(userId).map { it.userId }.toSet() // 내가 차단한 유저
+        val blockUserIds = blockContactListService.findAllByUserId(user.id).map { it.userId }.toSet() // 내가 차단한 유저
         val blockMeUserIds = blockContactListService.findAllByPhoneNumber(
             user.phoneNumber ?: throw IllegalStateException("핸드폰 번호를 등록해주세요")
         ).map { it.userId }.toSet() // 나를 차단한 유저

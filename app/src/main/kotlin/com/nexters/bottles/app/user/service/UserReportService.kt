@@ -15,7 +15,7 @@ class UserReportService(
         userReportRepository.save(userReport)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun getReportRespondentList(userId: Long): List<UserReport> {
         return userReportRepository.findByReporterUserId(userId)
     }
