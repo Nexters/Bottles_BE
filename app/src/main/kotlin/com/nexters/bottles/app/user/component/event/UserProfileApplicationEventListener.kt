@@ -21,7 +21,8 @@ class UserProfileApplicationEventListener(
     @Async
     @TransactionalEventListener
     fun handleCustomEvent(event: IntroductionSaveEventDto) {
-        bottleService.matchFirstRandomBottle(event.userId)?.let {
+        var savedBottles = bottleService.matchFirstRandomBottle(event.userId, 3)
+        savedBottles.forEach {
             bottleHistoryService.saveMatchingHistory(sourceUserId = it.sourceUser.id, targetUserId = it.targetUser.id)
         }
     }

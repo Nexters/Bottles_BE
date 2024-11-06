@@ -46,11 +46,9 @@ class UserProfileService(
             val isFirstRegisterIntroduction = it.introduction.isEmpty()
             it.introduction = introduction
             if (isFirstRegisterIntroduction) {
-                repeat(firstMatchingCount) {
-                    applicationEventPublisher.publishEvent(
-                        IntroductionSaveEventDto(userId = userId)
-                    )
-                }
+                applicationEventPublisher.publishEvent(
+                    IntroductionSaveEventDto(userId = userId)
+                )
             }
         } ?: run {
             profileRepository.save(

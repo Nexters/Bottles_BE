@@ -49,7 +49,7 @@ class BottleFacadeV2(
         ).map { it.userId }.toSet() // 나를 차단한 유저
 
         bottleService.matchRandomBottle(user.id, BOTTLE_PUSH_TIME.hour, blockUserIds, blockedMeUserIds)
-            ?.also {
+            .forEach {
                 applicationEventPublisher.publishEvent(
                     BottleMatchEventDto(
                         bottleId = it.id,
@@ -78,7 +78,7 @@ class BottleFacadeV2(
         ).map { it.userId }.toSet() // 나를 차단한 유저
 
         bottleService.matchAdditionalRandomBottle(user.id, BOTTLE_PUSH_TIME.hour, blockUserIds, blockedMeUserIds)
-            ?.also {
+            .forEach {
                 applicationEventPublisher.publishEvent(
                     BottleMatchEventDto(
                         bottleId = it.id,
