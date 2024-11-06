@@ -1,6 +1,6 @@
 package com.nexters.bottles.api.auth.component
 
-import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
+import com.nexters.bottles.app.auth.event.DeleteUserEventDto
 import com.nexters.bottles.app.auth.service.BlackListService
 import com.nexters.bottles.app.auth.service.RefreshTokenService
 import com.nexters.bottles.app.bottle.service.BottleCachingService

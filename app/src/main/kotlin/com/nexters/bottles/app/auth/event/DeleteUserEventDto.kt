@@ -1,4 +1,4 @@
-package com.nexters.bottles.api.auth.component.event
+package com.nexters.bottles.app.auth.event
 
 data class DeleteUserEventDto(
     val userId: Long,

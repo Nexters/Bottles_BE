@@ -5,8 +5,8 @@ import com.nexters.bottles.api.auth.component.ApplePublicKeyGenerator
 import com.nexters.bottles.api.auth.component.AuthCodeGenerator
 import com.nexters.bottles.api.auth.component.JwtTokenProvider
 import com.nexters.bottles.api.auth.component.NaverSmsEncoder
-import com.nexters.bottles.api.auth.component.event.DeleteUserEventDto
-import com.nexters.bottles.api.auth.event.dto.SignUpEventDto
+import com.nexters.bottles.app.auth.event.DeleteUserEventDto
+import com.nexters.bottles.app.auth.event.SignUpEventDto
 import com.nexters.bottles.api.auth.facade.dto.AppleRevokeResponse
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpRequest
 import com.nexters.bottles.api.auth.facade.dto.AppleSignInUpResponse

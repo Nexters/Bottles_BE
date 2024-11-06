@@ -1,6 +1,5 @@
 package com.nexters.bottles.app.user.service
 
-import com.nexters.bottles.app.user.component.event.dto.IntroductionSaveEventDto
 import com.nexters.bottles.app.user.component.event.dto.UploadImageEventDto
 import com.nexters.bottles.app.user.domain.QuestionAndAnswer
 import com.nexters.bottles.app.user.domain.User
@@ -43,15 +42,7 @@ class UserProfileService(
     fun saveIntroduction(userId: Long, introduction: List<QuestionAndAnswer>, firstMatchingCount: Int) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
         profileRepository.findByUserId(user.id)?.let {
-            val isFirstRegisterIntroduction = it.introduction.isEmpty()
             it.introduction = introduction
-            if (isFirstRegisterIntroduction) {
-                repeat(firstMatchingCount) {
-                    applicationEventPublisher.publishEvent(
-                        IntroductionSaveEventDto(userId = userId)
-                    )
-                }
-            }
         } ?: run {
             profileRepository.save(
                 UserProfile(
