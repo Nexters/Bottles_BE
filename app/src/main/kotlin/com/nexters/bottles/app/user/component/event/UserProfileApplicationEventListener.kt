@@ -6,6 +6,8 @@ import com.nexters.bottles.app.bottle.service.BottleService
 import com.nexters.bottles.app.common.component.FileService
 import com.nexters.bottles.app.user.component.event.dto.UploadImageEventDto
 import com.nexters.bottles.app.user.service.UserService
+import mu.KotlinLogging
+import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionalEventListener
@@ -18,10 +20,14 @@ class UserProfileApplicationEventListener(
     private val fileService: FileService
 ) {
 
+    private val log = KotlinLogging.logger {  }
+
     @Async
-    @TransactionalEventListener
+    @EventListener
     fun handleCustomEvent(event: SignUpEventDto) {
-        var savedBottles = bottleService.matchFirstRandomBottle(event.userId, 3)
+        log.info { "SignUpEventDto" }
+        var savedBottles = bottleService.matchFirstRandomBottle(userId = event.userId, count = 3)
+        log.info { "savedBottles=$savedBottles" }
         savedBottles.forEach {
             bottleHistoryService.saveMatchingHistory(sourceUserId = it.sourceUser.id, targetUserId = it.targetUser.id)
         }

@@ -95,7 +95,6 @@ class BottleMatchingRepository(
                 UsersCanBeMatchedDto(
                     willMatchUserId = rs.getLong("willMatchUserId"),
                     willMatchUserGender = rs.getString("willMatchUserGender"),
-                    willMatchCity = rs.getString("city")
                 )
             }
         )
