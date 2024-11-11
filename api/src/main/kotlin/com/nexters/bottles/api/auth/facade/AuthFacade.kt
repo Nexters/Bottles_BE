@@ -87,7 +87,6 @@ class AuthFacade(
             hasCompleteUserProfile = userProfile != null,
             hasCompleteIntroduction = userProfile?.hasCompleteIntroduction() ?: false,
         ).also {
-            log.info { "isSignUp: ${signInUpDto.isSignUp}" }
             if (signInUpDto.isSignUp) {
                 applicationEventPublisher.publishEvent(
                     SignUpEventDto(
