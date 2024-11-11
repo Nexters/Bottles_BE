@@ -56,7 +56,8 @@ class UserService(
             val user = userRepository.save(
                 User(
                     signUpType = SignUpType.APPLE,
-                    appleAccountId = appleAccountId
+                    appleAccountId = appleAccountId,
+                    phoneNumber = "00000000000"
                 )
             )
             return SignInUpDto(userId = user.id, isSignUp = true)
