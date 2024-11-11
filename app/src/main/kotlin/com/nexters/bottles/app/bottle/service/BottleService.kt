@@ -167,33 +167,32 @@ class BottleService(
         userId: Long,
         matchingHour: Int,
         blockUserIds: Set<Long>,
-        blockedMeUserIds: Set<Long>,
-        count: Int = 1,
-    ): List<Bottle> {
+        blockedMeUserIds: Set<Long>
+    ): Bottle? {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        if (user.isNotRegisterProfile()) return emptyList()
-        if (user.isMatchInactive()) return emptyList()
+        if (user.isNotRegisterProfile()) return null
+        if (user.isMatchInactive()) return null
 
         val matchingTime = getMatchingTime(matchingHour)
-        if (user.lastRandomMatchedAt > matchingTime) return emptyList()
+        if (user.lastRandomMatchedAt > matchingTime) return null
 
         val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
             .filter { it.willMatchUserId !in blockUserIds }
             .filter { it.willMatchUserId !in blockedMeUserIds }
 
-        if (usersCanBeMatched.isEmpty()) return emptyList()
+        if (usersCanBeMatched.isEmpty()) return null
 
-        val matchingUserDtos = findUserSameRegionOrRandom(usersCanBeMatched, user, count)
-        val matchingUsers = userRepository.findByIdInAndDeletedFalse(matchingUserDtos.map { it.willMatchUserId })
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
-        val now = LocalDateTime.now()
-        var bottles = matchingUsers.map { matchingUser -> Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1)) }
-        val savedBottles = bottleRepository.saveAll(bottles)
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = matchingTime.plusDays(1))
+        val savedBottle = bottleRepository.save(bottle)
 
         user.updateLastRandomMatchedAt(LocalDateTime.now())
 
-        return savedBottles
+        return savedBottle
     }
 
     @Transactional
@@ -201,13 +200,12 @@ class BottleService(
         userId: Long,
         matchingHour: Int,
         blockUserIds: Set<Long>,
-        blockedMeUserIds: Set<Long>,
-        count: Int = 1,
-    ): List<Bottle> {
+        blockedMeUserIds: Set<Long>
+    ): Bottle? {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        if (user.isNotRegisterProfile()) return emptyList()
-        if (user.isMatchInactive()) return emptyList()
+        if (user.isNotRegisterProfile()) return null
+        if (user.isMatchInactive()) return null
 
         var usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
             .filter { it.willMatchUserId !in blockUserIds }
@@ -220,18 +218,18 @@ class BottleService(
                 .filter { it.willMatchUserId !in blockedMeUserIds }
         }
 
-        if (usersCanBeMatched.isEmpty()) return emptyList()
+        if (usersCanBeMatched.isEmpty()) return null
 
-        val matchingUserDtos = findUserSameRegionOrRandom(usersCanBeMatched, user, count)
-        val matchingUsers = userRepository.findByIdInAndDeletedFalse(matchingUserDtos.map { it.willMatchUserId })
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
-        val now = LocalDateTime.now()
-        var bottles = matchingUsers.map { matchingUser -> Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1)) }
-        val savedBottles = bottleRepository.saveAll(bottles)
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = LocalDateTime.now().plusDays(1))
+        val savedBottle = bottleRepository.save(bottle)
 
         user.updateLastRandomMatchedAt(LocalDateTime.now())
 
-        return savedBottles
+        return savedBottle
     }
 
     private fun getMatchingTime(matchingHour: Int): LocalDateTime {
@@ -245,25 +243,13 @@ class BottleService(
 
     private fun findUserSameRegionOrRandom(
         usersCanBeMatchedDtos: List<UsersCanBeMatchedDto>,
-        targetUser: User,
-        count: Int,
-    ): List<UsersCanBeMatchedDto> {
-        val canBeMatchedDtos = usersCanBeMatchedDtos.shuffled()
-            .filter {
+        targetUser: User
+    ): UsersCanBeMatchedDto {
+        return usersCanBeMatchedDtos.shuffled()
+            .firstOrNull {
                 targetUser.gender?.name != it.willMatchUserGender
                 targetUser.city == it.willMatchCity
-            }
-
-
-        // 필터링된 사용자가 count에 도달하지 못하면 추가로 사용자 채우기
-        return if (canBeMatchedDtos.size < count) {
-            val additionalDtos = usersCanBeMatchedDtos.shuffled()
-                .filter { it !in canBeMatchedDtos } // 이미 선택된 항목을 제외
-                .take(count - canBeMatchedDtos.size) // 모자란 개수만큼 추가
-            canBeMatchedDtos + additionalDtos // 기존 결과에 추가 결과를 합쳐서 반환
-        } else {
-            canBeMatchedDtos
-        }
+            } ?: usersCanBeMatchedDtos[0]
     }
 
     @Transactional(readOnly = true)
@@ -299,22 +285,23 @@ class BottleService(
     }
 
     @Transactional
-    fun matchFirstRandomBottle(userId: Long, count: Int): List<Bottle> {
+    fun matchFirstRandomBottle(userId: Long): Bottle? {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatchedWithoutIntroduction(user.id, user.gender!!).take(count)
-        if (usersCanBeMatched.isEmpty()) return emptyList()
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
+        if (usersCanBeMatched.isEmpty()) return null
 
-        val matchingUserDtos = findUserSameRegionOrRandom(usersCanBeMatched, user, count)
-        val matchingUsers = userRepository.findByIdInAndDeletedFalse(matchingUserDtos.map { it.willMatchUserId })
+        val matchingUserDto = findUserSameRegionOrRandom(usersCanBeMatched, user)
+        val matchingUser = userRepository.findByIdAndDeletedFalse(matchingUserDto.willMatchUserId)
+            ?: throw IllegalArgumentException("탈퇴한 회원입니다")
 
         val now = LocalDateTime.now()
-        var bottles = matchingUsers.map { matchingUser -> Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1)) }
-        val savedBottles = bottleRepository.saveAll(bottles)
+        val bottle = Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1))
+        val savedBottle = bottleRepository.save(bottle)
 
         user.updateLastRandomMatchedAt(now)
 
-        return savedBottles
+        return savedBottle
     }
 
     // TODO 클라이언트에서 문답 읽음 표시를 v2로 옮긴 후 변경 -> Letter의 isReadByOtherUser 제거 (이후 읽음 표시는 BottleReadHistory 한곳에서만 관리하도록 함)
