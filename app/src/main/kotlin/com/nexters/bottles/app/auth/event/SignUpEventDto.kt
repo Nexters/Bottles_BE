@@ -1,4 +1,4 @@
-package com.nexters.bottles.api.auth.event.dto
+package com.nexters.bottles.app.auth.event
 
 class SignUpEventDto(
     val userName: String? = null,

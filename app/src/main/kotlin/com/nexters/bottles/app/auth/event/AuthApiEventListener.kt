@@ -1,6 +1,5 @@
-package com.nexters.bottles.api.auth.event
+package com.nexters.bottles.app.auth.event
 
-import com.nexters.bottles.api.auth.event.dto.SignUpEventDto
 import com.nexters.bottles.app.notification.component.FcmClient
 import com.nexters.bottles.app.notification.component.dto.FcmNotification
 import com.nexters.bottles.app.notification.service.FcmTokenService
