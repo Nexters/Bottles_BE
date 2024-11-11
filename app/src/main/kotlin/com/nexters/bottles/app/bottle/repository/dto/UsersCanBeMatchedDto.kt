@@ -3,7 +3,7 @@ package com.nexters.bottles.app.bottle.repository.dto
 data class UsersCanBeMatchedDto(
     val willMatchUserId: Long,
     val willMatchUserGender: String,
-    val willMatchCity: String,
+    val willMatchCity: String? = null,
 )
 
 data class UserProfileSelectDto(

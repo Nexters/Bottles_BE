@@ -74,7 +74,7 @@ class BottleFacade(
         if (isActiveMatching) {
             val matchingHour = BOTTLE_PUSH_TIME.hour
             bottleService.matchRandomBottle(user.id, matchingHour, blockUserIds, blockedMeUserIds)
-                ?.also {
+                .forEach {
                     applicationEventPublisher.publishEvent(
                         BottleMatchEventDto(
                             bottleId = it.id,
