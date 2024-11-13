@@ -114,9 +114,9 @@ class AuthController(
     @GetMapping("/app-version")
     fun getUpdateAppVersion(): UpdateAppVersionResponse {
         return UpdateAppVersionResponse(
-            minimumIosVersion = null,
-            minimumAndroidVersion = 10009L,
-            latestAndroidVersion = 10010L
+            minimumIosVersion = 39,
+            minimumAndroidVersion = 10011L,
+            latestAndroidVersion = 10011L,
         )
     }
 }
