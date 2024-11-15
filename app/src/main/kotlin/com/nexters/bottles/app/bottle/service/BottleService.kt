@@ -188,7 +188,13 @@ class BottleService(
         val matchingUsers = userRepository.findByIdInAndDeletedFalse(matchingUserDtos.map { it.willMatchUserId })
 
         val now = LocalDateTime.now()
-        var bottles = matchingUsers.map { matchingUser -> Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1)) }
+        var bottles = matchingUsers.map { matchingUser ->
+            Bottle(
+                targetUser = user,
+                sourceUser = matchingUser,
+                expiredAt = now.plusDays(1)
+            )
+        }
         val savedBottles = bottleRepository.saveAll(bottles)
 
         user.updateLastRandomMatchedAt(LocalDateTime.now())
@@ -225,7 +231,13 @@ class BottleService(
         val matchingUsers = userRepository.findByIdInAndDeletedFalse(matchingUserDtos.map { it.willMatchUserId })
 
         val now = LocalDateTime.now()
-        var bottles = matchingUsers.map { matchingUser -> Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1)) }
+        var bottles = matchingUsers.map { matchingUser ->
+            Bottle(
+                targetUser = user,
+                sourceUser = matchingUser,
+                expiredAt = now.plusDays(1)
+            )
+        }
         val savedBottles = bottleRepository.saveAll(bottles)
 
         user.updateLastRandomMatchedAt(LocalDateTime.now())
@@ -255,7 +267,7 @@ class BottleService(
 
 
         // 필터링된 사용자가 count에 도달하지 못하면 추가로 사용자 채우기
-        return if (canBeMatchedDtos.size < count) {
+        val result = if (canBeMatchedDtos.size < count) {
             val additionalDtos = usersCanBeMatchedDtos.shuffled()
                 .filter { it !in canBeMatchedDtos } // 이미 선택된 항목을 제외
                 .take(count - canBeMatchedDtos.size) // 모자란 개수만큼 추가
@@ -263,6 +275,8 @@ class BottleService(
         } else {
             canBeMatchedDtos
         }
+
+        return result.take(count) // 결과에서 count만큼만 반환
     }
 
     @Transactional(readOnly = true)
@@ -301,14 +315,20 @@ class BottleService(
     fun matchFirstRandomBottle(userId: Long, count: Int): List<Bottle> {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalStateException("회원가입 상태를 문의해주세요")
 
-        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!).take(count)
+        val usersCanBeMatched = bottleMatchingRepository.findAllUserCanBeMatched(user.id, user.gender!!)
         if (usersCanBeMatched.isEmpty()) return emptyList()
 
         val matchingUserDtos = findUserSameRegionOrRandom(usersCanBeMatched, user, count)
         val matchingUsers = userRepository.findByIdInAndDeletedFalse(matchingUserDtos.map { it.willMatchUserId })
 
         val now = LocalDateTime.now()
-        var bottles = matchingUsers.map { matchingUser -> Bottle(targetUser = user, sourceUser = matchingUser, expiredAt = now.plusDays(1)) }
+        var bottles = matchingUsers.map { matchingUser ->
+            Bottle(
+                targetUser = user,
+                sourceUser = matchingUser,
+                expiredAt = now.plusDays(1)
+            )
+        }
         val savedBottles = bottleRepository.saveAll(bottles)
 
         user.updateLastRandomMatchedAt(now)
