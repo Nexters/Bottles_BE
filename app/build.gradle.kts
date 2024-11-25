@@ -14,6 +14,9 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-webflux")
     api("net.logstash.logback:logstash-logback-encoder:7.3")
 
+    api("org.springframework.boot:spring-boot-starter-data-redis")
+    api("io.lettuce:lettuce-core")
+
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
